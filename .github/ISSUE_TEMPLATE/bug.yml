@@ -1,0 +1,18 @@
+name: 🐞 Reporte de error
+description: Informa sobre un error o comportamiento inesperado.
+title: "[Bug]: "
+labels: ["🐞 bug"]
+assignees: []
+body:
+  - type: markdown
+    attributes:
+      value: |
+        ## 🐞 Reporte de error
+        Por favor, completa la información para que podamos reproducir y resolver el problema.
+
+  - type: textarea
+    id: resultado
+    attributes:
+      label: ❌ Resultado actual
+      description: Describe lo que pasa actualmente
+      placeholder: Ej. El login no valida correctamente

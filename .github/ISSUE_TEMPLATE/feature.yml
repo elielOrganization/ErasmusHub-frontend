@@ -1,0 +1,18 @@
+name: 💡 Nueva funcionalidad
+description: Sugiere una nueva característica o mejora existente.
+title: "[Feature]: "
+labels: ["💡 feature"]
+assignees: []
+body:
+  - type: markdown
+    attributes:
+      value: |
+        ## 💡 Nueva funcionalidad
+        Describe qué funcionalidad quieres añadir o mejorar.
+
+  - type: input
+    id: objetivo
+    attributes:
+      label: 🎯 Objetivo
+      description: ¿Qué problema resuelve o mejora esta nueva función?
+      placeholder: Ej. Permitir login con Google

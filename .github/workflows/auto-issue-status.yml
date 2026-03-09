@@ -1,0 +1,125 @@
+name: 🔄 Actualizar estado de Issues automáticamente
+
+on:
+  issues:
+    types: [assigned, unassigned]
+  pull_request:
+    types: [closed]
+
+permissions:
+  issues: write
+  pull-requests: write
+
+jobs:
+  update-status:
+    runs-on: ubuntu-latest
+    steps:
+      - name: 🧠 Detectar evento y actualizar etiqueta
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const owner = context.repo.owner;
+            const repo = context.repo.repo;
+
+            // Utilidad para buscar comentario oculto de etiquetas
+            async function findLabelsComment(issue_number) {
+              const comments = await github.rest.issues.listComments({ owner, repo, issue_number });
+              return comments.data.find(c => c.body && c.body.startsWith('<!--LABELS:'));
+            }
+
+            // 🟡 Caso 1: Se asigna un issue → guardar etiquetas originales y poner "in progress"
+            if (context.eventName === 'issues' && context.payload.action === 'assigned') {
+              const issue = context.payload.issue;
+              const labels = issue.labels.map(l => l.name);
+              if (!labels.includes('🚧 in progress') || labels.length > 1) {
+                // Guardar todas las etiquetas actuales (excepto "🚧 in progress") en comentario oculto
+                const labelsToSave = labels.filter(l => l !== '🚧 in progress');
+                if (labelsToSave.length > 0) {
+                  await github.rest.issues.createComment({
+                    owner,
+                    repo,
+                    issue_number: issue.number,
+                    body: `<!--LABELS:${labelsToSave.join(',')}-->`
+                  });
+                }
+                // Reemplazar todas las etiquetas por solo "🚧 in progress"
+                await github.rest.issues.setLabels({
+                  owner,
+                  repo,
+                  issue_number: issue.number,
+                  labels: ['🚧 in progress']
+                });
+                console.log(`🚧 Issue #${issue.number} ahora solo tiene la etiqueta "🚧 in progress" y las anteriores fueron guardadas`);
+              } else {
+                console.log(`🚧 Issue #${issue.number} ya tiene solo la etiqueta "🚧 in progress"`);
+              }
+            }
+
+            // 🔴 Caso 2: Se desasigna un issue → restaurar etiquetas originales si hay comentario
+            if (context.eventName === 'issues' && context.payload.action === 'unassigned') {
+              const issue = context.payload.issue;
+              // Buscar comentario oculto y restaurar etiquetas
+              const labelsComment = await findLabelsComment(issue.number);
+              let restored = false;
+              if (labelsComment) {
+                // Permitir emojis y caracteres especiales en etiquetas
+                const match = labelsComment.body.match(/<!--LABELS:([\s\S]+?)-->/);
+                if (match) {
+                  const prevLabels = match[1].split(',').map(l => l.trim()).filter(Boolean);
+                  if (prevLabels.length > 0) {
+                    // Reemplazar todas las etiquetas actuales por las originales
+                    await github.rest.issues.setLabels({
+                      owner,
+                      repo,
+                      issue_number: issue.number,
+                      labels: prevLabels
+                    });
+                    restored = true;
+                    console.log(`🔙 Etiquetas originales restauradas: ${prevLabels.join(', ')}`);
+                  }
+                }
+                // Borrar comentario oculto
+                await github.rest.issues.deleteComment({
+                  owner,
+                  repo,
+                  comment_id: labelsComment.id
+                });
+              }
+              // Si no había comentario, solo quitar "🚧 in progress" si está
+              if (!restored) {
+                const labels = issue.labels.map(l => l.name);
+                if (labels.includes('🚧 in progress')) {
+                  await github.rest.issues.removeLabel({
+                    owner,
+                    repo,
+                    issue_number: issue.number,
+                    name: '🚧 in progress'
+                  });
+                  console.log(`🔁 Etiqueta "🚧 in progress" eliminada del issue #${issue.number}`);
+                }
+              }
+            }
+
+            // 🟢 Caso 3: Se mergea un PR → marcar issue como "done"
+            if (context.eventName === 'pull_request' && context.payload.pull_request.merged) {
+              const prBody = context.payload.pull_request.body || '';
+              const issueMatch = prBody.match(/#(\d+)/);
+
+              if (!issueMatch) {
+                console.log('No se encontró un issue vinculado.');
+                return;
+              }
+
+              const issue_number = issueMatch[1];
+              const { data: issue } = await github.rest.issues.get({ owner, repo, issue_number });
+              const existingLabels = issue.labels.map(l => l.name).filter(l => l !== '🚧 in progress' && l !== '✅ done');
+
+              await github.rest.issues.setLabels({
+                owner,
+                repo,
+                issue_number,
+                labels: [...existingLabels, '✅ done']
+              });
+
+              console.log(`✅ Issue #${issue_number} marcado como "✅ done"`);
+            }
