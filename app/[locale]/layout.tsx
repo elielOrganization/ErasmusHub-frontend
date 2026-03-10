@@ -4,7 +4,8 @@ import { NextIntlClientProvider } from 'next-intl';
 import { getMessages } from 'next-intl/server';
 import { notFound } from 'next/navigation';
 import { routing } from '@/i18n/routing';
-import "../globals.css"; // Ojo a la ruta, ahora que bajaste un nivel puede que sea '../globals.css' o '@/app/globals.css'
+import { AuthProvider } from '@/context/AuthContext'; // <--- IMPORTANTE: Importa tu AuthProvider
+import "../globals.css";
 
 const geistSans = Geist({ variable: "--font-geist-sans", subsets: ["latin"] });
 const geistMono = Geist_Mono({ variable: "--font-geist-mono", subsets: ["latin"] });
@@ -35,9 +36,13 @@ export default async function RootLayout({
   return (
     <html lang={locale}>
       <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
-        {/* El proveedor oficial de next-intl */}
         <NextIntlClientProvider messages={messages}>
-          {children}
+          {/* Envolvemos los children con el AuthProvider. 
+              Ahora TODA la aplicación tiene acceso al usuario logueado 
+          */}
+          <AuthProvider>
+            {children}
+          </AuthProvider>
         </NextIntlClientProvider>
       </body>
     </html>

@@ -18,10 +18,16 @@
     "confirmPasswordLabel": "Confirmar Contraseña",
     "confirmPasswordPlaceholder": "Repite tu contraseña",
     "alreadyHaveAccount": "¿Ya tienes una cuenta?",
-    "login": "[TRANSLATE] Sign in",
-    "noAccount": "[TRANSLATE] Don't have an account?",
-    "registerFree": "[TRANSLATE] Sign up for free"
+    "loading": "Entrando...",
+    "errors": {
+      "emptyFields": "Por favor, rellena todos los campos.",
+      "invalidEmail": "El correo electrónico no es válido.",
+      "passwordTooShort": "La contraseña debe tener al menos 8 caracteres.",
+      "badCredentials": "Email o contraseña incorrectos.",
+      "generic": "Algo salió mal. Inténtalo de nuevo."
+    }
   },
+
   "dashboard": {
     "home": "Inicio",
     "students": "Estudiantes",
