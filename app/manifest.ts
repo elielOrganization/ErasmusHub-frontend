@@ -2,6 +2,7 @@ import type { MetadataRoute } from 'next';
 
 export default function manifest(): MetadataRoute.Manifest {
   return {
+    id: '/', 
     name: 'ErasmusHub',
     short_name: 'ErasmusHub',
     description: 'La plataforma para estudiantes Erasmus',
@@ -26,6 +27,21 @@ export default function manifest(): MetadataRoute.Manifest {
         type: 'image/png',
         purpose: 'maskable',
       },
+    ],
+    // Asegúrate de que estos archivos EXISTAN en public/icons/
+    screenshots: [
+      {
+        src: '/icons/icon-512x512.png',
+        sizes: '512x512',
+        type: 'image/png',
+        form_factor: 'wide',
+      },
+      {
+        src: '/icons/icon-512x512.png',
+        sizes: '512x512',
+        type: 'image/png',
+        form_factor: 'narrow',
+      }
     ],
   };
 }

@@ -17,6 +17,7 @@
     "lastNamePlaceholder": "Your last name",
     "confirmPasswordLabel": "Confirm Password",
     "confirmPasswordPlaceholder": "Repeat your password",
+    "installPWA": "Install ErasmusHub",
     "alreadyHaveAccount": "Already have an account?",
     "loading": "Signing in...",
     "errors": {

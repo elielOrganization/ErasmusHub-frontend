@@ -7,11 +7,14 @@ import InputField from "@/components/InputField";
 import SubmitButton from "@/components/SubmitButton";
 import Cookies from 'js-cookie';
 import { useAuth } from '@/context/AuthContext';
+import { usePWA } from '@/hooks/usePWA';
 
 export default function Login() {
   const t = useTranslations('auth');
   const router = useRouter();
   const { loginGlobal, user, loading: authLoading } = useAuth();
+  
+  const { isInstallable, installApp } = usePWA();
 
   const [formData, setFormData] = useState({ email: '', password: '' });
   const [loading, setLoading] = useState(false);
@@ -23,26 +26,21 @@ export default function Login() {
     }
   }, [user, authLoading, router]);
 
-  // --- LÓGICA DE VALIDACIÓN ---
   const validateForm = () => {
     const { email, password } = formData;
-
     if (!email.trim() || !password.trim()) {
       setError(t('errors.emptyFields'));
       return false;
     }
-
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(email)) {
       setError(t('errors.invalidEmail'));
       return false;
     }
-
     if (password.length < 8) {
       setError(t('errors.passwordTooShort'));
       return false;
     }
-
     return true;
   };
 
@@ -139,7 +137,6 @@ export default function Login() {
         </div>
       </form>
 
-      {/* --- BOTÓN PARA REGISTRARSE --- */}
       <p className="text-center text-gray-400 text-xs mt-8">
         {t('dontHaveAccount')}{" "}
         <span
@@ -149,6 +146,21 @@ export default function Login() {
           {t('register')}
         </span>
       </p>
+
+      {isInstallable && (
+        <div className="mt-8 flex justify-center border-t border-gray-100 pt-6">
+          <button
+            type="button"
+            onClick={installApp}
+            className="flex items-center gap-2 px-5 py-2.5 text-sm font-semibold text-blue-700 bg-blue-50 hover:bg-blue-100 rounded-xl transition-all shadow-sm"
+          >
+            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+            </svg>
+            Instalar App
+          </button>
+        </div>
+      )}
     </AuthLayout>
   );
 }

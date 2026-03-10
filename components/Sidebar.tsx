@@ -2,11 +2,14 @@
 import { useTranslations } from 'next-intl';
 import { Link, usePathname } from '@/i18n/routing';
 import { useSidebar } from '@/context/SidebarContext';
+import { usePWA } from '@/hooks/usePWA';
 
 export default function Sidebar() {
     const t = useTranslations('dashboard');
     const pathname = usePathname();
     const { isCollapsed, toggleSidebar } = useSidebar();
+    
+    const { isInstallable, installApp } = usePWA();
 
     const menuItems = [
         { name: t('home'), path: '/dashboard', icon: <path strokeLinecap="round" strokeLinejoin="round" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" /> },
@@ -18,7 +21,6 @@ export default function Sidebar() {
     return (
         <aside className={`fixed left-0 top-12 h-[calc(100vh-3rem)] bg-white border-r border-gray-200 flex flex-col z-20 transition-all duration-300 ease-in-out ${isCollapsed ? 'w-20' : 'w-64'}`}>
 
-            {/* LOGO AREA */}
             <div className="px-4 py-6 flex items-center justify-center relative">
                 <div className={`bg-blue-600 rounded-2xl flex items-center justify-center shadow-lg transition-all duration-300 ${isCollapsed ? 'w-10 h-10' : 'w-12 h-12'}`}>
                     <svg className={`${isCollapsed ? 'w-6 h-6' : 'w-7 h-7'} text-white`} fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth="2">
@@ -28,7 +30,6 @@ export default function Sidebar() {
                 </div>
             </div>
 
-            {/* BOTÓN TOGGLE (Flotante en el borde) */}
             <button
                 onClick={toggleSidebar}
                 className="absolute -right-3 top-20 w-6 h-6 bg-white border border-gray-200 rounded-full flex items-center justify-center shadow-sm hover:bg-gray-50 z-30 transition-transform duration-300"
@@ -37,7 +38,6 @@ export default function Sidebar() {
                 <svg className="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 19l-7-7 7-7" /></svg>
             </button>
 
-            {/* NAVEGACIÓN */}
             <nav className="flex-1 p-3 space-y-1 overflow-y-auto overflow-x-hidden">
                 {menuItems.map((item) => {
                     const isActive = pathname === item.path;
@@ -58,6 +58,23 @@ export default function Sidebar() {
                     );
                 })}
             </nav>
+
+            {isInstallable && (
+                <div className="p-4 border-t border-gray-200">
+                    <button
+                        onClick={installApp}
+                        className={`flex items-center gap-3 w-full px-3 py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-all duration-200 justify-center`}
+                        title="Instalar App"
+                    >
+                        <svg className="w-5 h-5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                        </svg>
+                        <span className={`text-sm font-medium whitespace-nowrap transition-opacity duration-300 ${isCollapsed ? 'hidden' : 'block'}`}>
+                            Instalar App
+                        </span>
+                    </button>
+                </div>
+            )}
         </aside>
     );
 }

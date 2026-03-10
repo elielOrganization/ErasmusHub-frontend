@@ -4,7 +4,7 @@ import { NextIntlClientProvider } from 'next-intl';
 import { getMessages } from 'next-intl/server';
 import { notFound } from 'next/navigation';
 import { routing } from '@/i18n/routing';
-import { AuthProvider } from '@/context/AuthContext'; // <--- IMPORTANTE: Importa tu AuthProvider
+import { AuthProvider } from '@/context/AuthContext';
 import "../globals.css";
 
 const geistSans = Geist({ variable: "--font-geist-sans", subsets: ["latin"] });
@@ -38,24 +38,18 @@ export default async function RootLayout({
   children: React.ReactNode;
   params: Promise<{locale: string}>;
 }) {
-  // En Next.js 15, params es asíncrono
   const { locale } = await params;
 
-  // Validar que el idioma existe
   if (!routing.locales.includes(locale as any)) {
     notFound();
   }
 
-  // Cargar los diccionarios del servidor
   const messages = await getMessages();
 
   return (
     <html lang={locale}>
       <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
         <NextIntlClientProvider messages={messages}>
-          {/* Envolvemos los children con el AuthProvider. 
-              Ahora TODA la aplicación tiene acceso al usuario logueado 
-          */}
           <AuthProvider>
             {children}
           </AuthProvider>
