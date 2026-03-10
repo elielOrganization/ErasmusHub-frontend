@@ -17,10 +17,11 @@
     "lastNamePlaceholder": "Tus apellidos",
     "confirmPasswordLabel": "Confirmar Contraseña",
     "confirmPasswordPlaceholder": "Repite tu contraseña",
-    "alreadyHaveAccount": "¿Ya tienes una cuenta?"
-  }
-}
-
+    "alreadyHaveAccount": "¿Ya tienes una cuenta?",
+    "login": "[TRANSLATE] Sign in",
+    "noAccount": "[TRANSLATE] Don't have an account?",
+    "registerFree": "[TRANSLATE] Sign up for free"
+  },
   "dashboard": {
     "home": "Inicio",
     "students": "Estudiantes",

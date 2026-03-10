@@ -46,7 +46,7 @@ export default function Login() {
 
       try {
           // Para GET, pasamos los datos en la URL: ?email=...
-          const url = `http://127.0.0.1:8000/api/v1/users/?email=${formData.email}`;
+          const url = `${process.env.NEXT_PUBLIC_API_URL}/api/v1/users/?email=${formData.email}`;
 
           const response = await fetch(url, {
               method: 'GET', // <--- OBLIGATORIO: Debe ser GET
