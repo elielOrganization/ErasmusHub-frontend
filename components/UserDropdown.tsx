@@ -2,19 +2,21 @@
 import { useState, useRef, useEffect } from "react";
 import { useTranslations } from "next-intl";
 import { useRouter } from "@/i18n/routing";
+import { useAuth } from "@/context/AuthContext"; // 1. Importamos el hook de autenticación
 
 export default function UserDropdown() {
     const [isOpen, setIsOpen] = useState(false);
     const t = useTranslations("dashboard");
     const router = useRouter();
     const menuRef = useRef<HTMLDivElement>(null);
+    
+    // 2. Extraemos los datos del usuario real y la función logout del contexto
+    const { user, logout } = useAuth();
 
-    // Datos ficticios del usuario
-    const user = {
-        name: "Juan Sebastián",
-        email: "juan.erasmus@hub.com",
-        initials: "JS"
-    };
+    // 3. Generamos las iniciales dinámicamente basadas en el usuario real
+    const initials = user 
+        ? `${user.nombre.charAt(0)}${user.apellidos.charAt(0)}`.toUpperCase() 
+        : "??";
 
     useEffect(() => {
         const handleClickOutside = (event: MouseEvent) => {
@@ -24,9 +26,12 @@ export default function UserDropdown() {
         return () => document.removeEventListener("mousedown", handleClickOutside);
     }, []);
 
+    // Si por alguna razón no hay usuario, no mostramos el dropdown (o mostramos un estado de carga)
+    if (!user) return null;
+
     return (
         <div className="relative" ref={menuRef}>
-            {/* Trigger: Avatar pequeño en el Header */}
+            {/* Trigger: Avatar pequeño */}
             <button
                 onClick={() => setIsOpen(!isOpen)}
                 className="w-9 h-9 rounded-full flex items-center justify-center text-white text-xs font-bold shadow-sm transition-transform hover:scale-105 active:scale-95 border-2 border-white ring-1 ring-gray-100"
@@ -34,13 +39,13 @@ export default function UserDropdown() {
                     background: "linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%)",
                 }}
             >
-                {user.initials}
+                {initials}
             </button>
 
             {isOpen && (
                 <div className="absolute right-0 mt-3 w-64 bg-white rounded-2xl shadow-2xl border border-gray-100 overflow-hidden z-50 animate-in fade-in zoom-in duration-200">
 
-                    {/* Header del menú (Centrado) */}
+                    {/* Header del menú con datos REALES */}
                     <div className="flex flex-col items-center px-4 py-6 bg-gray-50/50 border-b border-gray-100">
                         <div
                             className="w-16 h-16 rounded-full flex items-center justify-center text-white text-xl font-bold mb-3 shadow-md border-4 border-white"
@@ -48,13 +53,14 @@ export default function UserDropdown() {
                                 background: "linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%)",
                             }}
                         >
-                            {user.initials}
+                            {initials}
                         </div>
-                        <p className="text-base font-bold text-gray-800 text-center">{user.name}</p>
+                        <p className="text-base font-bold text-gray-800 text-center">
+                            {user.nombre} {user.apellidos}
+                        </p>
                         <p className="text-xs text-gray-400 text-center">{user.email}</p>
                     </div>
 
-                    {/* Cuerpo del menú (Icono + Texto en línea) */}
                     <div className="p-2 space-y-1">
                         <button
                             onClick={() => { router.push('/dashboard/profile'); setIsOpen(false) }}
@@ -77,10 +83,10 @@ export default function UserDropdown() {
                         </button>
                     </div>
 
-                    {/* Footer: Cerrar sesión (Ligero fondo rojo) */}
+                    {/* Footer: Cerrar sesión (Usando la función del contexto) */}
                     <div className="p-2 border-t border-gray-50 bg-gray-50/30">
                         <button
-                            onClick={() => router.push('/')}
+                            onClick={() => logout()} // 4. Ejecutamos el logout real
                             className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-red-600 bg-red-50/50 hover:bg-red-50 rounded-xl transition-colors group"
                         >
                             <svg className="w-5 h-5 text-red-400 group-hover:text-red-600 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">

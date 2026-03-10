@@ -1,22 +1,31 @@
 {
   "auth": {
-    "login": "Sign in",
-    "register": "Create account",
-    "createAccountTitle": "Create an account",
-    "nameLabel": "First Name",
-    "namePlaceholder": "Anna",
-    "lastNameLabel": "Last Name",
-    "lastNamePlaceholder": "Smith",
-    "emailLabel": "Email address",
+    "welcomeTitle": "Welcome back!",
+    "welcomeSubtitle": "Access your account to manage your Erasmus procedures",
+    "emailLabel": "Email Address",
+    "emailPlaceholder": "example@mail.com",
     "passwordLabel": "Password",
-    "emailPlaceholder": "you@email.com",
-    "passwordPlaceholder": "Minimum 8 characters",
-    "confirmPasswordLabel": "Confirm password",
+    "passwordPlaceholder": "••••••••",
+    "forgotPassword": "Forgot your password?",
+    "signIn": "Sign In",
+    "dontHaveAccount": "Don't have an account?",
+    "register": "Register here",
+    "createAccountTitle": "Create your account",
+    "nameLabel": "First Name",
+    "namePlaceholder": "Your name",
+    "lastNameLabel": "Last Name",
+    "lastNamePlaceholder": "Your last name",
+    "confirmPasswordLabel": "Confirm Password",
     "confirmPasswordPlaceholder": "Repeat your password",
-    "noAccount": "Don't have an account?",
-    "registerFree": "Sign up for free",
     "alreadyHaveAccount": "Already have an account?",
-    "signIn": "Sign in"
+    "loading": "Signing in...",
+    "errors": {
+      "emptyFields": "Please fill in all fields.",
+      "invalidEmail": "The email address is not valid.",
+      "passwordTooShort": "Password must be at least 8 characters long.",
+      "badCredentials": "Invalid email or password.",
+      "generic": "Something went wrong. Please try again."
+    }
   },
 
   "dashboard": {

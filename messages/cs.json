@@ -1,22 +1,31 @@
 {
   "auth": {
-    "login": "Přihlásit se",
-    "register": "Vytvořit účet",
-    "createAccountTitle": "Vytvořit účet",
-    "nameLabel": "Jméno",
-    "namePlaceholder": "Anna",
-    "lastNameLabel": "Příjmení",
-    "lastNamePlaceholder": "Nováková",
+    "welcomeTitle": "Vítejte zpět!",
+    "welcomeSubtitle": "Přihlaste se ke svému účtu a spravujte své záležitosti Erasmus",
     "emailLabel": "E-mailová adresa",
+    "emailPlaceholder": "priklad@mail.cz",
     "passwordLabel": "Heslo",
-    "emailPlaceholder": "tvuj@email.cz",
-    "passwordPlaceholder": "Minimálně 8 znaků",
+    "passwordPlaceholder": "••••••••",
+    "forgotPassword": "Zapomněli jste heslo?",
+    "signIn": "Přihlásit se",
+    "dontHaveAccount": "Nemáte účet?",
+    "register": "Zaregistrujte se zde",
+    "createAccountTitle": "Vytvořte si účet",
+    "nameLabel": "Jméno",
+    "namePlaceholder": "Vaše jméno",
+    "lastNameLabel": "Příjmení",
+    "lastNamePlaceholder": "Vaše příjmení",
     "confirmPasswordLabel": "Potvrdit heslo",
-    "confirmPasswordPlaceholder": "Zopakujte heslo",
-    "noAccount": "Nemáte účet?",
-    "registerFree": "Zaregistrujte se zdarma",
+    "confirmPasswordPlaceholder": "Zopakujte své heslo",
     "alreadyHaveAccount": "Již máte účet?",
-    "signIn": "Přihlaste se"
+    "loading": "Přihlašování...",
+    "errors": {
+      "emptyFields": "Prosím, vyplňte všechna pole.",
+      "invalidEmail": "E-mailová adresa není platná.",
+      "passwordTooShort": "Heslo musí mít alespoň 8 znaků.",
+      "badCredentials": "Nesprávný e-mail nebo heslo.",
+      "generic": "Něco se nepovedlo. Zkuste to prosím znovu."
+    }
   },
   
   "dashboard": {
