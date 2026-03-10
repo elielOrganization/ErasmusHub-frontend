@@ -37,5 +37,11 @@
     "logout": "Odhlásit se",
     "notifications": "Oznámení",
     "noNotifications": "Nemáte žádná nová oznámení"
+  },
+
+  "offline": {
+    "title": "Jste offline",
+    "description": "Zkontrolujte prosím připojení k internetu a zkuste to znovu.",
+    "retry": "Zkusit znovu"
   }
 }

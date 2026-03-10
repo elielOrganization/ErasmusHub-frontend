@@ -1,8 +1,8 @@
 "use client"
 import { createContext, useContext, useState, ReactNode } from "react";
-import es from "../locales/es.json";
-import en from "../locales/en.json";
-import cs from "../locales/cs.json";
+import es from "../messages/es.json";
+import en from "../messages/en.json";
+import cs from "../messages/cs.json";
 
 const dictionaries: Record<string, any> = { es, en, cs };
 

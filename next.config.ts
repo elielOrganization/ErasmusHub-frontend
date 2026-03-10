@@ -1,12 +1,20 @@
 import type { NextConfig } from "next";
 import createNextIntlPlugin from 'next-intl/plugin';
+import withSerwistInit from '@serwist/next';
 
-// Le decimos dónde está nuestra configuración
 const withNextIntl = createNextIntlPlugin('./i18n/request.ts');
 
+const revision = crypto.randomUUID();
+
+const withSerwist = withSerwistInit({
+  swSrc: 'app/sw.ts',
+  swDest: 'public/sw.js',
+  additionalPrecacheEntries: [{ url: '/en/offline', revision }],
+  disable: process.env.NODE_ENV === 'development',
+});
+
 const nextConfig: NextConfig = {
-  /* tus configuraciones previas si tenías alguna */
-  devIndicators: false
+  devIndicators: false,
 };
 
-export default withNextIntl(nextConfig);
+export default withSerwist(withNextIntl(nextConfig));

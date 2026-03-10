@@ -37,5 +37,11 @@
     "logout": "Cerrar sesión",
     "notifications": "Notificaciones",
     "noNotifications": "No tienes notificaciones nuevas"
+  },
+
+  "offline": {
+    "title": "Sin conexión",
+    "description": "Comprueba tu conexión a internet e inténtalo de nuevo.",
+    "retry": "Reintentar"
   }
 }
