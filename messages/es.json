@@ -17,9 +17,16 @@
     "lastNamePlaceholder": "Tus apellidos",
     "confirmPasswordLabel": "Confirmar Contraseña",
     "confirmPasswordPlaceholder": "Repite tu contraseña",
-    "alreadyHaveAccount": "¿Ya tienes una cuenta?"
-  }
-}
+    "alreadyHaveAccount": "¿Ya tienes una cuenta?",
+    "loading": "Entrando...",
+    "errors": {
+      "emptyFields": "Por favor, rellena todos los campos.",
+      "invalidEmail": "El correo electrónico no es válido.",
+      "passwordTooShort": "La contraseña debe tener al menos 8 caracteres.",
+      "badCredentials": "Email o contraseña incorrectos.",
+      "generic": "Algo salió mal. Inténtalo de nuevo."
+    }
+  },
 
   "dashboard": {
     "home": "Inicio",
