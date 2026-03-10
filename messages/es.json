@@ -1,0 +1,34 @@
+{
+  "auth": {
+    "welcomeTitle": "¡Bienvenido de nuevo!",
+    "welcomeSubtitle": "Accede a tu cuenta para gestionar tus trámites Erasmus",
+    "emailLabel": "Correo Electrónico",
+    "emailPlaceholder": "ejemplo@correo.com",
+    "passwordLabel": "Contraseña",
+    "passwordPlaceholder": "••••••••",
+    "forgotPassword": "¿Has olvidado tu contraseña?",
+    "signIn": "Iniciar Sesión",
+    "dontHaveAccount": "¿No tienes una cuenta?",
+    "register": "Regístrate aquí",
+    "createAccountTitle": "Crea tu cuenta",
+    "nameLabel": "Nombre",
+    "namePlaceholder": "Tu nombre",
+    "lastNameLabel": "Apellidos",
+    "lastNamePlaceholder": "Tus apellidos",
+    "confirmPasswordLabel": "Confirmar Contraseña",
+    "confirmPasswordPlaceholder": "Repite tu contraseña",
+    "alreadyHaveAccount": "¿Ya tienes una cuenta?"
+  }
+}
+
+  "dashboard": {
+    "home": "Inicio",
+    "students": "Estudiantes",
+    "documents": "Documentos",
+    "settings": "Ajustes",
+    "profile": "Mi Perfil",
+    "logout": "Cerrar sesión",
+    "notifications": "Notificaciones",
+    "noNotifications": "No tienes notificaciones nuevas"
+  }
+}

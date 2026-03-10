@@ -1,0 +1,32 @@
+{
+  "auth": {
+    "login": "Přihlásit se",
+    "register": "Vytvořit účet",
+    "createAccountTitle": "Vytvořit účet",
+    "nameLabel": "Jméno",
+    "namePlaceholder": "Anna",
+    "lastNameLabel": "Příjmení",
+    "lastNamePlaceholder": "Nováková",
+    "emailLabel": "E-mailová adresa",
+    "passwordLabel": "Heslo",
+    "emailPlaceholder": "tvuj@email.cz",
+    "passwordPlaceholder": "Minimálně 8 znaků",
+    "confirmPasswordLabel": "Potvrdit heslo",
+    "confirmPasswordPlaceholder": "Zopakujte heslo",
+    "noAccount": "Nemáte účet?",
+    "registerFree": "Zaregistrujte se zdarma",
+    "alreadyHaveAccount": "Již máte účet?",
+    "signIn": "Přihlaste se"
+  },
+  
+  "dashboard": {
+    "home": "Domů",
+    "students": "Studenti",
+    "documents": "Dokumenty",
+    "settings": "Nastavení",
+    "profile": "Můj profil",
+    "logout": "Odhlásit se",
+    "notifications": "Oznámení",
+    "noNotifications": "Nemáte žádná nová oznámení"
+  }
+}

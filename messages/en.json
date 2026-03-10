@@ -1,0 +1,32 @@
+{
+  "auth": {
+    "login": "Sign in",
+    "register": "Create account",
+    "createAccountTitle": "Create an account",
+    "nameLabel": "First Name",
+    "namePlaceholder": "Anna",
+    "lastNameLabel": "Last Name",
+    "lastNamePlaceholder": "Smith",
+    "emailLabel": "Email address",
+    "passwordLabel": "Password",
+    "emailPlaceholder": "you@email.com",
+    "passwordPlaceholder": "Minimum 8 characters",
+    "confirmPasswordLabel": "Confirm password",
+    "confirmPasswordPlaceholder": "Repeat your password",
+    "noAccount": "Don't have an account?",
+    "registerFree": "Sign up for free",
+    "alreadyHaveAccount": "Already have an account?",
+    "signIn": "Sign in"
+  },
+
+  "dashboard": {
+    "home": "Home",
+    "students": "Students",
+    "documents": "Documents",
+    "settings": "Settings",
+    "profile": "My Profile",
+    "logout": "Logout",
+    "notifications": "Notifications",
+    "noNotifications": "You have no new notifications"
+  }
+}
