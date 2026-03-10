@@ -10,7 +10,11 @@ venv/
 .venv/
 __pycache__/
 
+# Serwist generated service worker
+public/sw.js
+public/sw.js.map
+public/swe-worker-*.js
+
 # Otros
 .env*
-!.env.example
 *.db
