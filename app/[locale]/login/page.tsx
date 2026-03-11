@@ -8,6 +8,7 @@ import SubmitButton from "@/components/SubmitButton";
 import Cookies from 'js-cookie';
 import { useAuth } from '@/context/AuthContext';
 import { usePWA } from '@/hooks/usePWA';
+import { API_URL } from '@/lib/api';
 
 export default function Login() {
   const t = useTranslations('auth');
@@ -57,7 +58,7 @@ export default function Login() {
       setError(null);
 
       try {
-          const response = await fetch(`http://127.0.0.1:8000/auth/login`, {
+          const response = await fetch(`${API_URL}/auth/login`, {
               method: 'POST',
               headers: { 'Content-Type': 'application/json' },
               body: JSON.stringify(formData),

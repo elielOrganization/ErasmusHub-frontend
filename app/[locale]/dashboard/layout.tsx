@@ -1,9 +1,10 @@
 import { cookies } from 'next/headers';
-import { redirect } from 'next/navigation'; // Importante para la redirección
+import { redirect } from 'next/navigation';
 import Sidebar from "@/components/Sidebar";
 import Header from "@/components/Header";
 import { SidebarProvider } from "@/context/SidebarContext";
 import DashboardContent from "../../../components/DashboardContent";
+import { SERVER_API_URL } from '@/lib/api';
 
 export default async function DashboardLayout({ children }: { children: React.ReactNode }) {
     const cookieStore = await cookies();
@@ -20,7 +21,7 @@ export default async function DashboardLayout({ children }: { children: React.Re
     // 3. (Opcional pero recomendado) Validar el token en el servidor
     // Esto evita que alguien con un token falso o expirado vea el dashboard
     try {
-        const response = await fetch("http://127.0.0.1:8000/auth/me", {
+        const response = await fetch(`${SERVER_API_URL}/auth/me`, {
             method: 'GET',
             headers: {
                 'Authorization': `Bearer ${token}`,

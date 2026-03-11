@@ -5,6 +5,7 @@ import { useRouter } from '@/i18n/routing';
 import AuthLayout from "@/components/AuthLayout";
 import InputField from "@/components/InputField";
 import SubmitButton from "@/components/SubmitButton";
+import { API_URL } from '@/lib/api';
 
 export default function Register() {
     const t = useTranslations('auth');
@@ -77,7 +78,7 @@ export default function Register() {
         console.log("Cargando activado..."); // Añade este log para ver si llega aquí
 
         try {
-            const response = await fetch('http://127.0.0.1:8000/users/', {
+            const response = await fetch(`${API_URL}/users/`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
