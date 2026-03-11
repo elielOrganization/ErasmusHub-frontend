@@ -14,7 +14,6 @@
     "nameLabel": "Jméno",
     "namePlaceholder": "Vaše jméno",
     "lastNameLabel": "Příjmení",
-    "installPWA": "Instalovat ErasmusHub",
     "lastNamePlaceholder": "Vaše příjmení",
     "confirmPasswordLabel": "Potvrdit heslo",
     "confirmPasswordPlaceholder": "Zopakujte své heslo",
@@ -37,7 +36,8 @@
     "profile": "Můj profil",
     "logout": "Odhlásit se",
     "notifications": "Oznámení",
-    "noNotifications": "Nemáte žádná nová oznámení"
+    "noNotifications": "Nemáte žádná nová oznámení",
+    "installApp": "Instalovat aplikaci"
   },
 
   "offline": {

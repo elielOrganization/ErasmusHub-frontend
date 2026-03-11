@@ -64,13 +64,13 @@ export default function Sidebar() {
                     <button
                         onClick={installApp}
                         className={`flex items-center gap-3 w-full px-3 py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-all duration-200 justify-center`}
-                        title="Instalar App"
+                        title={t('installApp')}
                     >
                         <svg className="w-5 h-5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
                         </svg>
                         <span className={`text-sm font-medium whitespace-nowrap transition-opacity duration-300 ${isCollapsed ? 'hidden' : 'block'}`}>
-                            Instalar App
+                            {t('installApp')}
                         </span>
                     </button>
                 </div>

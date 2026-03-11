@@ -12,7 +12,6 @@
     "register": "Regístrate aquí",
     "createAccountTitle": "Crea tu cuenta",
     "nameLabel": "Nombre",
-    "installPWA": "Instalar ErasmusHub",
     "namePlaceholder": "Tu nombre",
     "lastNameLabel": "Apellidos",
     "lastNamePlaceholder": "Tus apellidos",
@@ -37,7 +36,8 @@
     "profile": "Mi Perfil",
     "logout": "Cerrar sesión",
     "notifications": "Notificaciones",
-    "noNotifications": "No tienes notificaciones nuevas"
+    "noNotifications": "No tienes notificaciones nuevas",
+    "installApp": "Instalar App"
   },
 
   "offline": {

@@ -17,7 +17,6 @@
     "lastNamePlaceholder": "Your last name",
     "confirmPasswordLabel": "Confirm Password",
     "confirmPasswordPlaceholder": "Repeat your password",
-    "installPWA": "Install ErasmusHub",
     "alreadyHaveAccount": "Already have an account?",
     "loading": "Signing in...",
     "errors": {
@@ -37,7 +36,8 @@
     "profile": "My Profile",
     "logout": "Logout",
     "notifications": "Notifications",
-    "noNotifications": "You have no new notifications"
+    "noNotifications": "You have no new notifications",
+    "installApp": "Install App"
   },
 
   "offline": {
