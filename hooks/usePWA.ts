@@ -7,46 +7,20 @@ interface BeforeInstallPromptEvent extends Event {
   userChoice: Promise<{ outcome: 'accepted' | 'dismissed' }>;
 }
 
-export type InstallMethod = 'prompt' | 'ios' | 'manual' | null;
-
-function getInstallMethod(): InstallMethod {
-  if (typeof window === 'undefined') return null;
-
-  // Already running as installed PWA
-  if (window.matchMedia('(display-mode: standalone)').matches) return null;
-  if ((navigator as any).standalone === true) return null;
-
-  const ua = navigator.userAgent.toLowerCase();
-
-  // iOS Safari: must use "Add to Home Screen"
-  if (/iphone|ipad|ipod/.test(ua)) return 'ios';
-
-  // All other browsers: try native prompt first, fallback to manual guide
-  return 'prompt';
-}
-
 export const usePWA = () => {
   const [deferredPrompt, setDeferredPrompt] = useState<BeforeInstallPromptEvent | null>(null);
   const [isInstallable, setIsInstallable] = useState(false);
-  const [installMethod, setInstallMethod] = useState<InstallMethod>(null);
-  const [showGuide, setShowGuide] = useState(false);
 
   useEffect(() => {
-    const method = getInstallMethod();
-    setInstallMethod(method);
-    setIsInstallable(method !== null);
-
     const handleBeforeInstall = (e: Event) => {
       e.preventDefault();
       setDeferredPrompt(e as BeforeInstallPromptEvent);
-      setInstallMethod('prompt');
       setIsInstallable(true);
     };
 
     const handleAppInstalled = () => {
       setIsInstallable(false);
       setDeferredPrompt(null);
-      setShowGuide(false);
     };
 
     window.addEventListener('beforeinstallprompt', handleBeforeInstall);
@@ -59,25 +33,19 @@ export const usePWA = () => {
   }, []);
 
   const installApp = async () => {
-    if (deferredPrompt) {
-      // Native install prompt (Chrome, Edge, Samsung Internet)
-      try {
-        await deferredPrompt.prompt();
-        const { outcome } = await deferredPrompt.userChoice;
-        if (outcome === 'accepted') {
-          setIsInstallable(false);
-          setDeferredPrompt(null);
-        }
-      } catch {
+    if (!deferredPrompt) return;
+    try {
+      await deferredPrompt.prompt();
+      const { outcome } = await deferredPrompt.userChoice;
+      if (outcome === 'accepted') {
+        setIsInstallable(false);
         setDeferredPrompt(null);
       }
-    } else {
-      // iOS, Firefox, Opera, Brave, etc.: show manual guide
-      setShowGuide(true);
+    } catch {
+      setDeferredPrompt(null);
+      setIsInstallable(false);
     }
   };
 
-  const closeGuide = () => setShowGuide(false);
-
-  return { isInstallable, installMethod, installApp, showGuide, closeGuide };
+  return { isInstallable, installApp };
 };

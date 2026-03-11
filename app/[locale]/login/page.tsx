@@ -15,7 +15,7 @@ export default function Login() {
   const router = useRouter();
   const { loginGlobal, user, loading: authLoading } = useAuth();
   
-  const { isInstallable, installMethod, installApp, showGuide, closeGuide } = usePWA();
+  const { isInstallable, installApp } = usePWA();
 
   const [formData, setFormData] = useState({ email: '', password: '' });
   const [loading, setLoading] = useState(false);
@@ -163,51 +163,6 @@ export default function Login() {
         </div>
       )}
 
-      {showGuide && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4" onClick={closeGuide}>
-          <div className="bg-white rounded-2xl p-6 max-w-sm w-full shadow-xl" onClick={(e) => e.stopPropagation()}>
-            <h3 className="text-lg font-bold text-gray-800 mb-4">Instalar ErasmusHub</h3>
-            {installMethod === 'ios' ? (
-              <ol className="text-sm text-gray-600 space-y-3">
-                <li className="flex gap-2">
-                  <span className="font-bold text-blue-600">1.</span>
-                  Pulsa el icono de compartir
-                  <svg className="w-5 h-5 inline text-blue-600 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2"><path strokeLinecap="round" strokeLinejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" /></svg>
-                </li>
-                <li className="flex gap-2">
-                  <span className="font-bold text-blue-600">2.</span>
-                  Selecciona &quot;Agregar a pantalla de inicio&quot;
-                </li>
-                <li className="flex gap-2">
-                  <span className="font-bold text-blue-600">3.</span>
-                  Pulsa &quot;Agregar&quot;
-                </li>
-              </ol>
-            ) : (
-              <ol className="text-sm text-gray-600 space-y-3">
-                <li className="flex gap-2">
-                  <span className="font-bold text-blue-600">1.</span>
-                  Abre el menu del navegador (tres puntos o lineas)
-                </li>
-                <li className="flex gap-2">
-                  <span className="font-bold text-blue-600">2.</span>
-                  Busca &quot;Instalar aplicacion&quot; o &quot;Agregar a pantalla de inicio&quot;
-                </li>
-                <li className="flex gap-2">
-                  <span className="font-bold text-blue-600">3.</span>
-                  Confirma la instalacion
-                </li>
-              </ol>
-            )}
-            <button
-              onClick={closeGuide}
-              className="mt-5 w-full py-2.5 text-sm font-semibold text-white bg-blue-600 hover:bg-blue-700 rounded-xl transition-all"
-            >
-              Entendido
-            </button>
-          </div>
-        </div>
-      )}
     </AuthLayout>
   );
 }
