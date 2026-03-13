@@ -9,13 +9,13 @@ import { useApi } from '@/hooks/useApi';
 
 interface DiarioEntry {
     id: number;
-    fecha: string;
-    estado: string;
-    hora_inicio_manana: string | null;
-    hora_fin_manana: string | null;
-    hora_inicio_tarde: string | null;
-    hora_fin_tarde: string | null;
-    incidencias: string | null;
+    date: string;
+    status: string;
+    morning_start: string | null;
+    morning_end: string | null;
+    afternoon_start: string | null;
+    afternoon_end: string | null;
+    incidents: string | null;
 }
 
 interface PaginatedResponse {
@@ -33,7 +33,7 @@ export default function DiarioPage() {
     const [search, setSearch] = useState('');
 
     const { data, loading } = useApi<PaginatedResponse>(
-        `/practicas/${params.id}/diario?page=${page}&page_size=${pageSize}`
+        `/internships/${params.id}/daily-logs?page=${page}&page_size=${pageSize}`
     );
 
     const columns: Column<DiarioEntry>[] = [
@@ -46,22 +46,22 @@ export default function DiarioPage() {
                 </button>
             ),
         },
-        { key: 'fecha', label: t('date') },
+        { key: 'date', label: t('date') },
         {
-            key: 'estado',
+            key: 'status',
             label: t('status'),
             render: (item) => (
                 <StatusBadge
-                    label={item.estado === 'completado' ? 'Cumplimentado por el alumno/a' : 'Pendiente de cumplimentar'}
-                    variant={item.estado === 'completado' ? 'success' : 'warning'}
+                    label={item.status === 'completado' ? 'Cumplimentado por el alumno/a' : 'Pendiente de cumplimentar'}
+                    variant={item.status === 'completado' ? 'success' : 'warning'}
                 />
             ),
         },
-        { key: 'hora_inicio_manana', label: t('morningStart') },
-        { key: 'hora_fin_manana', label: t('morningEnd') },
-        { key: 'hora_inicio_tarde', label: t('afternoonStart') },
-        { key: 'hora_fin_tarde', label: t('afternoonEnd') },
-        { key: 'incidencias', label: t('incidents') },
+        { key: 'morning_start', label: t('morningStart') },
+        { key: 'morning_end', label: t('morningEnd') },
+        { key: 'afternoon_start', label: t('afternoonStart') },
+        { key: 'afternoon_end', label: t('afternoonEnd') },
+        { key: 'incidents', label: t('incidents') },
     ];
 
     return (

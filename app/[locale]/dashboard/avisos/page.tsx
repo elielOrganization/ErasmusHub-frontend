@@ -7,9 +7,9 @@ import { useApi, apiPatch } from '@/hooks/useApi';
 
 interface Notificacion {
     id: number;
-    titulo: string;
+    title: string;
     body: string;
-    tipo: string;
+    type: string;
     is_read: boolean;
     created_at: string;
 }
@@ -28,21 +28,21 @@ export default function AvisosPage() {
     const [search, setSearch] = useState('');
 
     const { data, loading, refetch } = useApi<PaginatedResponse>(
-        `/notificaciones/me?page=${page}&page_size=${pageSize}${search ? `&search=${search}` : ''}`
+        `/notifications/me?page=${page}&page_size=${pageSize}${search ? `&search=${search}` : ''}`
     );
 
     const handleMarkRead = async (id: number) => {
-        await apiPatch(`/notificaciones/${id}/read`);
+        await apiPatch(`/notifications/${id}/read`);
         refetch();
     };
 
     const columns: Column<Notificacion>[] = [
-        { key: 'titulo', label: t('notice') },
+        { key: 'title', label: t('notice') },
         {
-            key: 'tipo',
+            key: 'type',
             label: t('type'),
             render: (item) => (
-                <span className="uppercase text-xs font-medium text-gray-600">{item.tipo}</span>
+                <span className="uppercase text-xs font-medium text-gray-600">{item.type}</span>
             ),
         },
         {

@@ -9,12 +9,12 @@ import { useApi } from '@/hooks/useApi';
 
 interface Practica {
     id: number;
-    empresa_nombre: string;
-    empresa_direccion: string | null;
-    fecha_inicio: string;
-    fecha_fin: string;
-    horas_totales: number;
-    estado: string;
+    company_name: string;
+    company_address: string | null;
+    start_date: string;
+    end_date: string;
+    total_hours: number;
+    status: string;
 }
 
 interface PaginatedResponse {
@@ -31,7 +31,7 @@ export default function MisPracticasPage() {
     const [search, setSearch] = useState('');
 
     const { data, loading } = useApi<PaginatedResponse>(
-        `/practicas/me?page=${page}&page_size=${pageSize}${search ? `&search=${search}` : ''}`
+        `/internships/me?page=${page}&page_size=${pageSize}${search ? `&search=${search}` : ''}`
     );
 
     const columns: Column<Practica>[] = [
@@ -48,10 +48,10 @@ export default function MisPracticasPage() {
                 </Link>
             ),
         },
-        { key: 'empresa_nombre', label: t('entity') },
-        { key: 'fecha_inicio', label: t('startDate') },
-        { key: 'fecha_fin', label: t('endDate') },
-        { key: 'horas_totales', label: t('totalHours') },
+        { key: 'company_name', label: t('entity') },
+        { key: 'start_date', label: t('startDate') },
+        { key: 'end_date', label: t('endDate') },
+        { key: 'total_hours', label: t('totalHours') },
     ];
 
     return (

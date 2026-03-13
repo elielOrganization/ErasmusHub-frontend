@@ -17,10 +17,10 @@ export default function Sidebar() {
     const { isInstallable, installApp } = usePWA();
     const { user } = useAuth();
 
-    const isStudent = user?.roles?.includes('estudiante');
+    const isStudent = user?.roles?.includes('student');
 
     // Fetch unread notifications count for badge
-    const { data: unreadData } = useApi<{ count: number }>('/notificaciones/me/unread-count');
+    const { data: unreadData } = useApi<{ count: number }>('/notifications/me/unread-count');
     const unreadCount = unreadData?.count || 0;
 
     const defaultItems = [

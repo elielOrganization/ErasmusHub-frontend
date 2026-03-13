@@ -7,27 +7,27 @@ import { useApi } from '@/hooks/useApi';
 
 interface HorarioItem {
     id: number;
-    dia_semana: string;
-    horario_manana: string | null;
-    horario_tarde: string | null;
+    weekday: string;
+    morning_hours: string | null;
+    afternoon_hours: string | null;
 }
 
 interface PracticaDetail {
     id: number;
-    estudiante_nombre: string;
-    estudiante_apellidos: string;
-    estudiante_email: string;
-    empresa_nombre: string;
-    empresa_cif: string | null;
-    empresa_direccion: string | null;
-    tutor_empresa_nombre: string | null;
-    tutor_empresa_email: string | null;
-    tutor_educativo_nombre: string | null;
-    fecha_inicio: string;
-    fecha_fin: string;
-    horas_totales: number;
-    estado: string;
-    horarios: HorarioItem[];
+    student_first_name: string;
+    student_last_name: string;
+    student_email: string;
+    company_name: string;
+    company_tax_id: string | null;
+    company_address: string | null;
+    company_tutor_name: string | null;
+    company_tutor_email: string | null;
+    academic_tutor_name: string | null;
+    start_date: string;
+    end_date: string;
+    total_hours: number;
+    status: string;
+    schedules: HorarioItem[];
 }
 
 const DIAS_ORDER = ['lunes', 'martes', 'miercoles', 'jueves', 'viernes'];
@@ -42,7 +42,7 @@ const DIAS_DISPLAY: Record<string, string> = {
 export default function DatosGeneralesPage() {
     const params = useParams();
     const t = useTranslations('practicas');
-    const { data, loading } = useApi<PracticaDetail>(`/practicas/${params.id}`);
+    const { data, loading } = useApi<PracticaDetail>(`/internships/${params.id}`);
 
     if (loading) {
         return <div className="text-sm text-gray-400 py-8 text-center">Cargando...</div>;
@@ -52,8 +52,8 @@ export default function DatosGeneralesPage() {
         return <div className="text-sm text-gray-400 py-8 text-center">No se encontró la práctica</div>;
     }
 
-    const sortedHorarios = [...(data.horarios || [])].sort(
-        (a, b) => DIAS_ORDER.indexOf(a.dia_semana) - DIAS_ORDER.indexOf(b.dia_semana)
+    const sortedHorarios = [...(data.schedules || [])].sort(
+        (a, b) => DIAS_ORDER.indexOf(a.weekday) - DIAS_ORDER.indexOf(b.weekday)
     );
 
     return (
@@ -66,26 +66,26 @@ export default function DatosGeneralesPage() {
                     <InfoCard
                         title={t('studentData')}
                         fields={[
-                            { label: 'Nombre completo', value: `${data.estudiante_nombre} ${data.estudiante_apellidos}` },
-                            { label: 'Email', value: data.estudiante_email },
+                            { label: 'Nombre completo', value: `${data.student_first_name} ${data.student_last_name}` },
+                            { label: 'Email', value: data.student_email },
                         ]}
                     />
                     <InfoCard
                         title={t('companyData')}
                         fields={[
-                            { label: 'Nombre empresa', value: data.empresa_nombre },
-                            { label: 'CIF', value: data.empresa_cif },
-                            { label: 'Dirección prácticas', value: data.empresa_direccion },
-                            { label: 'Tutor/a empresa', value: data.tutor_empresa_nombre },
+                            { label: 'Nombre empresa', value: data.company_name },
+                            { label: 'CIF', value: data.company_tax_id },
+                            { label: 'Dirección prácticas', value: data.company_address },
+                            { label: 'Tutor/a empresa', value: data.company_tutor_name },
                         ]}
                     />
                     <InfoCard
                         title={t('practiceData')}
                         fields={[
-                            { label: 'Nombre tutor/a educativo/a', value: data.tutor_educativo_nombre },
-                            { label: 'Fecha inicio', value: data.fecha_inicio },
-                            { label: 'Fecha fin', value: data.fecha_fin },
-                            { label: 'Horas previstas', value: `${data.horas_totales} horas` },
+                            { label: 'Nombre tutor/a educativo/a', value: data.academic_tutor_name },
+                            { label: 'Fecha inicio', value: data.start_date },
+                            { label: 'Fecha fin', value: data.end_date },
+                            { label: 'Horas previstas', value: `${data.total_hours} horas` },
                         ]}
                     />
                 </div>
@@ -106,10 +106,10 @@ export default function DatosGeneralesPage() {
                         {sortedHorarios.map((h) => (
                             <tr key={h.id}>
                                 <td className="px-6 py-3 text-sm font-semibold text-gray-900">
-                                    {DIAS_DISPLAY[h.dia_semana] || h.dia_semana.toUpperCase()}
+                                    {DIAS_DISPLAY[h.weekday] || h.weekday.toUpperCase()}
                                 </td>
-                                <td className="px-6 py-3 text-sm text-gray-700">{h.horario_manana || '-'}</td>
-                                <td className="px-6 py-3 text-sm text-gray-700">{h.horario_tarde || '-'}</td>
+                                <td className="px-6 py-3 text-sm text-gray-700">{h.morning_hours || '-'}</td>
+                                <td className="px-6 py-3 text-sm text-gray-700">{h.afternoon_hours || '-'}</td>
                             </tr>
                         ))}
                     </tbody>

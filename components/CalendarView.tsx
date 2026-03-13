@@ -3,11 +3,11 @@ import { useState } from 'react';
 import { useTranslations } from 'next-intl';
 
 interface CalendarEvent {
-    fecha: string; // YYYY-MM-DD
-    tipo: string;
-    hora_inicio?: string;
-    hora_fin?: string;
-    estado: string;
+    date: string; // YYYY-MM-DD
+    type: string;
+    start_time?: string;
+    end_time?: string;
+    status: string;
 }
 
 interface CalendarViewProps {
@@ -63,7 +63,7 @@ export default function CalendarView({ events, onMonthChange }: CalendarViewProp
 
     const eventMap = new Map<string, CalendarEvent[]>();
     events.forEach((e) => {
-        const key = e.fecha;
+        const key = e.date;
         if (!eventMap.has(key)) eventMap.set(key, []);
         eventMap.get(key)!.push(e);
     });
@@ -129,21 +129,21 @@ export default function CalendarView({ events, onMonthChange }: CalendarViewProp
                                             <div
                                                 key={i}
                                                 className={`text-[10px] px-1.5 py-0.5 rounded truncate ${
-                                                    eventColors[ev.tipo] || eventColors[ev.estado] || 'bg-gray-200 text-gray-700'
+                                                    eventColors[ev.type] || eventColors[ev.status] || 'bg-gray-200 text-gray-700'
                                                 }`}
                                             >
-                                                {ev.tipo === 'asistencia' && ev.hora_inicio && ev.hora_fin
-                                                    ? `ASISTE [${ev.hora_inicio}-${ev.hora_fin}]`
-                                                    : ev.tipo.replace('_', ' ')}
+                                                {ev.type === 'asistencia' && ev.start_time && ev.end_time
+                                                    ? `ASISTE [${ev.start_time}-${ev.end_time}]`
+                                                    : ev.type.replace('_', ' ')}
                                             </div>
                                         ))}
-                                        {dayEvents.length > 0 && dayEvents[0].estado && (
+                                        {dayEvents.length > 0 && dayEvents[0].status && (
                                             <div className={`text-[10px] px-1.5 py-0.5 rounded truncate ${
-                                                dayEvents[0].estado === 'completado'
+                                                dayEvents[0].status === 'completado'
                                                     ? 'bg-green-600 text-white'
                                                     : 'bg-blue-500 text-white'
                                             }`}>
-                                                {dayEvents[0].estado === 'completado'
+                                                {dayEvents[0].status === 'completado'
                                                     ? 'Cumplimentado por el alumno/a'
                                                     : 'Pendiente de cumplimentar'}
                                             </div>

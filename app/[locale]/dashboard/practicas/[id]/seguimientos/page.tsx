@@ -7,10 +7,10 @@ import { useApi } from '@/hooks/useApi';
 
 interface Seguimiento {
     id: number;
-    tipo: string;
-    fecha_programada: string;
-    completado: boolean;
-    fecha_completado: string | null;
+    type: string;
+    scheduled_date: string;
+    completed: boolean;
+    completed_at: string | null;
 }
 
 const TIPO_DISPLAY: Record<string, string> = {
@@ -22,7 +22,7 @@ const TIPO_DISPLAY: Record<string, string> = {
 export default function SeguimientosPage() {
     const params = useParams();
     const t = useTranslations('practicas');
-    const { data, loading } = useApi<Seguimiento[]>(`/practicas/${params.id}/seguimientos`);
+    const { data, loading } = useApi<Seguimiento[]>(`/internships/${params.id}/follow-ups`);
 
     return (
         <div>
@@ -48,20 +48,20 @@ export default function SeguimientosPage() {
                         ) : (
                             data.map((s) => {
                                 const now = new Date();
-                                const scheduled = new Date(s.fecha_programada);
+                                const scheduled = new Date(s.scheduled_date);
                                 const available = scheduled <= now;
 
                                 return (
                                     <tr key={s.id} className="hover:bg-gray-50/50">
-                                        <td className="px-6 py-3 text-sm text-gray-700">{TIPO_DISPLAY[s.tipo] || s.tipo}</td>
-                                        <td className="px-6 py-3 text-sm text-gray-700">{s.fecha_programada}</td>
+                                        <td className="px-6 py-3 text-sm text-gray-700">{TIPO_DISPLAY[s.type] || s.type}</td>
+                                        <td className="px-6 py-3 text-sm text-gray-700">{s.scheduled_date}</td>
                                         <td className="px-6 py-3">
                                             <StatusBadge
-                                                label={s.completado ? 'SÍ' : 'NO'}
-                                                variant={s.completado ? 'success' : 'warning'}
+                                                label={s.completed ? 'SÍ' : 'NO'}
+                                                variant={s.completed ? 'success' : 'warning'}
                                             />
                                         </td>
-                                        <td className="px-6 py-3 text-sm text-gray-700">{s.fecha_completado || '-'}</td>
+                                        <td className="px-6 py-3 text-sm text-gray-700">{s.completed_at || '-'}</td>
                                         <td className="px-6 py-3">
                                             {s.completado ? (
                                                 <span className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-green-50 text-green-700 text-xs font-medium rounded-lg border border-green-200">

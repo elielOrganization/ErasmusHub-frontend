@@ -7,8 +7,8 @@ import { API_URL } from '@/lib/api';
 interface User {
     id: number;
     email: string;
-    nombre: string;
-    apellidos: string;
+    first_name: string;
+    last_name: string;
     roles: string[];
 }
 

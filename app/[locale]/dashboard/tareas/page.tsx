@@ -8,7 +8,7 @@ import { useApi, apiPatch } from '@/hooks/useApi';
 
 interface Tarea {
     id: number;
-    titulo: string;
+    title: string;
     completed: boolean;
     due_date: string;
     created_at: string;
@@ -28,16 +28,16 @@ export default function TareasPage() {
     const [search, setSearch] = useState('');
 
     const { data, loading, refetch } = useApi<PaginatedResponse>(
-        `/tareas/me?page=${page}&page_size=${pageSize}${search ? `&search=${search}` : ''}`
+        `/tasks/me?page=${page}&page_size=${pageSize}${search ? `&search=${search}` : ''}`
     );
 
     const handleComplete = async (id: number) => {
-        await apiPatch(`/tareas/${id}/completar`);
+        await apiPatch(`/tasks/${id}/complete`);
         refetch();
     };
 
     const columns: Column<Tarea>[] = [
-        { key: 'titulo', label: t('task') },
+        { key: 'title', label: t('task') },
         {
             key: 'due_date',
             label: t('dueDate'),

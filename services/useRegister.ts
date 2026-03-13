@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useRouter } from '@/i18n/routing';
 import { API_URL } from '@/lib/api';
 
-export const useRegister = () => {
+export const useRegister = (translations?: { passwordsMatch?: string; genericError?: string; success?: string }) => {
     const router = useRouter();
 
     // Estado para controlar el paso actual del formulario
@@ -43,7 +43,7 @@ export const useRegister = () => {
         setError(null);
 
         if (formData.password !== formData.confirmPassword) {
-            setError("Las contraseñas no coinciden");
+            setError(translations?.passwordsMatch || "Passwords do not match");
             return;
         }
 
@@ -54,27 +54,27 @@ export const useRegister = () => {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
-                    dni: formData.dni,
+                    rodne_cislo: formData.dni,
                     email: formData.email,
                     password: formData.password,
-                    name: formData.name,
-                    surname: formData.surname,
-                    birthdate: formData.birthdate,
-                    address: formData.address
+                    first_name: formData.name,
+                    last_name: formData.surname,
+                    fecha_nacimiento: formData.birthdate || null,
+                    direccion: formData.address || null,
                 }),
             });
 
             const data = await response.json();
 
             if (!response.ok) {
-                throw new Error(data.detail || "Error en el registro");
+                throw new Error(data.detail || translations?.genericError || "Registration error");
             }
 
-            alert("¡Cuenta creada con éxito!");
+            alert(translations?.success || "Account created successfully!");
             router.push("/");
 
         } catch (err: any) {
-            setError(err.message || "Error de conexión con el servidor");
+            setError(err.message || translations?.genericError || "Connection error");
         } finally {
             setLoading(false);
         }

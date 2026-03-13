@@ -8,12 +8,12 @@ import { useApi, apiPost } from '@/hooks/useApi';
 
 interface Comunicacion {
     id: number;
-    emisor_id: number;
-    destinatario_tipo: string;
-    tipo: string;
-    asunto: string;
-    mensaje: string;
-    leido: boolean;
+    sender_id: number;
+    recipient_type: string;
+    type: string;
+    subject: string;
+    body: string;
+    is_read: boolean;
     created_at: string;
 }
 
@@ -60,11 +60,11 @@ function MessageSection({
                         messages.map((msg) => (
                             <tr key={msg.id} className="border-b border-gray-50 hover:bg-gray-50/50">
                                 <td className="px-6 py-3 text-sm text-gray-700">{new Date(msg.created_at).toLocaleDateString()}</td>
-                                <td className="px-6 py-3 text-sm text-gray-700">{msg.tipo}</td>
-                                <td className="px-6 py-3 text-sm text-gray-700">{msg.asunto}</td>
-                                <td className="px-6 py-3 text-sm text-gray-700 max-w-xs truncate">{msg.mensaje}</td>
+                                <td className="px-6 py-3 text-sm text-gray-700">{msg.type}</td>
+                                <td className="px-6 py-3 text-sm text-gray-700">{msg.subject}</td>
+                                <td className="px-6 py-3 text-sm text-gray-700 max-w-xs truncate">{msg.body}</td>
                                 <td className="px-6 py-3">
-                                    <StatusBadge label={msg.leido ? 'Sí' : 'No'} variant={msg.leido ? 'success' : 'warning'} />
+                                    <StatusBadge label={msg.is_read ? 'Sí' : 'No'} variant={msg.is_read ? 'success' : 'warning'} />
                                 </td>
                             </tr>
                         ))
@@ -80,10 +80,10 @@ export default function ComunicacionesPage() {
     const t = useTranslations('practicas');
 
     const { data: tutorMsgs, loading: l1 } = useApi<Comunicacion[]>(
-        `/practicas/${params.id}/comunicaciones?destinatario_tipo=tutor_empresa`
+        `/internships/${params.id}/communications?recipient_type=tutor_empresa`
     );
     const { data: cotutorMsgs, loading: l2 } = useApi<Comunicacion[]>(
-        `/practicas/${params.id}/comunicaciones?destinatario_tipo=cotutor`
+        `/internships/${params.id}/communications?recipient_type=cotutor`
     );
 
     const handleAddTutor = () => {

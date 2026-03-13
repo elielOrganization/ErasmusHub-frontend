@@ -8,12 +8,12 @@ import { useApi } from '@/hooks/useApi';
 
 interface AsistenciaEvent {
     id: number;
-    fecha: string;
-    tipo: string;
-    hora_inicio: string | null;
-    hora_fin: string | null;
-    estado: string;
-    notas: string | null;
+    date: string;
+    type: string;
+    start_time: string | null;
+    end_time: string | null;
+    status: string;
+    notes: string | null;
 }
 
 export default function CalendarioPage() {
@@ -23,7 +23,7 @@ export default function CalendarioPage() {
     const [month, setMonth] = useState(`${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`);
 
     const { data } = useApi<AsistenciaEvent[]>(
-        `/practicas/${params.id}/asistencia?month=${month}`
+        `/internships/${params.id}/attendance?month=${month}`
     );
 
     return (
@@ -31,11 +31,11 @@ export default function CalendarioPage() {
             <PageHeader title={t('attendanceCalendar')} />
             <CalendarView
                 events={(data || []).map((e) => ({
-                    fecha: e.fecha,
-                    tipo: e.tipo,
-                    hora_inicio: e.hora_inicio || undefined,
-                    hora_fin: e.hora_fin || undefined,
-                    estado: e.estado,
+                    date: e.date,
+                    type: e.type,
+                    start_time: e.start_time || undefined,
+                    end_time: e.end_time || undefined,
+                    status: e.status,
                 }))}
                 onMonthChange={setMonth}
             />

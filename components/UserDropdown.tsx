@@ -15,7 +15,7 @@ export default function UserDropdown() {
 
     // 3. Generamos las iniciales dinámicamente basadas en el usuario real
     const initials = user 
-        ? `${user.nombre.charAt(0)}${user.apellidos.charAt(0)}`.toUpperCase() 
+        ? `${user.first_name.charAt(0)}${user.last_name.charAt(0)}`.toUpperCase()
         : "??";
 
     useEffect(() => {
@@ -56,7 +56,7 @@ export default function UserDropdown() {
                             {initials}
                         </div>
                         <p className="text-base font-bold text-gray-800 text-center">
-                            {user.nombre} {user.apellidos}
+                            {user.first_name} {user.last_name}
                         </p>
                         <p className="text-xs text-gray-400 text-center">{user.email}</p>
                     </div>

@@ -18,7 +18,7 @@ export default function ExencionesPage() {
         setSubmitting(true);
         setError('');
         try {
-            await apiPost('/exenciones/', { motivo });
+            await apiPost('/exemptions/', { reason: motivo });
             setSuccess(true);
             setMotivo('');
         } catch {

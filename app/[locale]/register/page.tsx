@@ -8,10 +8,13 @@ import { useRegister } from '@/services/useRegister';
 export default function Register() {
     const t = useTranslations('auth');
     
-    const { 
-        step, totalSteps, formData, loading, error, 
-        handleChange, nextStep, prevStep, handleSubmit, router 
-    } = useRegister();
+    const {
+        step, totalSteps, formData, loading, error,
+        handleChange, nextStep, prevStep, handleSubmit, router
+    } = useRegister({
+        passwordsMatch: t('errors.passwordsMatch'),
+        genericError: t('errors.generic'),
+    });
 
     // Iconos
     const userIcon = (color: string) => (
