@@ -3,10 +3,10 @@ import { useState, ReactNode, ChangeEvent } from "react";
 
 interface InputFieldProps {
     label: string;
-    type: "text" | "email" | "password";
+    // AÑADIDO: "date" a los tipos permitidos
+    type: "text" | "email" | "password" | "date";
     placeholder: string;
     icon: (color: string) => ReactNode;
-    // Nuevas props para la funcionalidad del formulario
     name?: string;
     value?: string;
     onChange?: (e: ChangeEvent<HTMLInputElement>) => void;

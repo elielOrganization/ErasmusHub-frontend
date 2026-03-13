@@ -1,9 +1,9 @@
 {
   "auth": {
     "welcomeTitle": "Vítejte zpět!",
-    "welcomeSubtitle": "Přihlaste se ke svému účtu a spravujte své záležitosti Erasmus",
-    "emailLabel": "E-mailová adresa",
-    "emailPlaceholder": "priklad@mail.cz",
+    "welcomeSubtitle": "Přihlaste se ke svému účtu pro správu svých Erasmus záležitostí",
+    "emailLabel": "E-mail",
+    "emailPlaceholder": "priklad@email.cz",
     "passwordLabel": "Heslo",
     "passwordPlaceholder": "••••••••",
     "forgotPassword": "Zapomněli jste heslo?",
@@ -19,12 +19,24 @@
     "confirmPasswordPlaceholder": "Zopakujte své heslo",
     "alreadyHaveAccount": "Již máte účet?",
     "loading": "Přihlašování...",
+    "dniLabel": "Občanský průkaz / DNI",
+    "dniPlaceholder": "Např: 12345678A",
+    "birthdateLabel": "Datum narození",
+    "birthdatePlaceholder": "dd.mm.rrrr",
+    "addressLabel": "Adresa",
+    "addressPlaceholder": "Ulice, číslo, město...",
+    "stepText": "Krok {current} z {total}",
+    "nextButton": "Další",
+    "prevButton": "Předchozí",
+    "finishButton": "Dokončit registraci",
+    "registering": "Registrace...",
     "errors": {
-      "emptyFields": "Prosím, vyplňte všechna pole.",
-      "invalidEmail": "E-mailová adresa není platná.",
+      "emptyFields": "Vyplňte prosím všechna pole.",
+      "invalidEmail": "Neplatná e-mailová adresa.",
       "passwordTooShort": "Heslo musí mít alespoň 8 znaků.",
       "badCredentials": "Nesprávný e-mail nebo heslo.",
-      "generic": "Něco se nepovedlo. Zkuste to prosím znovu."
+      "generic": "Něco se pokazilo. Zkuste to prosím znovu.",
+      "passwordsMatch": "Hesla se neshodují."
     }
   },
   

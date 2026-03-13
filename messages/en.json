@@ -2,8 +2,8 @@
   "auth": {
     "welcomeTitle": "Welcome back!",
     "welcomeSubtitle": "Access your account to manage your Erasmus procedures",
-    "emailLabel": "Email Address",
-    "emailPlaceholder": "example@mail.com",
+    "emailLabel": "Email",
+    "emailPlaceholder": "example@email.com",
     "passwordLabel": "Password",
     "passwordPlaceholder": "••••••••",
     "forgotPassword": "Forgot your password?",
@@ -11,7 +11,7 @@
     "dontHaveAccount": "Don't have an account?",
     "register": "Register here",
     "createAccountTitle": "Create your account",
-    "nameLabel": "First Name",
+    "nameLabel": "Name",
     "namePlaceholder": "Your name",
     "lastNameLabel": "Last Name",
     "lastNamePlaceholder": "Your last name",
@@ -19,12 +19,24 @@
     "confirmPasswordPlaceholder": "Repeat your password",
     "alreadyHaveAccount": "Already have an account?",
     "loading": "Signing in...",
+    "dniLabel": "National ID / DNI",
+    "dniPlaceholder": "Ex: 12345678A",
+    "birthdateLabel": "Date of Birth",
+    "birthdatePlaceholder": "dd/mm/yyyy",
+    "addressLabel": "Address",
+    "addressPlaceholder": "Street, number, city...",
+    "stepText": "Step {current} of {total}",
+    "nextButton": "Next",
+    "prevButton": "Previous",
+    "finishButton": "Finish Registration",
+    "registering": "Registering...",
     "errors": {
       "emptyFields": "Please fill in all fields.",
-      "invalidEmail": "The email address is not valid.",
+      "invalidEmail": "Invalid email address.",
       "passwordTooShort": "Password must be at least 8 characters long.",
-      "badCredentials": "Invalid email or password.",
-      "generic": "Something went wrong. Please try again."
+      "badCredentials": "Incorrect email or password.",
+      "generic": "Something went wrong. Please try again.",
+      "passwordsMatch": "Passwords do not match."
     }
   },
 
