@@ -11,15 +11,15 @@ export const useRegister = (translations?: { passwordsMatch?: string; genericErr
 
     // Estado con los nuevos campos solicitados
     const [formData, setFormData] = useState({
-        name: '',
-        surname: '',
-        dni: '',
-        birthdate: '',
+        first_name: '',    // Changed from name
+        last_name: '',     // Changed from surname
+        rodne_cislo: '',   // Changed from dni
+        birth_date: '',    // Changed from birthdate
         email: '',
         address: '',
         password: '',
         confirmPassword: ''
-    });
+});
 
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
@@ -54,12 +54,12 @@ export const useRegister = (translations?: { passwordsMatch?: string; genericErr
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
-                    rodne_cislo: formData.dni,
+                    rodne_cislo: formData.rodne_cislo,
                     email: formData.email,
                     password: formData.password,
-                    first_name: formData.name,
-                    last_name: formData.surname,
-                    fecha_nacimiento: formData.birthdate || null,
+                    first_name: formData.first_name,
+                    last_name: formData.last_name,
+                    fecha_nacimiento: formData.birth_date || null,
                     direccion: formData.address || null,
                 }),
             });

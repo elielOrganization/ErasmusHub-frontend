@@ -16,7 +16,7 @@ export default function Register() {
         genericError: t('errors.generic'),
     });
 
-    // Iconos
+    // Icons
     const userIcon = (color: string) => (
         <>
             <path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2" stroke={color} strokeLinecap="round" />
@@ -51,7 +51,6 @@ export default function Register() {
                 <h1 className="text-2xl font-bold text-gray-800 tracking-tight">
                     {t('createAccountTitle')}
                 </h1>
-                {/* Uso de variables dinámicas en traducciones */}
                 <p className="text-sm text-gray-500 mt-2">
                     {t('stepText', { current: step, total: totalSteps })}
                 </p>
@@ -72,15 +71,15 @@ export default function Register() {
 
             <form className="space-y-5" onSubmit={handleSubmit} noValidate>
                 
-                {/* PASO 1: Datos Personales */}
+                {/* STEP 1: Personal Data */}
                 {step === 1 && (
                     <div className="space-y-4 animate-fadeIn">
                         <div className="grid grid-cols-2 gap-4">
                             <InputField
                                 label={t('nameLabel')}
                                 type="text"
-                                name="name"
-                                value={formData.name}
+                                name="first_name"
+                                value={formData.first_name}
                                 onChange={handleChange}
                                 placeholder={t('namePlaceholder')}
                                 icon={userIcon}
@@ -89,8 +88,8 @@ export default function Register() {
                             <InputField
                                 label={t('lastNameLabel')}
                                 type="text"
-                                name="surname"
-                                value={formData.surname}
+                                name="last_name"
+                                value={formData.last_name}
                                 onChange={handleChange}
                                 placeholder={t('lastNamePlaceholder')}
                                 icon={userIcon}
@@ -100,8 +99,8 @@ export default function Register() {
                         <InputField
                             label={t('dniLabel')}
                             type="text"
-                            name="dni"
-                            value={formData.dni}
+                            name="rodne_cislo"
+                            value={formData.rodne_cislo}
                             onChange={handleChange}
                             placeholder={t('dniPlaceholder')}
                             icon={idIcon}
@@ -110,8 +109,8 @@ export default function Register() {
                         <InputField
                             label={t('birthdateLabel')}
                             type="date"
-                            name="birthdate"
-                            value={formData.birthdate}
+                            name="birth_date"
+                            value={formData.birth_date}
                             onChange={handleChange}
                             placeholder={t('birthdatePlaceholder')}
                             icon={calendarIcon}
@@ -120,7 +119,7 @@ export default function Register() {
                     </div>
                 )}
 
-                {/* PASO 2: Datos de Contacto */}
+                {/* STEP 2: Contact Data */}
                 {step === 2 && (
                     <div className="space-y-4 animate-fadeIn">
                         <InputField
@@ -146,7 +145,7 @@ export default function Register() {
                     </div>
                 )}
 
-                {/* PASO 3: Seguridad */}
+                {/* STEP 3: Security */}
                 {step === 3 && (
                     <div className="space-y-4 animate-fadeIn">
                         <InputField
@@ -172,7 +171,6 @@ export default function Register() {
                     </div>
                 )}
 
-                {/* Controles de Navegación */}
                 <div className="flex gap-4 pt-4">
                     {step > 1 && (
                         <button
