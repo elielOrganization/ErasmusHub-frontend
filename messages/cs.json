@@ -40,6 +40,85 @@
     "installApp": "Instalovat aplikaci"
   },
 
+  "practicas": {
+    "title": "Mé praxe",
+    "entity": "Subjekt",
+    "startDate": "Datum zahájení",
+    "endDate": "Datum ukončení",
+    "totalHours": "Celkový počet hodin",
+    "status": "Stav",
+    "viewPractice": "ZOBRAZIT PRAXI",
+    "generalData": "Obecné údaje",
+    "followUps": "Sledování",
+    "diary": "Můj deník",
+    "activityCalendar": "Kalendář aktivit",
+    "communications": "Komunikace",
+    "practiceSheet": "List praxe",
+    "studentData": "Údaje studenta",
+    "companyData": "Údaje společnosti",
+    "practiceData": "Údaje o praxi",
+    "weeklySchedule": "Rozvrh",
+    "followUpQuestionnaires": "Sledovací dotazníky",
+    "studentFollowUps": "Sledování studenta",
+    "type": "Typ",
+    "scheduledDate": "Plánované datum",
+    "completed": "Dokončeno",
+    "completionDate": "Datum dokončení",
+    "fillOut": "VYPLNIT",
+    "date": "Datum",
+    "view": "Zobrazit deník",
+    "morningStart": "Začátek dopoledne",
+    "morningEnd": "Konec dopoledne",
+    "afternoonStart": "Začátek odpoledne",
+    "afternoonEnd": "Konec odpoledne",
+    "incidents": "Incidenty",
+    "attendanceCalendar": "Kalendář docházky",
+    "subject": "Předmět",
+    "message": "Zpráva",
+    "read": "Přečteno",
+    "addMessage": "PŘIDAT",
+    "communicationStudentTutor": "Komunikace student - tutor společnosti",
+    "communicationStudentCotutor": "Komunikace student - kotutor"
+  },
+
+  "exenciones": {
+    "title": "Žádost o výjimku",
+    "description": "Můžete podat pouze jednu žádost o výjimku na zápis a akademický rok",
+    "reason": "Důvod žádosti",
+    "reasonPlaceholder": "Popište důvod vaší žádosti o výjimku...",
+    "documentsToProvide": "Dokumenty k dodání",
+    "socialSecurityCert": "Potvrzení o pracovní historii ze sociálního zabezpečení",
+    "activitiesCert": "Potvrzení o činnostech vykonávaných ve společnosti",
+    "selectFile": "Vybrat soubor",
+    "submit": "PODAT ŽÁDOST O VÝJIMKU",
+    "successMessage": "Žádost o výjimku byla úspěšně odeslána"
+  },
+
+  "tareas": {
+    "title": "Mé nevyřízené úkoly",
+    "task": "Úkol",
+    "dueDate": "Termín",
+    "status": "Stav",
+    "markComplete": "Dokončit"
+  },
+
+  "avisos": {
+    "title": "Mé upozornění",
+    "notice": "Upozornění",
+    "type": "Typ",
+    "view": "Zobrazit"
+  },
+
+  "table": {
+    "show": "Zobrazit",
+    "records": "záznamů",
+    "search": "Hledat:",
+    "previous": "Předchozí",
+    "next": "Další",
+    "noResults": "V této tabulce nejsou k dispozici žádná data",
+    "showing": "Zobrazeno {from} až {to} z {total} záznamů"
+  },
+
   "offline": {
     "title": "Jste offline",
     "description": "Zkontrolujte prosím připojení k internetu a zkuste to znovu.",

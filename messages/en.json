@@ -40,6 +40,85 @@
     "installApp": "Install App"
   },
 
+  "practicas": {
+    "title": "My Internships",
+    "entity": "Entity",
+    "startDate": "Start Date",
+    "endDate": "End Date",
+    "totalHours": "Total Hours",
+    "status": "Status",
+    "viewPractice": "VIEW INTERNSHIP",
+    "generalData": "General Data",
+    "followUps": "Follow-ups",
+    "diary": "My Diary",
+    "activityCalendar": "Activity Calendar",
+    "communications": "Communications",
+    "practiceSheet": "Internship Sheet",
+    "studentData": "Student Data",
+    "companyData": "Company Data",
+    "practiceData": "Internship Data",
+    "weeklySchedule": "Schedule",
+    "followUpQuestionnaires": "Follow-up Questionnaires",
+    "studentFollowUps": "Student Follow-ups",
+    "type": "Type",
+    "scheduledDate": "Scheduled Date",
+    "completed": "Completed",
+    "completionDate": "Completion Date",
+    "fillOut": "FILL OUT",
+    "date": "Date",
+    "view": "View Diary",
+    "morningStart": "Morning Start",
+    "morningEnd": "Morning End",
+    "afternoonStart": "Afternoon Start",
+    "afternoonEnd": "Afternoon End",
+    "incidents": "Incidents",
+    "attendanceCalendar": "Attendance Calendar",
+    "subject": "Subject",
+    "message": "Message",
+    "read": "Read",
+    "addMessage": "ADD",
+    "communicationStudentTutor": "Student - Company Tutor Communication",
+    "communicationStudentCotutor": "Student - Co-tutor Communication"
+  },
+
+  "exenciones": {
+    "title": "Request Exemption",
+    "description": "You can only submit one exemption request per enrollment and academic year",
+    "reason": "Reason for request",
+    "reasonPlaceholder": "Describe the reason for your exemption request...",
+    "documentsToProvide": "Documents to provide",
+    "socialSecurityCert": "Social Security work history certificate",
+    "activitiesCert": "Certificate of activities performed at the company",
+    "selectFile": "Select file",
+    "submit": "REQUEST EXEMPTION",
+    "successMessage": "Exemption request submitted successfully"
+  },
+
+  "tareas": {
+    "title": "My Pending Tasks",
+    "task": "Task",
+    "dueDate": "Due Date",
+    "status": "Status",
+    "markComplete": "Complete"
+  },
+
+  "avisos": {
+    "title": "My Notices",
+    "notice": "Notice",
+    "type": "Type",
+    "view": "View"
+  },
+
+  "table": {
+    "show": "Show",
+    "records": "records",
+    "search": "Search:",
+    "previous": "Previous",
+    "next": "Next",
+    "noResults": "No data available in this table",
+    "showing": "Showing {from} to {to} of {total} records"
+  },
+
   "offline": {
     "title": "You are offline",
     "description": "Please check your internet connection and try again.",

@@ -40,6 +40,85 @@
     "installApp": "Instalar App"
   },
 
+  "practicas": {
+    "title": "Mis Prácticas",
+    "entity": "Entidad",
+    "startDate": "Fecha Inicio",
+    "endDate": "Fecha Final",
+    "totalHours": "Horas Totales Prev.",
+    "status": "Estado",
+    "viewPractice": "VER PRÁCTICA",
+    "generalData": "Datos generales",
+    "followUps": "Seguimientos",
+    "diary": "Mi diario",
+    "activityCalendar": "Calendario de actividades",
+    "communications": "Comunicaciones",
+    "practiceSheet": "Ficha práctica",
+    "studentData": "Datos alumno/a",
+    "companyData": "Datos empresa",
+    "practiceData": "Datos práctica",
+    "weeklySchedule": "Horario",
+    "followUpQuestionnaires": "Cuestionarios seguimiento",
+    "studentFollowUps": "Seguimientos al alumno/a",
+    "type": "Tipo",
+    "scheduledDate": "Fecha Prevista",
+    "completed": "Realizado",
+    "completionDate": "Fecha Realización",
+    "fillOut": "RELLENAR",
+    "date": "Fecha",
+    "view": "Ver Diario",
+    "morningStart": "Hora Inicio Mañana",
+    "morningEnd": "Hora Fin Mañana",
+    "afternoonStart": "Hora Inicio Tarde",
+    "afternoonEnd": "Hora Fin Tarde",
+    "incidents": "Incidencia",
+    "attendanceCalendar": "Calendario de asistencia",
+    "subject": "Asunto",
+    "message": "Mensaje",
+    "read": "Leído",
+    "addMessage": "AÑADIR",
+    "communicationStudentTutor": "Comunicación Alumno/a - Tutor/a Entidad",
+    "communicationStudentCotutor": "Comunicación Alumno/a - Cotutor/a"
+  },
+
+  "exenciones": {
+    "title": "Solicitar Exención",
+    "description": "Solo podrá realizar una solicitud de exención de prácticas por matrícula y año académico",
+    "reason": "Motivo de la solicitud",
+    "reasonPlaceholder": "Describe el motivo de tu solicitud de exención...",
+    "documentsToProvide": "Documentación a aportar",
+    "socialSecurityCert": "Certificado de vida laboral de la Seguridad social",
+    "activitiesCert": "Certificado de actividades realizadas en la empresa",
+    "selectFile": "Seleccionar archivo",
+    "submit": "SOLICITAR EXENCIÓN",
+    "successMessage": "Solicitud de exención enviada correctamente"
+  },
+
+  "tareas": {
+    "title": "Mis Tareas Pendientes",
+    "task": "Tarea",
+    "dueDate": "Fecha Límite",
+    "status": "Estado",
+    "markComplete": "Completar"
+  },
+
+  "avisos": {
+    "title": "Mis Avisos",
+    "notice": "Aviso",
+    "type": "Tipo",
+    "view": "Ver"
+  },
+
+  "table": {
+    "show": "Mostrar",
+    "records": "registros",
+    "search": "Buscar:",
+    "previous": "Anterior",
+    "next": "Siguiente",
+    "noResults": "Ningún dato disponible en esta tabla",
+    "showing": "Mostrando {from} a {to} de {total} registros"
+  },
+
   "offline": {
     "title": "Sin conexión",
     "description": "Comprueba tu conexión a internet e inténtalo de nuevo.",

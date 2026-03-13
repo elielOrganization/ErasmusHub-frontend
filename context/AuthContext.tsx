@@ -9,6 +9,7 @@ interface User {
     email: string;
     nombre: string;
     apellidos: string;
+    roles: string[];
 }
 
 interface AuthContextType {
