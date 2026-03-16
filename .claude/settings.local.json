@@ -20,7 +20,10 @@
       "Bash(grep -n \"//\\\\|/\\\\*\" app/[locale]/dashboard/page.tsx context/AuthContext.tsx components/LanguageSelector.tsx)",
       "Bash(wc -l app/[locale]/dashboard/page.tsx context/AuthContext.tsx components/LanguageSelector.tsx)",
       "Bash(find /c/Users/Marcos/Documents/GitHub/ErasmusHub-frontend/app/[locale] -type f)",
-      "Bash(xargs grep -l \"type.*Register\\\\|interface.*Register\")"
+      "Bash(xargs grep -l \"type.*Register\\\\|interface.*Register\")",
+      "Bash(xargs grep -l \"useRegister\\\\|RegisterForm\\\\|registration\")",
+      "Bash(xargs grep -l \"validate\\\\|validation\")",
+      "Bash(xargs grep -l \"validate\\\\|Validate\")"
     ]
   }
 }

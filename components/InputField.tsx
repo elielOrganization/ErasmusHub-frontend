@@ -3,7 +3,6 @@ import { useState, ReactNode, ChangeEvent } from "react";
 
 interface InputFieldProps {
     label: string;
-    // ADDED: "date" to allowed types
     type: "text" | "email" | "password" | "date";
     placeholder: string;
     icon: (color: string) => ReactNode;
@@ -11,17 +10,21 @@ interface InputFieldProps {
     value?: string;
     onChange?: (e: ChangeEvent<HTMLInputElement>) => void;
     required?: boolean;
+    error?: string;
+    readOnly?: boolean;
 }
 
-export default function InputField({ 
-    label, 
-    type, 
-    placeholder, 
-    icon, 
-    name, 
-    value, 
-    onChange, 
-    required 
+export default function InputField({
+    label,
+    type,
+    placeholder,
+    icon,
+    name,
+    value,
+    onChange,
+    required,
+    error,
+    readOnly
 }: InputFieldProps) {
     const [isFocused, setIsFocused] = useState(false);
     const [showPassword, setShowPassword] = useState(false);
@@ -29,8 +32,8 @@ export default function InputField({
     const isPasswordField = type === "password";
     const inputType = isPasswordField && showPassword ? "text" : type;
 
-    // Dynamic icon color based on focus state
-    const strokeColor = isFocused ? "#2563eb" : "#93c5fd";
+    const hasError = !!error;
+    const strokeColor = hasError ? "#dc2626" : isFocused ? "#2563eb" : "#93c5fd";
 
     return (
         <div>
@@ -40,9 +43,9 @@ export default function InputField({
             <div
                 className="flex items-center gap-3 rounded-xl px-4 py-3.5 border-2 transition-all duration-200"
                 style={{
-                    borderColor: isFocused ? "#2563eb" : "#e8f0fe",
-                    background: isFocused ? "#f0f7ff" : "#f8faff",
-                    boxShadow: isFocused ? "0 0 0 4px rgba(37,99,235,0.08)" : "none",
+                    borderColor: hasError ? "#dc2626" : isFocused ? "#2563eb" : "#e8f0fe",
+                    background: hasError ? "#fef2f2" : isFocused ? "#f0f7ff" : "#f8faff",
+                    boxShadow: hasError ? "0 0 0 4px rgba(220,38,38,0.08)" : isFocused ? "0 0 0 4px rgba(37,99,235,0.08)" : "none",
                 }}
             >
                 {/* Dynamic icon with injected color */}
@@ -57,9 +60,10 @@ export default function InputField({
                     required={required}
                     type={inputType}
                     placeholder={placeholder}
+                    readOnly={readOnly}
                     onFocus={() => setIsFocused(true)}
                     onBlur={() => setIsFocused(false)}
-                    className="flex-1 bg-transparent text-gray-800 text-sm outline-none placeholder-blue-200 min-w-0"
+                    className={`flex-1 bg-transparent text-gray-800 text-sm outline-none placeholder-blue-200 min-w-0 ${readOnly ? 'cursor-default' : ''}`}
                 />
 
                 {/* Password toggle (Eye icon) */}
@@ -83,6 +87,14 @@ export default function InputField({
                     </button>
                 )}
             </div>
+            {error && (
+                <p className="mt-1.5 text-xs text-red-600 flex items-center gap-1">
+                    <svg className="w-3 h-3 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                    {error}
+                </p>
+            )}
         </div>
     );
 }
