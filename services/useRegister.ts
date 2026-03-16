@@ -9,23 +9,25 @@ export const useRegister = (translations?: { passwordsMatch?: string; genericErr
     const [step, setStep] = useState(1);
     const totalSteps = 3;
 
-    // State with the new requested fields
     const [formData, setFormData] = useState({
-        first_name: '',    // Changed from name
-        last_name: '',     // Changed from surname
-        rodne_cislo: '',   // Changed from dni
-        birth_date: '',    // Changed from birthdate
+        first_name: '',
+        last_name: '',
+        rodne_cislo: '',
+        birth_date: '',
         email: '',
         address: '',
+        phone: '',
+        is_minor: false,
         password: '',
         confirmPassword: ''
-});
+    });
 
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        setFormData({ ...formData, [e.target.name]: e.target.value });
+        const { name, type, checked, value } = e.target;
+        setFormData({ ...formData, [name]: type === 'checkbox' ? checked : value });
     };
 
     // Functions to navigate between form steps
@@ -54,13 +56,15 @@ export const useRegister = (translations?: { passwordsMatch?: string; genericErr
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
-                    rodne_cislo: formData.rodne_cislo,
                     email: formData.email,
-                    password: formData.password,
                     first_name: formData.first_name,
                     last_name: formData.last_name,
-                    fecha_nacimiento: formData.birth_date || null,
-                    direccion: formData.address || null,
+                    password: formData.password,
+                    rodne_cislo: formData.rodne_cislo,
+                    birth_date: formData.birth_date || null,
+                    is_minor: formData.is_minor,
+                    address: formData.address || null,
+                    phone: formData.phone || null,
                 }),
             });
 

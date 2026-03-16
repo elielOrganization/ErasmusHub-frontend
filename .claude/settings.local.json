@@ -18,7 +18,9 @@
       "Bash(xargs grep -n \"// .*[áéíóúñ]\\\\|/\\\\*.*[áéíóúñ]\")",
       "Bash(grep -n \"//.*\" context/AuthContext.tsx)",
       "Bash(grep -n \"//\\\\|/\\\\*\" app/[locale]/dashboard/page.tsx context/AuthContext.tsx components/LanguageSelector.tsx)",
-      "Bash(wc -l app/[locale]/dashboard/page.tsx context/AuthContext.tsx components/LanguageSelector.tsx)"
+      "Bash(wc -l app/[locale]/dashboard/page.tsx context/AuthContext.tsx components/LanguageSelector.tsx)",
+      "Bash(find /c/Users/Marcos/Documents/GitHub/ErasmusHub-frontend/app/[locale] -type f)",
+      "Bash(xargs grep -l \"type.*Register\\\\|interface.*Register\")"
     ]
   }
 }
