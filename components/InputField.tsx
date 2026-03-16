@@ -3,7 +3,7 @@ import { useState, ReactNode, ChangeEvent } from "react";
 
 interface InputFieldProps {
     label: string;
-    // AÑADIDO: "date" a los tipos permitidos
+    // ADDED: "date" to allowed types
     type: "text" | "email" | "password" | "date";
     placeholder: string;
     icon: (color: string) => ReactNode;
@@ -29,7 +29,7 @@ export default function InputField({
     const isPasswordField = type === "password";
     const inputType = isPasswordField && showPassword ? "text" : type;
 
-    // Color dinámico para el icono basado en el foco
+    // Dynamic icon color based on focus state
     const strokeColor = isFocused ? "#2563eb" : "#93c5fd";
 
     return (
@@ -45,7 +45,7 @@ export default function InputField({
                     boxShadow: isFocused ? "0 0 0 4px rgba(37,99,235,0.08)" : "none",
                 }}
             >
-                {/* Icono dinámico inyectando el color */}
+                {/* Dynamic icon with injected color */}
                 <svg width="16" height="16" fill="none" stroke={strokeColor} strokeWidth="2" viewBox="0 0 24 24">
                     {icon(strokeColor)}
                 </svg>
@@ -62,7 +62,7 @@ export default function InputField({
                     className="flex-1 bg-transparent text-gray-800 text-sm outline-none placeholder-blue-200 min-w-0"
                 />
 
-                {/* Toggle Contraseña (Ojo) */}
+                {/* Password toggle (Eye icon) */}
                 {isPasswordField && (
                     <button
                         type="button"

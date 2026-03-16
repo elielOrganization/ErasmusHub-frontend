@@ -6,7 +6,7 @@ import PageHeader from '@/components/PageHeader';
 import StatusBadge from '@/components/StatusBadge';
 import { useApi, apiPost } from '@/hooks/useApi';
 
-interface Comunicacion {
+interface Communication {
     id: number;
     sender_id: number;
     recipient_type: string;
@@ -23,12 +23,14 @@ function MessageSection({
     loading,
     onAdd,
     t,
+    tc,
 }: {
     title: string;
-    messages: Comunicacion[];
+    messages: Communication[];
     loading: boolean;
     onAdd: () => void;
     t: (key: string) => string;
+    tc: (key: string) => string;
 }) {
     return (
         <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden mb-6">
@@ -53,9 +55,9 @@ function MessageSection({
                 </thead>
                 <tbody>
                     {loading ? (
-                        <tr><td colSpan={5} className="px-6 py-8 text-center text-sm text-gray-400">Cargando...</td></tr>
+                        <tr><td colSpan={5} className="px-6 py-8 text-center text-sm text-gray-400">{tc('loading')}</td></tr>
                     ) : messages.length === 0 ? (
-                        <tr><td colSpan={5} className="px-6 py-8 text-center text-sm text-gray-400">Ningún dato disponible en esta tabla</td></tr>
+                        <tr><td colSpan={5} className="px-6 py-8 text-center text-sm text-gray-400">{t('noDataAvailable')}</td></tr>
                     ) : (
                         messages.map((msg) => (
                             <tr key={msg.id} className="border-b border-gray-50 hover:bg-gray-50/50">
@@ -64,7 +66,7 @@ function MessageSection({
                                 <td className="px-6 py-3 text-sm text-gray-700">{msg.subject}</td>
                                 <td className="px-6 py-3 text-sm text-gray-700 max-w-xs truncate">{msg.body}</td>
                                 <td className="px-6 py-3">
-                                    <StatusBadge label={msg.is_read ? 'Sí' : 'No'} variant={msg.is_read ? 'success' : 'warning'} />
+                                    <StatusBadge label={msg.is_read ? tc('yes') : tc('no')} variant={msg.is_read ? 'success' : 'warning'} />
                                 </td>
                             </tr>
                         ))
@@ -78,11 +80,12 @@ function MessageSection({
 export default function ComunicacionesPage() {
     const params = useParams();
     const t = useTranslations('practicas');
+    const tc = useTranslations('common');
 
-    const { data: tutorMsgs, loading: l1 } = useApi<Comunicacion[]>(
+    const { data: tutorMsgs, loading: l1 } = useApi<Communication[]>(
         `/internships/${params.id}/communications?recipient_type=tutor_empresa`
     );
-    const { data: cotutorMsgs, loading: l2 } = useApi<Comunicacion[]>(
+    const { data: cotutorMsgs, loading: l2 } = useApi<Communication[]>(
         `/internships/${params.id}/communications?recipient_type=cotutor`
     );
 
@@ -102,6 +105,7 @@ export default function ComunicacionesPage() {
                 loading={l1}
                 onAdd={handleAddTutor}
                 t={t}
+                tc={tc}
             />
             <MessageSection
                 title={`${t('communicationStudentCotutor')}`}
@@ -109,6 +113,7 @@ export default function ComunicacionesPage() {
                 loading={l2}
                 onAdd={handleAddCotutor}
                 t={t}
+                tc={tc}
             />
         </div>
     );

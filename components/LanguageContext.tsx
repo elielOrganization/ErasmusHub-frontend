@@ -14,7 +14,7 @@ type LanguageContextType = {
 
 const LanguageContext = createContext<LanguageContextType | undefined>(undefined);
 
-// Añadimos la prop initialLocale
+// Added the initialLocale prop
 export function LanguageProvider({
     children,
     initialLocale = "es"
@@ -24,16 +24,16 @@ export function LanguageProvider({
 }) {
     const [locale, setLocaleState] = useState(initialLocale);
 
-    // Esta función ahora cambia el estado Y guarda la cookie
+    // This function changes state AND saves the cookie
     const setLocale = (newLocale: string) => {
         setLocaleState(newLocale);
-        // Guardamos la cookie por 1 año (365 días * 24h * 60m * 60s = 31536000)
+        // Save cookie for 1 year (365 days * 24h * 60m * 60s = 31536000)
         document.cookie = `NEXT_LOCALE=${newLocale}; path=/; max-age=31536000; SameSite=Lax`;
     };
 
     const t = (path: string) => {
         const keys = path.split('.');
-        let value = dictionaries[locale] || dictionaries["es"]; // Fallback a español si no encuentra el idioma
+        let value = dictionaries[locale] || dictionaries["es"]; // Fallback to Spanish if language not found
 
         for (const key of keys) {
             if (value[key] === undefined) return path;
@@ -51,6 +51,6 @@ export function LanguageProvider({
 
 export function useLanguage() {
     const context = useContext(LanguageContext);
-    if (!context) throw new Error("useLanguage debe usarse dentro de un LanguageProvider");
+    if (!context) throw new Error("useLanguage must be used within a LanguageProvider");
     return context;
 }

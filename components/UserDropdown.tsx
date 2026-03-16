@@ -2,7 +2,7 @@
 import { useState, useRef, useEffect } from "react";
 import { useTranslations } from "next-intl";
 import { useRouter } from "@/i18n/routing";
-import { useAuth } from "@/context/AuthContext"; // 1. Importamos el hook de autenticación
+import { useAuth } from "@/context/AuthContext"; // 1. Import the auth hook
 
 export default function UserDropdown() {
     const [isOpen, setIsOpen] = useState(false);
@@ -10,10 +10,10 @@ export default function UserDropdown() {
     const router = useRouter();
     const menuRef = useRef<HTMLDivElement>(null);
     
-    // 2. Extraemos los datos del usuario real y la función logout del contexto
+    // 2. Extract real user data and logout function from context
     const { user, logout } = useAuth();
 
-    // 3. Generamos las iniciales dinámicamente basadas en el usuario real
+    // 3. Generate initials dynamically based on the real user
     const initials = user 
         ? `${user.first_name.charAt(0)}${user.last_name.charAt(0)}`.toUpperCase()
         : "??";
@@ -26,12 +26,12 @@ export default function UserDropdown() {
         return () => document.removeEventListener("mousedown", handleClickOutside);
     }, []);
 
-    // Si por alguna razón no hay usuario, no mostramos el dropdown (o mostramos un estado de carga)
+    // If there's no user for some reason, don't render the dropdown
     if (!user) return null;
 
     return (
         <div className="relative" ref={menuRef}>
-            {/* Trigger: Avatar pequeño */}
+            {/* Trigger: Small avatar */}
             <button
                 onClick={() => setIsOpen(!isOpen)}
                 className="w-9 h-9 rounded-full flex items-center justify-center text-white text-xs font-bold shadow-sm transition-transform hover:scale-105 active:scale-95 border-2 border-white ring-1 ring-gray-100"
@@ -45,7 +45,7 @@ export default function UserDropdown() {
             {isOpen && (
                 <div className="absolute right-0 mt-3 w-64 bg-white rounded-2xl shadow-2xl border border-gray-100 overflow-hidden z-50 animate-in fade-in zoom-in duration-200">
 
-                    {/* Header del menú con datos REALES */}
+                    {/* Menu header with REAL user data */}
                     <div className="flex flex-col items-center px-4 py-6 bg-gray-50/50 border-b border-gray-100">
                         <div
                             className="w-16 h-16 rounded-full flex items-center justify-center text-white text-xl font-bold mb-3 shadow-md border-4 border-white"
@@ -83,10 +83,10 @@ export default function UserDropdown() {
                         </button>
                     </div>
 
-                    {/* Footer: Cerrar sesión (Usando la función del contexto) */}
+                    {/* Footer: Logout (Using the context function) */}
                     <div className="p-2 border-t border-gray-50 bg-gray-50/30">
                         <button
-                            onClick={() => logout()} // 4. Ejecutamos el logout real
+                            onClick={() => logout()} // 4. Execute the real logout
                             className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-red-600 bg-red-50/50 hover:bg-red-50 rounded-xl transition-colors group"
                         >
                             <svg className="w-5 h-5 text-red-400 group-hover:text-red-600 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">

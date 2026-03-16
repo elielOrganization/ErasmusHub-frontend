@@ -9,17 +9,17 @@ import { SERVER_API_URL } from '@/lib/api';
 export default async function DashboardLayout({ children }: { children: React.ReactNode }) {
     const cookieStore = await cookies();
     
-    // 1. Intentamos obtener el token de las cookies
+    // 1. Try to get the token from cookies
     const token = cookieStore.get('auth_token')?.value;
     const initialCollapsed = cookieStore.get('sidebar_collapsed')?.value === 'true';
 
-    // 2. Si no hay token, fuera. Ni siquiera cargamos el resto.
+    // 2. If there's no token, redirect. Don't even load the rest.
     if (!token) {
         redirect('/login');
     }
 
-    // 3. (Opcional pero recomendado) Validar el token en el servidor
-    // Esto evita que alguien con un token falso o expirado vea el dashboard
+    // 3. (Optional but recommended) Validate the token on the server
+    // This prevents someone with a fake or expired token from seeing the dashboard
     try {
         const response = await fetch(`${SERVER_API_URL}/auth/me`, {
             method: 'GET',
@@ -27,21 +27,21 @@ export default async function DashboardLayout({ children }: { children: React.Re
                 'Authorization': `Bearer ${token}`,
                 'Accept': 'application/json'
             },
-            // Cache: 'no-store' asegura que siempre verifique contra el servidor
+            // cache: 'no-store' ensures it always validates against the server
             cache: 'no-store' 
         });
 
         if (!response.ok) {
-            // Si el backend dice que el token no vale (401), redirigimos
+            // If the backend says the token is invalid (401), redirect
             redirect('/login');
         }
     } catch (error) {
-        // Si el servidor de Python está caído, podrías redirigir o mostrar un error
-        console.error("Error validando token en el servidor:", error);
+        // If the Python server is down, redirect or show an error
+        console.error("Error validating token on the server:", error);
         redirect('/login');
     }
 
-    // 4. Si todo está OK, renderizamos el layout normalmente
+    // 4. If everything is OK, render the layout normally
     return (
         <SidebarProvider initialCollapsed={initialCollapsed}>
             <div className="min-h-screen bg-gray-50">
