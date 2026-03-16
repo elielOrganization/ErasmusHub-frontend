@@ -74,7 +74,6 @@ export const useRegister = (translations?: { passwordsMatch?: string; genericErr
                 throw new Error(data.detail || translations?.genericError || "Registration error");
             }
 
-            alert(translations?.success || "Account created successfully!");
             router.push("/");
 
         } catch (err: any) {
