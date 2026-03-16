@@ -6,7 +6,7 @@ import DataTable, { Column } from '@/components/DataTable';
 import StatusBadge from '@/components/StatusBadge';
 import { useApi, apiPatch } from '@/hooks/useApi';
 
-interface Tarea {
+interface Task {
     id: number;
     title: string;
     completed: boolean;
@@ -15,7 +15,7 @@ interface Tarea {
 }
 
 interface PaginatedResponse {
-    items: Tarea[];
+    items: Task[];
     total: number;
     page: number;
     page_size: number;
@@ -36,7 +36,7 @@ export default function TareasPage() {
         refetch();
     };
 
-    const columns: Column<Tarea>[] = [
+    const columns: Column<Task>[] = [
         { key: 'title', label: t('task') },
         {
             key: 'due_date',
@@ -48,7 +48,7 @@ export default function TareasPage() {
             label: t('status'),
             render: (item) => (
                 <StatusBadge
-                    label={item.completed ? 'Completada' : 'Pendiente'}
+                    label={item.completed ? t('completedStatus') : t('pendingStatus')}
                     variant={item.completed ? 'success' : 'warning'}
                 />
             ),

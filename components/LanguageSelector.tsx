@@ -13,7 +13,7 @@ export default function LanguageSelector() {
     const [isOpen, setIsOpen] = useState(false);
     const dropdownRef = useRef<HTMLDivElement>(null);
 
-    // Herramientas de next-intl
+    // next-intl tools
     const locale = useLocale();
     const router = useRouter();
     const pathname = usePathname();
@@ -33,7 +33,7 @@ export default function LanguageSelector() {
 
     const changeLanguage = (nextLocale: string) => {
         setIsOpen(false);
-        // startTransition asegura que la URL cambie sin recargar la página bruscamente
+        // startTransition ensures the URL changes without a hard page reload
         startTransition(() => {
             router.replace(pathname, { locale: nextLocale });
         });

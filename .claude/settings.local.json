@@ -1,0 +1,24 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(ls -la /c/Users/Marcos/Documents/GitHub/ErasmusHub-frontend/*.md)",
+      "Bash(xargs wc -l)",
+      "Bash(grep -r \"Cargando\\\\|desconocido\\\\|Espacio vacío\\\\|Título\\\\|Controles\\\\|íconos\\\\|Icono\" /c/Users/Marcos/Documents/GitHub/ErasmusHub-frontend \\\\\\( -name \"node_modules\" -o -name \".next\" -o -name \".git\" \\\\\\) -prune -o -type f \\\\\\( -name \"*.ts\" -o -name \"*.tsx\" \\\\\\) -print)",
+      "Bash(npx next build)",
+      "Bash(while read f)",
+      "Bash(do if grep -q \"[áéíóúñ]\" \"$f\")",
+      "Bash(then echo \"$f\")",
+      "Bash(fi)",
+      "Bash(done)",
+      "Bash(grep -n \"[áéíóúñ]\" app/[locale]/dashboard/page.tsx components/LanguageSelector.tsx context/AuthContext.tsx)",
+      "Bash(grep -n \"Sincroniza\\\\|Bienvenido\\\\|Has iniciado\\\\|podrás\\\\|Español\" context/AuthContext.tsx app/[locale]/dashboard/page.tsx components/LanguageSelector.tsx)",
+      "Bash(xargs grep -l \"¡\\\\|?\")",
+      "Bash(grep -n \"[¡?]\" app/[locale]/dashboard/avisos/page.tsx app/[locale]/dashboard/layout.tsx app/[locale]/dashboard/practicas/page.tsx app/[locale]/dashboard/tareas/page.tsx)",
+      "Bash(grep -n \"estado\\\\|comentario\\\\|descripción\\\\|información\\\\|dirección\\\\|función\" app/[locale]/dashboard/*.tsx components/*.tsx services/*.ts hooks/*.ts)",
+      "Bash(xargs grep -n \"// .*[áéíóúñ]\\\\|/\\\\*.*[áéíóúñ]\")",
+      "Bash(grep -n \"//.*\" context/AuthContext.tsx)",
+      "Bash(grep -n \"//\\\\|/\\\\*\" app/[locale]/dashboard/page.tsx context/AuthContext.tsx components/LanguageSelector.tsx)",
+      "Bash(wc -l app/[locale]/dashboard/page.tsx context/AuthContext.tsx components/LanguageSelector.tsx)"
+    ]
+  }
+}

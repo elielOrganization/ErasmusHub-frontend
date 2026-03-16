@@ -5,7 +5,7 @@ import PageHeader from '@/components/PageHeader';
 import DataTable, { Column } from '@/components/DataTable';
 import { useApi, apiPatch } from '@/hooks/useApi';
 
-interface Notificacion {
+interface Notice {
     id: number;
     title: string;
     body: string;
@@ -15,7 +15,7 @@ interface Notificacion {
 }
 
 interface PaginatedResponse {
-    items: Notificacion[];
+    items: Notice[];
     total: number;
     page: number;
     page_size: number;
@@ -36,7 +36,7 @@ export default function AvisosPage() {
         refetch();
     };
 
-    const columns: Column<Notificacion>[] = [
+    const columns: Column<Notice>[] = [
         { key: 'title', label: t('notice') },
         {
             key: 'type',
@@ -53,7 +53,7 @@ export default function AvisosPage() {
                     onClick={() => handleMarkRead(item.id)}
                     className="text-blue-600 hover:text-blue-800 text-sm font-medium transition-colors"
                 >
-                    VER
+                    {t('view')}
                 </button>
             ),
         },

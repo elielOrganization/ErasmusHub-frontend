@@ -7,7 +7,7 @@ import DataTable, { Column } from '@/components/DataTable';
 import StatusBadge, { getStatusVariant } from '@/components/StatusBadge';
 import { useApi } from '@/hooks/useApi';
 
-interface Practica {
+interface Internship {
     id: number;
     company_name: string;
     company_address: string | null;
@@ -18,7 +18,7 @@ interface Practica {
 }
 
 interface PaginatedResponse {
-    items: Practica[];
+    items: Internship[];
     total: number;
     page: number;
     page_size: number;
@@ -34,7 +34,7 @@ export default function MisPracticasPage() {
         `/internships/me?page=${page}&page_size=${pageSize}${search ? `&search=${search}` : ''}`
     );
 
-    const columns: Column<Practica>[] = [
+    const columns: Column<Internship>[] = [
         {
             key: 'action',
             label: '',

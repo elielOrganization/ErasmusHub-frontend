@@ -6,23 +6,23 @@ import { apiPost } from '@/hooks/useApi';
 
 export default function ExencionesPage() {
     const t = useTranslations('exenciones');
-    const [motivo, setMotivo] = useState('');
+    const [reason, setReason] = useState('');
     const [submitting, setSubmitting] = useState(false);
     const [success, setSuccess] = useState(false);
     const [error, setError] = useState('');
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        if (!motivo.trim()) return;
+        if (!reason.trim()) return;
 
         setSubmitting(true);
         setError('');
         try {
-            await apiPost('/exemptions/', { reason: motivo });
+            await apiPost('/exemptions/', { reason });
             setSuccess(true);
-            setMotivo('');
+            setReason('');
         } catch {
-            setError('Error al enviar la solicitud');
+            setError(t('submitError'));
         } finally {
             setSubmitting(false);
         }
@@ -53,8 +53,8 @@ export default function ExencionesPage() {
                             {t('reason')}
                         </label>
                         <textarea
-                            value={motivo}
-                            onChange={(e) => setMotivo(e.target.value)}
+                            value={reason}
+                            onChange={(e) => setReason(e.target.value)}
                             rows={4}
                             className="w-full border border-gray-200 rounded-lg px-4 py-3 text-sm focus:outline-none focus:border-blue-400 resize-none"
                             placeholder={t('reasonPlaceholder')}
@@ -84,7 +84,7 @@ export default function ExencionesPage() {
 
                     <button
                         type="submit"
-                        disabled={submitting || !motivo.trim()}
+                        disabled={submitting || !reason.trim()}
                         className="w-full py-3 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
                     >
                         <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" /></svg>

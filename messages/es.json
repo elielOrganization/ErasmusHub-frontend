@@ -40,6 +40,13 @@
     }
   },
 
+  "common": {
+    "loading": "Cargando...",
+    "unknownError": "Error desconocido",
+    "yes": "Sí",
+    "no": "No"
+  },
+
   "dashboard": {
     "home": "Inicio",
     "students": "Estudiantes",
@@ -49,7 +56,10 @@
     "logout": "Cerrar sesión",
     "notifications": "Notificaciones",
     "noNotifications": "No tienes notificaciones nuevas",
-    "installApp": "Instalar App"
+    "installApp": "Instalar App",
+    "loadingApp": "Cargando ErasmusHub...",
+    "welcomeTitle": "¡Bienvenido a ErasmusHub!",
+    "welcomeDescription": "Has iniciado sesión correctamente. Desde aquí podrás gestionar tus {students} y {documents}."
   },
 
   "practicas": {
@@ -90,7 +100,22 @@
     "read": "Leído",
     "addMessage": "AÑADIR",
     "communicationStudentTutor": "Comunicación Alumno/a - Tutor/a Entidad",
-    "communicationStudentCotutor": "Comunicación Alumno/a - Cotutor/a"
+    "communicationStudentCotutor": "Comunicación Alumno/a - Cotutor/a",
+    "notFound": "No se encontró la práctica",
+    "fullName": "Nombre completo",
+    "companyName": "Nombre empresa",
+    "taxId": "CIF",
+    "internshipAddress": "Dirección prácticas",
+    "companyTutor": "Tutor/a empresa",
+    "academicTutorName": "Nombre tutor/a educativo/a",
+    "plannedHours": "{hours} horas",
+    "morningSchedule": "HORARIO MAÑANA",
+    "afternoonSchedule": "HORARIO TARDE",
+    "completedByStudent": "Cumplimentado por el alumno/a",
+    "pendingCompletion": "Pendiente de cumplimentar",
+    "noDataAvailable": "Ningún dato disponible en esta tabla",
+    "today": "Hoy",
+    "attendance": "ASISTE [{start}-{end}]"
   },
 
   "exenciones": {
@@ -103,7 +128,8 @@
     "activitiesCert": "Certificado de actividades realizadas en la empresa",
     "selectFile": "Seleccionar archivo",
     "submit": "SOLICITAR EXENCIÓN",
-    "successMessage": "Solicitud de exención enviada correctamente"
+    "successMessage": "Solicitud de exención enviada correctamente",
+    "submitError": "Error al enviar la solicitud"
   },
 
   "tareas": {
@@ -111,7 +137,9 @@
     "task": "Tarea",
     "dueDate": "Fecha Límite",
     "status": "Estado",
-    "markComplete": "Completar"
+    "markComplete": "Completar",
+    "completedStatus": "Completada",
+    "pendingStatus": "Pendiente"
   },
 
   "avisos": {

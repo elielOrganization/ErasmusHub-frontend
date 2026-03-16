@@ -34,6 +34,7 @@ export default function DataTable<T extends Record<string, any>>({
     loading = false,
 }: DataTableProps<T>) {
     const t = useTranslations('table');
+    const tc = useTranslations('common');
     const [searchValue, setSearchValue] = useState('');
     const totalPages = Math.ceil(total / pageSize);
     const from = total === 0 ? 0 : (page - 1) * pageSize + 1;
@@ -95,7 +96,7 @@ export default function DataTable<T extends Record<string, any>>({
                         {loading ? (
                             <tr>
                                 <td colSpan={columns.length} className="px-6 py-8 text-center text-sm text-gray-400">
-                                    Cargando...
+                                    {tc('loading')}
                                 </td>
                             </tr>
                         ) : data.length === 0 ? (
