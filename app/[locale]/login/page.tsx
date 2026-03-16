@@ -1,92 +1,34 @@
 "use client"
-import { useState, useEffect } from 'react';
 import { useTranslations } from 'next-intl';
-import { useRouter } from '@/i18n/routing';
 import AuthLayout from "@/components/AuthLayout";
 import InputField from "@/components/InputField";
 import SubmitButton from "@/components/SubmitButton";
-import Cookies from 'js-cookie';
-import { useAuth } from '@/context/AuthContext';
-import { usePWA } from '@/hooks/usePWA';
-import { API_URL } from '@/lib/api';
+import { useLogin } from '@/services/useLogin';
 
 export default function Login() {
   const t = useTranslations('auth');
+<<<<<<< Updated upstream
   const router = useRouter();
   const { loginGlobal, user, loading: authLoading } = useAuth();
   
   const { isInstallable, installApp } = usePWA();
+=======
+  const td = useTranslations('dashboard');
+>>>>>>> Stashed changes
 
-  const [formData, setFormData] = useState({ email: '', password: '' });
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const {
+    formData, loading, authLoading, error, isInstallable,
+    handleChange, handleSubmit, installApp, router
+  } = useLogin({
+    emptyFields: t('errors.emptyFields'),
+    passwordTooShort: t('errors.passwordTooShort'),
+    badCredentials: t('errors.badCredentials'),
+    generic: t('errors.generic'),
+  });
 
-  useEffect(() => {
-    if (user && !authLoading) {
-      router.push("/dashboard");
-    }
-  }, [user, authLoading, router]);
-
-  const validateForm = () => {
-    const { email, password } = formData;
-    if (!email.trim() || !password.trim()) {
-      setError(t('errors.emptyFields'));
-      return false;
-    }
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(email)) {
-      setError(t('errors.invalidEmail'));
-      return false;
-    }
-    if (password.length < 8) {
-      setError(t('errors.passwordTooShort'));
-      return false;
-    }
-    return true;
-  };
-
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
-    if (error) setError(null);
-  };
-
-  const handleSubmit = async (e: React.FormEvent) => {
-      e.preventDefault();
-      if (!validateForm()) return;
-
-      setLoading(true);
-      setError(null);
-
-      try {
-          const response = await fetch(`${API_URL}/auth/login`, {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify(formData),
-          });
-
-          const data = await response.json();
-
-          if (!response.ok) {
-              if (response.status === 401) throw new Error(t('errors.badCredentials'));
-              throw new Error(data.detail || t('errors.generic'));
-          }
-
-          const expireTime = 30 / (24 * 60); 
-          Cookies.set('auth_token', data.access_token, { expires: expireTime, secure: true, sameSite: 'strict' });
-          
-          await loginGlobal(data.access_token);
-          router.push("/dashboard");
-
-      } catch (err: any) {
-          setError(err.message);
-      } finally {
-          setLoading(false);
-      }
-  };
-
-  const emailIcon = (color: string) => (
+  const idIcon = (color: string) => (
     <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-      <path d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+      <rect x="3" y="7" width="18" height="10" rx="2" />
     </svg>
   );
 
@@ -100,7 +42,7 @@ export default function Login() {
   return (
     <AuthLayout>
       <div className="h-px bg-blue-50 mb-8" />
-      
+
       {error && (
         <div className="mb-6 p-4 text-sm text-red-600 bg-red-50 rounded-2xl border border-red-100 flex items-center gap-2 animate-shake">
           <svg className="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -112,13 +54,13 @@ export default function Login() {
 
       <form className="space-y-5" onSubmit={handleSubmit} noValidate>
         <InputField
-          label={t('emailLabel')}
-          type="email"
-          name="email"
-          value={formData.email}
+          label={t('dniLabel')}
+          type="text"
+          name="rodne_cislo"
+          value={formData.rodne_cislo}
           onChange={handleChange}
-          placeholder={t('emailPlaceholder')}
-          icon={emailIcon}
+          placeholder={t('dniPlaceholder')}
+          icon={idIcon}
           required
         />
         <InputField

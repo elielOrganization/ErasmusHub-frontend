@@ -34,7 +34,7 @@
       "emptyFields": "Por favor, rellena todos los campos.",
       "invalidEmail": "El correo electrónico no es válido.",
       "passwordTooShort": "La contraseña debe tener al menos 8 caracteres.",
-      "badCredentials": "Email o contraseña incorrectos.",
+      "badCredentials": "DNI o contraseña incorrectos.",
       "generic": "Algo salió mal. Inténtalo de nuevo.",
       "passwordsMatch": "Las contraseñas no coinciden."
     }

@@ -34,7 +34,7 @@
       "emptyFields": "Please fill in all fields.",
       "invalidEmail": "Invalid email address.",
       "passwordTooShort": "Password must be at least 8 characters long.",
-      "badCredentials": "Incorrect email or password.",
+      "badCredentials": "Incorrect ID or password.",
       "generic": "Something went wrong. Please try again.",
       "passwordsMatch": "Passwords do not match."
     }
