@@ -24,7 +24,7 @@ const eventColors: Record<string, string> = {
     festivo: 'bg-gray-400 text-white',
 };
 
-const DAYS = ['lun', 'mar', 'mié', 'jue', 'vie', 'sáb', 'dom'];
+const DAYS = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
 
 export default function CalendarView({ events, onMonthChange }: CalendarViewProps) {
     const t = useTranslations('practicas');
@@ -57,8 +57,8 @@ export default function CalendarView({ events, onMonthChange }: CalendarViewProp
     };
 
     const monthNames = [
-        'enero', 'febrero', 'marzo', 'abril', 'mayo', 'junio',
-        'julio', 'agosto', 'septiembre', 'octubre', 'noviembre', 'diciembre'
+        'January', 'February', 'March', 'April', 'May', 'June',
+        'July', 'August', 'September', 'October', 'November', 'December'
     ];
 
     const eventMap = new Map<string, CalendarEvent[]>();
@@ -85,11 +85,11 @@ export default function CalendarView({ events, onMonthChange }: CalendarViewProp
                         <svg className="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5l7 7-7 7" /></svg>
                     </button>
                     <button onClick={goToday} className="px-3 py-1 text-sm border border-gray-200 rounded-lg hover:bg-gray-50">
-                        Hoy
+                        {t('today')}
                     </button>
                 </div>
                 <h2 className="text-lg font-semibold text-gray-900 capitalize">
-                    {monthNames[month]} de {year}
+                    {monthNames[month]} {year}
                 </h2>
                 <div className="w-24" />
             </div>
@@ -133,7 +133,7 @@ export default function CalendarView({ events, onMonthChange }: CalendarViewProp
                                                 }`}
                                             >
                                                 {ev.type === 'asistencia' && ev.start_time && ev.end_time
-                                                    ? `ASISTE [${ev.start_time}-${ev.end_time}]`
+                                                    ? t('attendance', { start: ev.start_time, end: ev.end_time })
                                                     : ev.type.replace('_', ' ')}
                                             </div>
                                         ))}
@@ -144,8 +144,8 @@ export default function CalendarView({ events, onMonthChange }: CalendarViewProp
                                                     : 'bg-blue-500 text-white'
                                             }`}>
                                                 {dayEvents[0].status === 'completado'
-                                                    ? 'Cumplimentado por el alumno/a'
-                                                    : 'Pendiente de cumplimentar'}
+                                                    ? t('completedByStudent')
+                                                    : t('pendingCompletion')}
                                             </div>
                                         )}
                                     </div>

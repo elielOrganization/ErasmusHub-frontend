@@ -5,14 +5,14 @@ import PageHeader from '@/components/PageHeader';
 import InfoCard from '@/components/InfoCard';
 import { useApi } from '@/hooks/useApi';
 
-interface HorarioItem {
+interface ScheduleItem {
     id: number;
     weekday: string;
     morning_hours: string | null;
     afternoon_hours: string | null;
 }
 
-interface PracticaDetail {
+interface InternshipDetail {
     id: number;
     student_first_name: string;
     student_last_name: string;
@@ -27,33 +27,35 @@ interface PracticaDetail {
     end_date: string;
     total_hours: number;
     status: string;
-    schedules: HorarioItem[];
+    schedules: ScheduleItem[];
 }
 
-const DIAS_ORDER = ['lunes', 'martes', 'miercoles', 'jueves', 'viernes'];
-const DIAS_DISPLAY: Record<string, string> = {
-    lunes: 'LUNES',
-    martes: 'MARTES',
-    miercoles: 'MIÉRCOLES',
-    jueves: 'JUEVES',
-    viernes: 'VIERNES',
+const DAYS_ORDER = ['lunes', 'martes', 'miercoles', 'jueves', 'viernes'];
+const DAYS_DISPLAY: Record<string, string> = {
+    lunes: 'MONDAY',
+    martes: 'TUESDAY',
+    miercoles: 'WEDNESDAY',
+    jueves: 'THURSDAY',
+    viernes: 'FRIDAY',
 };
 
 export default function DatosGeneralesPage() {
     const params = useParams();
     const t = useTranslations('practicas');
-    const { data, loading } = useApi<PracticaDetail>(`/internships/${params.id}`);
+    const { data, loading } = useApi<InternshipDetail>(`/internships/${params.id}`);
+
+    const tc = useTranslations('common');
 
     if (loading) {
-        return <div className="text-sm text-gray-400 py-8 text-center">Cargando...</div>;
+        return <div className="text-sm text-gray-400 py-8 text-center">{tc('loading')}</div>;
     }
 
     if (!data) {
-        return <div className="text-sm text-gray-400 py-8 text-center">No se encontró la práctica</div>;
+        return <div className="text-sm text-gray-400 py-8 text-center">{t('notFound')}</div>;
     }
 
-    const sortedHorarios = [...(data.schedules || [])].sort(
-        (a, b) => DIAS_ORDER.indexOf(a.weekday) - DIAS_ORDER.indexOf(b.weekday)
+    const sortedSchedules = [...(data.schedules || [])].sort(
+        (a, b) => DAYS_ORDER.indexOf(a.weekday) - DAYS_ORDER.indexOf(b.weekday)
     );
 
     return (
@@ -66,26 +68,26 @@ export default function DatosGeneralesPage() {
                     <InfoCard
                         title={t('studentData')}
                         fields={[
-                            { label: 'Nombre completo', value: `${data.student_first_name} ${data.student_last_name}` },
+                            { label: t('fullName'), value: `${data.student_first_name} ${data.student_last_name}` },
                             { label: 'Email', value: data.student_email },
                         ]}
                     />
                     <InfoCard
                         title={t('companyData')}
                         fields={[
-                            { label: 'Nombre empresa', value: data.company_name },
-                            { label: 'CIF', value: data.company_tax_id },
-                            { label: 'Dirección prácticas', value: data.company_address },
-                            { label: 'Tutor/a empresa', value: data.company_tutor_name },
+                            { label: t('companyName'), value: data.company_name },
+                            { label: t('taxId'), value: data.company_tax_id },
+                            { label: t('internshipAddress'), value: data.company_address },
+                            { label: t('companyTutor'), value: data.company_tutor_name },
                         ]}
                     />
                     <InfoCard
                         title={t('practiceData')}
                         fields={[
-                            { label: 'Nombre tutor/a educativo/a', value: data.academic_tutor_name },
-                            { label: 'Fecha inicio', value: data.start_date },
-                            { label: 'Fecha fin', value: data.end_date },
-                            { label: 'Horas previstas', value: `${data.total_hours} horas` },
+                            { label: t('academicTutorName'), value: data.academic_tutor_name },
+                            { label: t('startDate'), value: data.start_date },
+                            { label: t('endDate'), value: data.end_date },
+                            { label: t('totalHours'), value: t('plannedHours', { hours: data.total_hours }) },
                         ]}
                     />
                 </div>
@@ -98,15 +100,15 @@ export default function DatosGeneralesPage() {
                     <thead>
                         <tr className="bg-gray-50 border-y border-gray-100">
                             <th className="px-6 py-3 text-left text-xs font-semibold text-gray-500 uppercase"></th>
-                            <th className="px-6 py-3 text-left text-xs font-semibold text-gray-500 uppercase">HORARIO MAÑANA</th>
-                            <th className="px-6 py-3 text-left text-xs font-semibold text-gray-500 uppercase">HORARIO TARDE</th>
+                            <th className="px-6 py-3 text-left text-xs font-semibold text-gray-500 uppercase">{t('morningSchedule')}</th>
+                            <th className="px-6 py-3 text-left text-xs font-semibold text-gray-500 uppercase">{t('afternoonSchedule')}</th>
                         </tr>
                     </thead>
                     <tbody className="divide-y divide-gray-50">
-                        {sortedHorarios.map((h) => (
+                        {sortedSchedules.map((h) => (
                             <tr key={h.id}>
                                 <td className="px-6 py-3 text-sm font-semibold text-gray-900">
-                                    {DIAS_DISPLAY[h.weekday] || h.weekday.toUpperCase()}
+                                    {DAYS_DISPLAY[h.weekday] || h.weekday.toUpperCase()}
                                 </td>
                                 <td className="px-6 py-3 text-sm text-gray-700">{h.morning_hours || '-'}</td>
                                 <td className="px-6 py-3 text-sm text-gray-700">{h.afternoon_hours || '-'}</td>

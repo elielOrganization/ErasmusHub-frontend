@@ -40,6 +40,13 @@
     }
   },
   
+  "common": {
+    "loading": "Načítání...",
+    "unknownError": "Neznámá chyba",
+    "yes": "Ano",
+    "no": "Ne"
+  },
+
   "dashboard": {
     "home": "Domů",
     "students": "Studenti",
@@ -49,7 +56,10 @@
     "logout": "Odhlásit se",
     "notifications": "Oznámení",
     "noNotifications": "Nemáte žádná nová oznámení",
-    "installApp": "Instalovat aplikaci"
+    "installApp": "Instalovat aplikaci",
+    "loadingApp": "Načítání ErasmusHub...",
+    "welcomeTitle": "Vítejte v ErasmusHub!",
+    "welcomeDescription": "Úspěšně jste se přihlásili. Odtud můžete spravovat své {students} a {documents}."
   },
 
   "practicas": {
@@ -90,7 +100,22 @@
     "read": "Přečteno",
     "addMessage": "PŘIDAT",
     "communicationStudentTutor": "Komunikace student - tutor společnosti",
-    "communicationStudentCotutor": "Komunikace student - kotutor"
+    "communicationStudentCotutor": "Komunikace student - kotutor",
+    "notFound": "Praxe nenalezena",
+    "fullName": "Celé jméno",
+    "companyName": "Název firmy",
+    "taxId": "IČO",
+    "internshipAddress": "Adresa praxe",
+    "companyTutor": "Firemní tutor",
+    "academicTutorName": "Jméno akademického tutora",
+    "plannedHours": "{hours} hodin",
+    "morningSchedule": "DOPOLEDNÍ ROZVRH",
+    "afternoonSchedule": "ODPOLEDNÍ ROZVRH",
+    "completedByStudent": "Vyplněno studentem",
+    "pendingCompletion": "Čeká na vyplnění",
+    "noDataAvailable": "V této tabulce nejsou k dispozici žádná data",
+    "today": "Dnes",
+    "attendance": "PŘÍTOMEN [{start}-{end}]"
   },
 
   "exenciones": {
@@ -103,7 +128,8 @@
     "activitiesCert": "Potvrzení o činnostech vykonávaných ve společnosti",
     "selectFile": "Vybrat soubor",
     "submit": "PODAT ŽÁDOST O VÝJIMKU",
-    "successMessage": "Žádost o výjimku byla úspěšně odeslána"
+    "successMessage": "Žádost o výjimku byla úspěšně odeslána",
+    "submitError": "Chyba při odesílání žádosti"
   },
 
   "tareas": {
@@ -111,7 +137,9 @@
     "task": "Úkol",
     "dueDate": "Termín",
     "status": "Stav",
-    "markComplete": "Dokončit"
+    "markComplete": "Dokončit",
+    "completedStatus": "Dokončeno",
+    "pendingStatus": "Nevyřízeno"
   },
 
   "avisos": {

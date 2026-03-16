@@ -21,7 +21,7 @@ export default function NotificationDropdown() {
                 onClick={() => setIsOpen(!isOpen)}
                 className="p-2 rounded-full text-gray-400 hover:bg-gray-50 hover:text-blue-600 transition-all relative"
             >
-                {/* Icono de Campana Relleno (Solid) */}
+                {/* Solid bell icon */}
                 <svg
                     className="w-5 h-5"
                     fill="currentColor"
@@ -30,7 +30,7 @@ export default function NotificationDropdown() {
                     <path d="M12 22c1.1 0 2-.9 2-2h-4c0 1.1.89 2 2 2zm6-6v-5c0-3.07-1.64-5.64-4.5-6.32V4c0-.83-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5v.68C7.63 5.36 6 7.92 6 11v5l-2 2v1h16v-1l-2-2z" />
                 </svg>
 
-                {/* Puntito de notificación activa */}
+                {/* Active notification dot */}
                 <span className="absolute top-2 right-2.5 w-2 h-2 bg-red-500 rounded-full border-2 border-white"></span>
             </button>
 
@@ -40,7 +40,7 @@ export default function NotificationDropdown() {
                         <h3 className="text-sm font-bold text-gray-800">{t('notifications')}</h3>
                     </div>
                     <div className="max-h-64 overflow-y-auto p-8 text-center">
-                        {/* Icono decorativo para estado vacío */}
+                        {/* Decorative icon for empty state */}
                         <div className="w-12 h-12 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-3">
                             <svg className="w-6 h-6 text-gray-300" fill="currentColor" viewBox="0 0 24 24">
                                 <path d="M12 22c1.1 0 2-.9 2-2h-4c0 1.1.89 2 2 2zm6-6v-5c0-3.07-1.64-5.64-4.5-6.32V4c0-.83-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5v.68C7.63 5.36 6 7.92 6 11v5l-2 2v1h16v-1l-2-2z" />

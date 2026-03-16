@@ -5,11 +5,11 @@ import { API_URL } from '@/lib/api';
 export const useRegister = (translations?: { passwordsMatch?: string; genericError?: string; success?: string }) => {
     const router = useRouter();
 
-    // Estado para controlar el paso actual del formulario
+    // State to control the current form step
     const [step, setStep] = useState(1);
     const totalSteps = 3;
 
-    // Estado con los nuevos campos solicitados
+    // State with the new requested fields
     const [formData, setFormData] = useState({
         first_name: '',    // Changed from name
         last_name: '',     // Changed from surname
@@ -28,9 +28,9 @@ export const useRegister = (translations?: { passwordsMatch?: string; genericErr
         setFormData({ ...formData, [e.target.name]: e.target.value });
     };
 
-    // Funciones para navegar entre los recuadros
+    // Functions to navigate between form steps
     const nextStep = () => {
-        // Aquí podrías agregar validaciones por paso antes de avanzar
+        // You could add per-step validations here before advancing
         if (step < totalSteps) setStep(step + 1);
     };
 

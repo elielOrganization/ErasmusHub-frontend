@@ -36,7 +36,7 @@ export function useApi<T>(endpoint: string, options: UseApiOptions = { immediate
             const json = await res.json();
             setData(json);
         } catch (err) {
-            setError(err instanceof Error ? err.message : 'Error desconocido');
+            setError(err instanceof Error ? err.message : 'Unknown error');
         } finally {
             setLoading(false);
         }

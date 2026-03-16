@@ -7,7 +7,7 @@ import DataTable, { Column } from '@/components/DataTable';
 import StatusBadge from '@/components/StatusBadge';
 import { useApi } from '@/hooks/useApi';
 
-interface DiarioEntry {
+interface DiaryEntry {
     id: number;
     date: string;
     status: string;
@@ -19,7 +19,7 @@ interface DiarioEntry {
 }
 
 interface PaginatedResponse {
-    items: DiarioEntry[];
+    items: DiaryEntry[];
     total: number;
     page: number;
     page_size: number;
@@ -36,7 +36,7 @@ export default function DiarioPage() {
         `/internships/${params.id}/daily-logs?page=${page}&page_size=${pageSize}`
     );
 
-    const columns: Column<DiarioEntry>[] = [
+    const columns: Column<DiaryEntry>[] = [
         {
             key: 'view',
             label: t('view'),
@@ -52,7 +52,7 @@ export default function DiarioPage() {
             label: t('status'),
             render: (item) => (
                 <StatusBadge
-                    label={item.status === 'completado' ? 'Cumplimentado por el alumno/a' : 'Pendiente de cumplimentar'}
+                    label={item.status === 'completado' ? t('completedByStudent') : t('pendingCompletion')}
                     variant={item.status === 'completado' ? 'success' : 'warning'}
                 />
             ),

@@ -40,6 +40,13 @@
     }
   },
 
+  "common": {
+    "loading": "Loading...",
+    "unknownError": "Unknown error",
+    "yes": "Yes",
+    "no": "No"
+  },
+
   "dashboard": {
     "home": "Home",
     "students": "Students",
@@ -49,7 +56,10 @@
     "logout": "Logout",
     "notifications": "Notifications",
     "noNotifications": "You have no new notifications",
-    "installApp": "Install App"
+    "installApp": "Install App",
+    "loadingApp": "Loading ErasmusHub...",
+    "welcomeTitle": "Welcome to ErasmusHub!",
+    "welcomeDescription": "You have successfully signed in. From here you can manage your {students} and {documents}."
   },
 
   "practicas": {
@@ -90,7 +100,22 @@
     "read": "Read",
     "addMessage": "ADD",
     "communicationStudentTutor": "Student - Company Tutor Communication",
-    "communicationStudentCotutor": "Student - Co-tutor Communication"
+    "communicationStudentCotutor": "Student - Co-tutor Communication",
+    "notFound": "Internship not found",
+    "fullName": "Full name",
+    "companyName": "Company name",
+    "taxId": "Tax ID",
+    "internshipAddress": "Internship address",
+    "companyTutor": "Company tutor",
+    "academicTutorName": "Academic tutor name",
+    "plannedHours": "{hours} hours",
+    "morningSchedule": "MORNING SCHEDULE",
+    "afternoonSchedule": "AFTERNOON SCHEDULE",
+    "completedByStudent": "Completed by student",
+    "pendingCompletion": "Pending completion",
+    "noDataAvailable": "No data available in this table",
+    "today": "Today",
+    "attendance": "ATTENDED [{start}-{end}]"
   },
 
   "exenciones": {
@@ -103,7 +128,8 @@
     "activitiesCert": "Certificate of activities performed at the company",
     "selectFile": "Select file",
     "submit": "REQUEST EXEMPTION",
-    "successMessage": "Exemption request submitted successfully"
+    "successMessage": "Exemption request submitted successfully",
+    "submitError": "Error sending request"
   },
 
   "tareas": {
@@ -111,7 +137,9 @@
     "task": "Task",
     "dueDate": "Due Date",
     "status": "Status",
-    "markComplete": "Complete"
+    "markComplete": "Complete",
+    "completedStatus": "Completed",
+    "pendingStatus": "Pending"
   },
 
   "avisos": {

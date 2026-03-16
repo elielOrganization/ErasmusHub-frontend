@@ -26,7 +26,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     const [loading, setLoading] = useState(true);
     const router = useRouter();
 
-    // Función para validar el token contra /auth/me
+    // Function to validate the token against /auth/me
     const checkUserSession = async () => {
         const token = Cookies.get('auth_token');
 
@@ -40,7 +40,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             const response = await fetch(`${API_URL}/auth/me`, {
                 method: 'GET',
                 headers: {
-                    'Authorization': `Bearer ${token}`, // Cabecera requerida por tu backend
+                    'Authorization': `Bearer ${token}`, // Header required by the backend
                     'Accept': 'application/json'
                 }
             });
@@ -49,11 +49,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
                 const userData = await response.json();
                 setUser(userData);
             } else {
-                // Si el backend da 401 (token expirado tras 30 min), borramos todo
+                // If backend returns 401 (token expired after 30 min), clear everything
                 logout();
             }
         } catch (error) {
-            console.error("Error de conexión:", error);
+            console.error("Connection error:", error);
         } finally {
             setLoading(false);
         }
@@ -64,7 +64,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }, []);
 
     const loginGlobal = async (token: string) => {
-        await checkUserSession(); // Sincroniza el estado del usuario tras el login
+        await checkUserSession(); // Sync user state after login
     };
 
     const logout = () => {
@@ -82,6 +82,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
 export const useAuth = () => {
     const context = useContext(AuthContext);
-    if (!context) throw new Error("useAuth debe usarse dentro de un AuthProvider");
+    if (!context) throw new Error("useAuth must be used within an AuthProvider");
     return context;
 };
