@@ -4,12 +4,23 @@ import Cookies from 'js-cookie';
 import { useRouter } from '@/i18n/routing';
 import { API_URL } from '@/lib/api';
 
+interface Role {
+    id: number;
+    name: string;
+    description: string;
+}
+
 interface User {
     id: number;
+    birth_date: string;
+    created_at: string;
+    is_minor: boolean;
+    rodne_cislo: string;
+    phone: string;
     email: string;
     first_name: string;
     last_name: string;
-    roles: string;
+    role: Role;
 }
 
 interface AuthContextType {
