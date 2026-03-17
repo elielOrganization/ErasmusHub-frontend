@@ -60,6 +60,9 @@ export default function UserDropdown() {
                             {user?.first_name} {user?.last_name}
                         </p>
                         <p className="text-xs text-gray-400 text-center">{user?.email}</p>
+                        <p className="text-xs text-gray-500 mt-1">
+                            {user?.role?.name || 'Sin rol'}
+                        </p>
                     </div>
 
                     <div className="p-2 space-y-1">
