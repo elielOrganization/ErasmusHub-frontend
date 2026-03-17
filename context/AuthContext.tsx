@@ -59,7 +59,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             if (response.ok) {
                 const userData = await response.json();
                 setUser(userData);
-                console.log(userData)
             } else {
                 // If backend returns 401 (token expired after 30 min), clear everything
                 logout();
