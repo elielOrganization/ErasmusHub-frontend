@@ -6,7 +6,8 @@ import { SidebarProvider } from "@/context/SidebarContext";
 import DashboardContent from "@/components/DashboardContent";
 import { SERVER_API_URL } from '@/lib/api';
 
-export default async function DashboardLayout({ children }: { children: React.ReactNode }) {
+export default async function DashboardLayout({ children, params }: { children: React.ReactNode; params: Promise<{ locale: string }> }) {
+    const { locale } = await params;
     const cookieStore = await cookies();
     
     // 1. Get credentials and UI state

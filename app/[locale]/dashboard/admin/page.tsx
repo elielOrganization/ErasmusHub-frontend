@@ -32,10 +32,11 @@ async function fetchUsers(token: string): Promise<User[]> {
     return response.json();
 }
 
-export default async function AdminUsersPage({ params }: { params: { locale: string } }) {
+export default async function AdminUsersPage({ params }: { params: Promise<{ locale: string }> }) {
+    const { locale } = await params;
     const token = await getTokenFromCookie();
     if (!token) {
-        redirect(`/${params.locale}/login`);
+        redirect(`/${locale}/login`);
     }
 
     const users = await fetchUsers(token);
@@ -83,14 +84,14 @@ export default async function AdminUsersPage({ params }: { params: { locale: str
                                         <form action={toggleRole} className="inline">
                                             <input type="hidden" name="userId" value={user.id} />
                                             <input type="hidden" name="currentRole" value={roleLabel} />
-                                            <input type="hidden" name="locale" value={params.locale} />
+                                            <input type="hidden" name="locale" value={locale} />
                                             <button className="text-indigo-600 hover:text-indigo-900 mr-4 text-sm font-bold transition-colors">
                                                 Toggle Role
                                             </button>
                                         </form>
                                         <form action={deleteUser} className="inline">
                                             <input type="hidden" name="userId" value={user.id} />
-                                            <input type="hidden" name="locale" value={params.locale} />
+                                            <input type="hidden" name="locale" value={locale} />
                                             <button
                                                 type="submit"
                                                 className="text-rose-500 hover:text-rose-700 text-sm font-bold transition-colors"
