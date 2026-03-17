@@ -69,6 +69,7 @@
 
   "dashboard": {
     "home": "Inicio",
+    "admin": "Panel Admin",
     "students": "Estudiantes",
     "documents": "Documentos",
     "settings": "Ajustes",
