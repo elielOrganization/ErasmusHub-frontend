@@ -57,10 +57,10 @@ export default function UserDropdown() {
                             {initials}
                         </div>
                         <p className="text-base font-bold text-gray-800 text-center">
-                            {user.first_name} {user.last_name} {user.role.name}
-                            console.log({user.id}, {user.first_name}, {user.last_name}, {user.role.name})
+                            {user?.first_name} {user?.last_name} {user?.role?.name}
+                            console.log({user?.id}, {user?.first_name}, {user?.last_name}, {user?.role?.name},{user?.role?.id})
                         </p>
-                        <p className="text-xs text-gray-400 text-center">{user.email}</p>
+                        <p className="text-xs text-gray-400 text-center">{user?.email}</p>
                     </div>
 
                     <div className="p-2 space-y-1">
