@@ -17,7 +17,7 @@ export default function Sidebar() {
     const { isInstallable, installApp } = usePWA();
     const { user } = useAuth();
 
-    const isStudent = user?.roles?.includes('student');
+    const isStudent = user?.role?.name.includes('Student');
 
     // Fetch unread notifications count for badge
     const { data: unreadData } = useApi<{ count: number }>('/notifications/me/unread-count');
