@@ -56,7 +56,7 @@ export default function UserDropdown() {
                             {initials}
                         </div>
                         <p className="text-base font-bold text-gray-800 text-center">
-                            {user.first_name} {user.last_name}
+                            {user.first_name} {user.last_name} {user.roles}
                         </p>
                         <p className="text-xs text-gray-400 text-center">{user.email}</p>
                     </div>
