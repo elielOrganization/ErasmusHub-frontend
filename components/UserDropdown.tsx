@@ -9,6 +9,7 @@ export default function UserDropdown() {
     const t = useTranslations("dashboard");
     const router = useRouter();
     const menuRef = useRef<HTMLDivElement>(null);
+
     
     // 2. Extract real user data and logout function from context
     const { user, logout } = useAuth();
@@ -57,6 +58,7 @@ export default function UserDropdown() {
                         </div>
                         <p className="text-base font-bold text-gray-800 text-center">
                             {user.first_name} {user.last_name} {user.roles}
+                            console.log({user.id}, {user.first_name}, {user.last_name}, {user.roles})
                         </p>
                         <p className="text-xs text-gray-400 text-center">{user.email}</p>
                     </div>
