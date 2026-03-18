@@ -5,7 +5,7 @@ export default function DashboardContent({ children }: { children: React.ReactNo
     const { isCollapsed } = useSidebar();
 
     return (
-        <main className={`transition-all duration-300 pt-12 min-h-screen ${isCollapsed ? 'pl-20' : 'pl-64'}`}>
+        <main className={`transition-all duration-300 pt-12 min-h-screen pl-0 ${isCollapsed ? 'md:pl-16' : 'md:pl-64'}`}>
             <div className="p-8">
                 {children}
             </div>

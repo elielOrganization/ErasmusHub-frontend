@@ -6,6 +6,8 @@ import { useSidebar } from '@/context/SidebarContext';
 import { usePWA } from '@/hooks/usePWA';
 import { useAuth } from '@/context/AuthContext';
 import { useApi } from '@/hooks/useApi';
+import { useRoleTheme } from '@/hooks/useRoleTheme';
+import LanguageSelector from './LanguageSelector';
 
 export default function Sidebar() {
     const t = useTranslations('dashboard');
@@ -17,6 +19,7 @@ export default function Sidebar() {
     const { isCollapsed, toggleSidebar } = useSidebar();
     const { isInstallable, installApp } = usePWA();
     const { user, loading } = useAuth();
+    const theme = useRoleTheme();
 
     const roleName = user?.role?.name || '';
     const isStudent = roleName.includes('Student');
@@ -44,84 +47,104 @@ export default function Sidebar() {
     const menuItems = isStudent ? studentItems : defaultItems;
 
     return (
-        <aside className={`fixed left-0 top-12 h-[calc(100vh-3rem)] bg-white border-r border-gray-200 flex flex-col z-20 transition-all duration-300 ease-in-out ${isCollapsed ? 'w-20' : 'w-64'}`}>
+        <>
+            {/* Dark overlay on mobile when sidebar is open */}
+            {!isCollapsed && (
+                <div
+                    className="fixed inset-0 bg-black/40 z-10 md:hidden transition-opacity duration-300"
+                    onClick={toggleSidebar}
+                />
+            )}
 
-            <div className="px-4 py-6 flex items-center justify-center relative">
-                <button onClick={toggleSidebar} className="cursor-pointer group">
-                    <Image
-                        src="/logoVector.svg"
-                        alt="ErasmusHub"
-                        width={80}
-                        height={80}
-                        className={`transition-all duration-500 ease-in-out group-hover:scale-110 group-active:scale-95 ${isCollapsed ? 'w-10 h-10 rotate-[360deg]' : 'w-20 h-20 rotate-0'}`}
-                    />
-                </button>
-            </div>
+            <aside className={`fixed left-0 top-12 h-[calc(100vh-3rem)] bg-white border-r border-gray-200 flex flex-col z-20 transition-all duration-300 ease-in-out
+                ${isCollapsed ? 'w-16' : 'w-64'}
+                ${isCollapsed ? '-translate-x-full md:translate-x-0' : 'translate-x-0'}
+            `}>
 
-            <button
-                onClick={toggleSidebar}
-                className="absolute -right-3 top-20 w-6 h-6 bg-white border border-gray-200 rounded-full flex items-center justify-center shadow-sm hover:bg-gray-50 z-30 transition-transform duration-300"
-                style={{ transform: isCollapsed ? 'rotate(180deg)' : 'rotate(0deg)' }}
-            >
-                <svg className="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 19l-7-7 7-7" /></svg>
-            </button>
-
-            <nav className="flex-1 p-3 space-y-1 overflow-y-auto overflow-x-hidden">
-                {loading ? (
-                    <div className="space-y-2">
-                        {[...Array(4)].map((_, i) => (
-                            <div key={i} className="flex items-center gap-3 px-3 py-2.5">
-                                <div className="w-5 h-5 bg-gray-200 rounded animate-pulse shrink-0" />
-                                <div className={`h-4 bg-gray-200 rounded animate-pulse transition-opacity duration-300 ${isCollapsed ? 'opacity-0' : 'opacity-100'}`} style={{ width: `${60 + i * 15}px` }} />
-                            </div>
-                        ))}
-                        <p className={`text-xs text-gray-400 text-center mt-4 transition-opacity duration-300 ${isCollapsed ? 'opacity-0' : 'opacity-100'}`}>
-                            {t('loadingSidebar')}
-                        </p>
-                    </div>
-                ) : (
-                    menuItems.map((item) => {
-                        const isActive = pathname === item.path || (item.path !== '/dashboard' && pathname.startsWith(item.path));
-                        return (
-                            <Link
-                                key={item.path}
-                                href={item.path}
-                                className={`flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all duration-200 ${isActive ? "bg-blue-50 text-blue-700 font-medium" : "text-gray-600 hover:bg-gray-50"
-                                    }`}
-                            >
-                                <svg className={`w-5 h-5 shrink-0 ${isActive ? "text-blue-600" : "text-gray-400"}`} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
-                                    {item.icon}
-                                </svg>
-                                <span className={`text-sm whitespace-nowrap transition-opacity duration-300 ${isCollapsed ? 'opacity-0' : 'opacity-100'}`}>
-                                    {item.name}
-                                </span>
-                                {'badge' in item && (item as { badge?: number }).badge ? (
-                                    <span className={`ml-auto bg-red-500 text-white text-[10px] font-bold rounded-full min-w-5 h-5 flex items-center justify-center px-1.5 transition-opacity duration-300 ${isCollapsed ? 'opacity-0' : 'opacity-100'}`}>
-                                        {(item as { badge?: number }).badge}
-                                    </span>
-                                ) : null}
-                            </Link>
-                        );
-                    })
-                )}
-            </nav>
-
-            {isInstallable && (
-                <div className="p-4 border-t border-gray-200">
-                    <button
-                        onClick={installApp}
-                        className={`flex items-center gap-3 w-full px-3 py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-all duration-200 justify-center`}
-                        title={t('installApp')}
-                    >
-                        <svg className="w-5 h-5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
-                        </svg>
-                        <span className={`text-sm font-medium whitespace-nowrap transition-opacity duration-300 ${isCollapsed ? 'hidden' : 'block'}`}>
-                            {t('installApp')}
-                        </span>
+                <div className="flex items-center justify-center mx-3 mt-3">
+                    <button onClick={toggleSidebar} className="cursor-pointer group">
+                        <div className={`${theme.logoBg} rounded-2xl flex items-center justify-center transition-all duration-500 ${isCollapsed ? 'w-10 h-10' : 'w-16 h-16'}`}>
+                            <Image
+                                src="/logoVector.svg"
+                                alt="ErasmusHub"
+                                width={80}
+                                height={80}
+                                className={`transition-all duration-500 ease-in-out group-hover:scale-110 group-active:scale-95 ${isCollapsed ? 'w-7 h-7 rotate-[360deg]' : 'w-12 h-12 rotate-0'}`}
+                            />
+                        </div>
                     </button>
                 </div>
-            )}
-        </aside>
+
+                <button
+                    onClick={toggleSidebar}
+                    className="absolute -right-3 top-20 w-6 h-6 bg-white border border-gray-200 rounded-full flex items-center justify-center shadow-sm hover:bg-gray-50 z-30 transition-transform duration-300 hidden md:flex"
+                    style={{ transform: isCollapsed ? 'rotate(180deg)' : 'rotate(0deg)' }}
+                >
+                    <svg className="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 19l-7-7 7-7" /></svg>
+                </button>
+
+                <nav className="flex-1 p-3 space-y-1 overflow-y-auto overflow-x-hidden">
+                    {loading ? (
+                        <div className="space-y-2">
+                            {[...Array(4)].map((_, i) => (
+                                <div key={i} className="flex items-center gap-3 px-3 py-2.5">
+                                    <div className="w-5 h-5 bg-gray-200 rounded animate-pulse shrink-0" />
+                                    <div className={`h-4 bg-gray-200 rounded animate-pulse transition-opacity duration-300 ${isCollapsed ? 'opacity-0' : 'opacity-100'}`} style={{ width: `${60 + i * 15}px` }} />
+                                </div>
+                            ))}
+                            <p className={`text-xs text-gray-400 text-center mt-4 transition-opacity duration-300 ${isCollapsed ? 'opacity-0' : 'opacity-100'}`}>
+                                {t('loadingSidebar')}
+                            </p>
+                        </div>
+                    ) : (
+                        menuItems.map((item) => {
+                            const isActive = pathname === item.path || (item.path !== '/dashboard' && pathname.startsWith(item.path));
+                            return (
+                                <Link
+                                    key={item.path}
+                                    href={item.path}
+                                    className={`flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all duration-200 ${isActive ? `${theme.activeBg} ${theme.activeText} font-medium` : "text-gray-600 hover:bg-gray-50"
+                                        }`}
+                                >
+                                    <svg className={`w-5 h-5 shrink-0 ${isActive ? theme.activeIcon : "text-gray-400"}`} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+                                        {item.icon}
+                                    </svg>
+                                    <span className={`text-sm whitespace-nowrap transition-opacity duration-300 ${isCollapsed ? 'opacity-0' : 'opacity-100'}`}>
+                                        {item.name}
+                                    </span>
+                                    {'badge' in item && (item as { badge?: number }).badge ? (
+                                        <span className={`ml-auto bg-red-500 text-white text-[10px] font-bold rounded-full min-w-5 h-5 flex items-center justify-center px-1.5 transition-opacity duration-300 ${isCollapsed ? 'opacity-0' : 'opacity-100'}`}>
+                                            {(item as { badge?: number }).badge}
+                                        </span>
+                                    ) : null}
+                                </Link>
+                            );
+                        })
+                    )}
+                </nav>
+
+                {/* Language selector on mobile */}
+                <div className={`md:hidden p-3 border-t border-gray-200 transition-opacity duration-300 ${isCollapsed ? 'opacity-0' : 'opacity-100'}`}>
+                    <LanguageSelector dropUp />
+                </div>
+
+                {isInstallable && (
+                    <div className="p-4 border-t border-gray-200">
+                        <button
+                            onClick={installApp}
+                            className={`flex items-center gap-3 w-full px-3 py-2.5 ${theme.installBg} ${theme.installHover} text-white rounded-lg transition-all duration-200 justify-center`}
+                            title={t('installApp')}
+                        >
+                            <svg className="w-5 h-5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                            </svg>
+                            <span className={`text-sm font-medium whitespace-nowrap transition-opacity duration-300 ${isCollapsed ? 'hidden' : 'block'}`}>
+                                {t('installApp')}
+                            </span>
+                        </button>
+                    </div>
+                )}
+            </aside>
+        </>
     );
 }

@@ -2,7 +2,8 @@
 import { useState, useRef, useEffect } from "react";
 import { useTranslations } from "next-intl";
 import { useRouter } from "@/i18n/routing";
-import { useAuth } from "@/context/AuthContext"; // 1. Import the auth hook
+import { useAuth } from "@/context/AuthContext";
+import { useRoleTheme } from "@/hooks/useRoleTheme";
 
 export default function UserDropdown() {
     const [isOpen, setIsOpen] = useState(false);
@@ -10,9 +11,8 @@ export default function UserDropdown() {
     const router = useRouter();
     const menuRef = useRef<HTMLDivElement>(null);
 
-    
-    // 2. Extract real user data and logout function from context
     const { user, loading, logout } = useAuth();
+    const theme = useRoleTheme();
 
     // 3. Generate initials dynamically based on the real user
     const initials = user
@@ -39,7 +39,7 @@ export default function UserDropdown() {
                 onClick={() => setIsOpen(!isOpen)}
                 className="w-9 h-9 rounded-full flex items-center justify-center text-white text-xs font-bold shadow-sm transition-transform hover:scale-105 active:scale-95 border-2 border-white ring-1 ring-gray-100"
                 style={{
-                    background: "linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%)",
+                    background: `linear-gradient(135deg, ${theme.avatarFrom} 0%, ${theme.avatarTo} 100%)`,
                 }}
             >
                 {initials}
@@ -53,7 +53,7 @@ export default function UserDropdown() {
                         <div
                             className="w-16 h-16 rounded-full flex items-center justify-center text-white text-xl font-bold mb-3 shadow-md border-4 border-white"
                             style={{
-                                background: "linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%)",
+                                background: `linear-gradient(135deg, ${theme.avatarFrom} 0%, ${theme.avatarTo} 100%)`,
                             }}
                         >
                             {initials}
