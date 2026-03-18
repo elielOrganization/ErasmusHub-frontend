@@ -2,18 +2,13 @@
 
 import { useTranslations } from "next-intl";
 import { useAuth } from "@/context/AuthContext";
+import PageLoading from "@/components/PageLoading";
 
 export default function UserProfilePage() {
     const t = useTranslations("userProfile");
     const { user, loading } = useAuth();
 
-    if (loading) {
-        return (
-            <div className="flex items-center justify-center min-h-[60vh]">
-                <div className="w-8 h-8 border-4 border-blue-200 border-t-blue-600 rounded-full animate-spin" />
-            </div>
-        );
-    }
+    if (loading) return <PageLoading />;
 
     if (!user) return null;
 
