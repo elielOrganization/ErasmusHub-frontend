@@ -12,10 +12,10 @@ export default function UserDropdown() {
 
     
     // 2. Extract real user data and logout function from context
-    const { user, logout } = useAuth();
+    const { user, loading, logout } = useAuth();
 
     // 3. Generate initials dynamically based on the real user
-    const initials = user 
+    const initials = user
         ? `${user.first_name.charAt(0)}${user.last_name.charAt(0)}`.toUpperCase()
         : "??";
 
@@ -27,8 +27,10 @@ export default function UserDropdown() {
         return () => document.removeEventListener("mousedown", handleClickOutside);
     }, []);
 
-    // If there's no user for some reason, don't render the dropdown
-    if (!user) return null;
+    // Show skeleton placeholder while loading
+    if (loading || !user) return (
+        <div className="w-9 h-9 rounded-full bg-gray-200 animate-pulse border-2 border-white ring-1 ring-gray-100" />
+    );
 
     return (
         <div className="relative" ref={menuRef}>

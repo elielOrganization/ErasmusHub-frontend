@@ -16,7 +16,7 @@ export default function Sidebar() {
     const pathname = usePathname();
     const { isCollapsed, toggleSidebar } = useSidebar();
     const { isInstallable, installApp } = usePWA();
-    const { user } = useAuth();
+    const { user, loading } = useAuth();
 
     const roleName = user?.role?.name || '';
     const isStudent = roleName.includes('Student');
@@ -31,7 +31,6 @@ export default function Sidebar() {
         { name: t('home'), path: '/dashboard', icon: <path strokeLinecap="round" strokeLinejoin="round" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" /> },
         { name: t('students'), path: '/dashboard/students', icon: <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" /> },
         { name: t('documents'), path: '/dashboard/documents', icon: <path strokeLinecap="round" strokeLinejoin="round" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z" /> },
-        { name: t('settings'), path: '/dashboard/settings', icon: <path strokeLinecap="round" strokeLinejoin="round" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" /> },
     ];
 
     const studentItems = [
@@ -48,13 +47,15 @@ export default function Sidebar() {
         <aside className={`fixed left-0 top-12 h-[calc(100vh-3rem)] bg-white border-r border-gray-200 flex flex-col z-20 transition-all duration-300 ease-in-out ${isCollapsed ? 'w-20' : 'w-64'}`}>
 
             <div className="px-4 py-6 flex items-center justify-center relative">
-                <Image
-                    src="/logoVector.svg"
-                    alt="ErasmusHub"
-                    width={isCollapsed ? 40 : 48}
-                    height={isCollapsed ? 40 : 48}
-                    className="transition-all duration-300"
-                />
+                <button onClick={toggleSidebar} className="cursor-pointer group">
+                    <Image
+                        src="/logoVector.svg"
+                        alt="ErasmusHub"
+                        width={80}
+                        height={80}
+                        className={`transition-all duration-500 ease-in-out group-hover:scale-110 group-active:scale-95 ${isCollapsed ? 'w-10 h-10 rotate-[360deg]' : 'w-20 h-20 rotate-0'}`}
+                    />
+                </button>
             </div>
 
             <button
@@ -66,29 +67,43 @@ export default function Sidebar() {
             </button>
 
             <nav className="flex-1 p-3 space-y-1 overflow-y-auto overflow-x-hidden">
-                {menuItems.map((item) => {
-                    const isActive = pathname === item.path || (item.path !== '/dashboard' && pathname.startsWith(item.path));
-                    return (
-                        <Link
-                            key={item.path}
-                            href={item.path}
-                            className={`flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all duration-200 ${isActive ? "bg-blue-50 text-blue-700 font-medium" : "text-gray-600 hover:bg-gray-50"
-                                }`}
-                        >
-                            <svg className={`w-5 h-5 shrink-0 ${isActive ? "text-blue-600" : "text-gray-400"}`} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
-                                {item.icon}
-                            </svg>
-                            <span className={`text-sm whitespace-nowrap transition-opacity duration-300 ${isCollapsed ? 'opacity-0' : 'opacity-100'}`}>
-                                {item.name}
-                            </span>
-                            {'badge' in item && (item as { badge?: number }).badge ? (
-                                <span className={`ml-auto bg-red-500 text-white text-[10px] font-bold rounded-full min-w-5 h-5 flex items-center justify-center px-1.5 transition-opacity duration-300 ${isCollapsed ? 'opacity-0' : 'opacity-100'}`}>
-                                    {(item as { badge?: number }).badge}
+                {loading ? (
+                    <div className="space-y-2">
+                        {[...Array(4)].map((_, i) => (
+                            <div key={i} className="flex items-center gap-3 px-3 py-2.5">
+                                <div className="w-5 h-5 bg-gray-200 rounded animate-pulse shrink-0" />
+                                <div className={`h-4 bg-gray-200 rounded animate-pulse transition-opacity duration-300 ${isCollapsed ? 'opacity-0' : 'opacity-100'}`} style={{ width: `${60 + i * 15}px` }} />
+                            </div>
+                        ))}
+                        <p className={`text-xs text-gray-400 text-center mt-4 transition-opacity duration-300 ${isCollapsed ? 'opacity-0' : 'opacity-100'}`}>
+                            {t('loadingSidebar')}
+                        </p>
+                    </div>
+                ) : (
+                    menuItems.map((item) => {
+                        const isActive = pathname === item.path || (item.path !== '/dashboard' && pathname.startsWith(item.path));
+                        return (
+                            <Link
+                                key={item.path}
+                                href={item.path}
+                                className={`flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all duration-200 ${isActive ? "bg-blue-50 text-blue-700 font-medium" : "text-gray-600 hover:bg-gray-50"
+                                    }`}
+                            >
+                                <svg className={`w-5 h-5 shrink-0 ${isActive ? "text-blue-600" : "text-gray-400"}`} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+                                    {item.icon}
+                                </svg>
+                                <span className={`text-sm whitespace-nowrap transition-opacity duration-300 ${isCollapsed ? 'opacity-0' : 'opacity-100'}`}>
+                                    {item.name}
                                 </span>
-                            ) : null}
-                        </Link>
-                    );
-                })}
+                                {'badge' in item && (item as { badge?: number }).badge ? (
+                                    <span className={`ml-auto bg-red-500 text-white text-[10px] font-bold rounded-full min-w-5 h-5 flex items-center justify-center px-1.5 transition-opacity duration-300 ${isCollapsed ? 'opacity-0' : 'opacity-100'}`}>
+                                        {(item as { badge?: number }).badge}
+                                    </span>
+                                ) : null}
+                            </Link>
+                        );
+                    })
+                )}
             </nav>
 
             {isInstallable && (
