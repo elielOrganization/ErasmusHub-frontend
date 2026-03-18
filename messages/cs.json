@@ -180,6 +180,18 @@
     "showing": "Zobrazeno {from} až {to} z {total} záznamů"
   },
 
+  "adminDashboard": {
+    "totalUsers": "Celkem uživatelů",
+    "admins": "Administrátoři",
+    "minors": "Nezletilí",
+    "userManagement": "Správa uživatelů",
+    "user": "Uživatel",
+    "email": "E-mail",
+    "role": "Role",
+    "minor": "Nezletilý",
+    "unknown": "Neznámý"
+  },
+
   "offline": {
     "title": "Jste offline",
     "description": "Zkontrolujte prosím připojení k internetu a zkuste to znovu.",
