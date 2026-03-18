@@ -3,14 +3,14 @@
 import { useTranslations } from "next-intl";
 import { useAuth } from "@/context/AuthContext";
 import { useRoleTheme } from "@/hooks/useRoleTheme";
-import PageLoading from "@/components/PageLoading";
+import LoadingSpinner from "@/components/ui/LoadingSpinner";
 
 export default function UserProfilePage() {
     const t = useTranslations("userProfile");
     const { user, loading } = useAuth();
     const theme = useRoleTheme();
 
-    if (loading) return <PageLoading />;
+    if (loading) return <LoadingSpinner />;
 
     if (!user) return null;
 

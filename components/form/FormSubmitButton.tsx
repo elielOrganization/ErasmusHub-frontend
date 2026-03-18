@@ -7,7 +7,7 @@ interface SubmitButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement
     disabled?: boolean;
 }
 
-export default function SubmitButton({ children, disabled, className, ...props }: SubmitButtonProps) {
+export default function FormSubmitButton({ children, disabled, className, ...props }: SubmitButtonProps) {
     return (
         <button
             {...props} // Passes onClick, onBlur, etc. automatically

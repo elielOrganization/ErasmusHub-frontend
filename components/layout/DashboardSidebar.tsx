@@ -7,9 +7,9 @@ import { usePWA } from '@/hooks/usePWA';
 import { useAuth } from '@/context/AuthContext';
 import { useApi } from '@/hooks/useApi';
 import { useRoleTheme } from '@/hooks/useRoleTheme';
-import LanguageSelector from './LanguageSelector';
+import LanguageSwitcher from '../dropdowns/LanguageSwitcher';
 
-export default function Sidebar() {
+export default function DashboardSidebar() {
     const t = useTranslations('dashboard');
     const tp = useTranslations('practicas');
     const te = useTranslations('exenciones');
@@ -125,7 +125,7 @@ export default function Sidebar() {
 
                 {/* Language selector on mobile */}
                 <div className={`md:hidden p-3 border-t border-gray-200 transition-opacity duration-300 ${isCollapsed ? 'opacity-0' : 'opacity-100'}`}>
-                    <LanguageSelector dropUp />
+                    <LanguageSwitcher dropUp />
                 </div>
 
                 {isInstallable && (

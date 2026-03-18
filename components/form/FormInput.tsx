@@ -14,7 +14,7 @@ interface InputFieldProps {
     readOnly?: boolean;
 }
 
-export default function InputField({
+export default function FormInput({
     label,
     type,
     placeholder,

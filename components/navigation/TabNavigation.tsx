@@ -11,7 +11,7 @@ interface TabNavProps {
     tabs: Tab[];
 }
 
-export default function TabNav({ tabs }: TabNavProps) {
+export default function TabNavigation({ tabs }: TabNavProps) {
     const pathname = usePathname();
 
     return (

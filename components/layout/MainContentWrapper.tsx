@@ -1,7 +1,7 @@
 "use client"
 import { useSidebar } from "@/context/SidebarContext";
 
-export default function DashboardContent({ children }: { children: React.ReactNode }) {
+export default function MainContentWrapper({ children }: { children: React.ReactNode }) {
     const { isCollapsed } = useSidebar();
 
     return (
