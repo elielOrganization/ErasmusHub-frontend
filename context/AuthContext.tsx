@@ -26,8 +26,28 @@ interface User {
 interface AuthContextType {
     user: User | null;
     loading: boolean;
+    roleName: string | null; // inmediate value from token
     loginGlobal: (token: string) => Promise<void>;
     logout: () => void;
+}
+
+function base64UrlDecode(input: string) {
+    // Base64url -> Base64
+    const base64 = input.replace(/-/g, '+').replace(/_/g, '/');
+    const pad = base64.length % 4;
+    const padded = pad === 0 ? base64 : base64 + '='.repeat(4 - pad);
+    return atob(padded);
+}
+
+function decodeJwt<T = any>(token: string): T | null {
+    try {
+        const parts = token.split('.');
+        if (parts.length !== 3) return null;
+        const payload = base64UrlDecode(parts[1]);
+        return JSON.parse(payload) as T;
+    } catch {
+        return null;
+    }
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -35,57 +55,71 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 export function AuthProvider({ children }: { children: ReactNode }) {
     const [user, setUser] = useState<User | null>(null);
     const [loading, setLoading] = useState(true);
+    const [roleName, setRoleName] = useState<string | null>(null);
     const router = useRouter();
 
-    // Function to validate the token against /auth/me
-    const checkUserSession = async () => {
+    // Decodes the token and updates roleName (fast path). Then refreshes full user data.
+    const refreshUserFromToken = async () => {
         const token = Cookies.get('auth_token');
-
         if (!token) {
             setUser(null);
+            setRoleName(null);
             setLoading(false);
             return;
         }
+
+        const decoded = decodeJwt<{ sub?: string; role?: string }>(token);
+        const role = decoded?.role ?? null;
+        setRoleName(role);
 
         try {
             const response = await fetch(`${API_URL}/auth/me`, {
                 method: 'GET',
                 headers: {
-                    'Authorization': `Bearer ${token}`, // Header required by the backend
-                    'Accept': 'application/json'
-                }
+                    'Authorization': `Bearer ${token}`,
+                    'Accept': 'application/json',
+                },
             });
 
             if (response.ok) {
                 const userData = await response.json();
                 setUser(userData);
+                // Keep roleName in sync with the validated value from the backend
+                setRoleName(userData?.role?.name ?? role);
             } else {
-                // If backend returns 401 (token expired after 30 min), clear everything
+                // If backend returns 401 (token expired), clear everything
                 logout();
             }
         } catch (error) {
-            console.error("Connection error:", error);
+            console.error('Connection error:', error);
         } finally {
             setLoading(false);
         }
     };
 
     useEffect(() => {
-        checkUserSession();
+        refreshUserFromToken();
+
+        const interval = setInterval(() => {
+            refreshUserFromToken();
+        }, 10 * 60 * 1000); // Refresh every 10 min
+
+        return () => clearInterval(interval);
     }, []);
 
     const loginGlobal = async (token: string) => {
-        await checkUserSession(); // Sync user state after login
+        await refreshUserFromToken(); // Sync user state after login
     };
 
     const logout = () => {
         Cookies.remove('auth_token');
         setUser(null);
+        setRoleName(null);
         router.push('/login');
     };
 
     return (
-        <AuthContext.Provider value={{ user, loading, loginGlobal, logout }}>
+        <AuthContext.Provider value={{ user, loading, roleName, loginGlobal, logout }}>
             {children}
         </AuthContext.Provider>
     );

@@ -7,7 +7,7 @@ const withNextIntl = createNextIntlPlugin('./i18n/request.ts');
 const withSerwist = withSerwistInit({
   swSrc: 'app/sw.ts',
   swDest: 'public/sw.js', 
-  disable: false, 
+  disable: process.env.NODE_ENV !== "production", 
   register: true,
 });
 
