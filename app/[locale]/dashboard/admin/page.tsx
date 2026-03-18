@@ -1,12 +1,11 @@
 import { cookies } from 'next/headers';
 import { redirect } from 'next/navigation';
 import { SERVER_API_URL } from '@/lib/api';
-import { deleteUser, toggleRole } from './actions';
 
 interface Role {
     id: number;
     name: string;
-    slug?: string;
+    description?: string;
 }
 
 interface User {
@@ -14,12 +13,9 @@ interface User {
     first_name: string;
     last_name: string;
     email: string;
-    role?: Role | string;
-}
-
-async function getTokenFromCookie() {
-    const cookieStore = await cookies();
-    return cookieStore.get('auth_token')?.value;
+    is_minor: boolean;
+    created_at: string;
+    role?: Role;
 }
 
 async function fetchUsers(token: string): Promise<User[]> {
@@ -32,79 +28,92 @@ async function fetchUsers(token: string): Promise<User[]> {
     return response.json();
 }
 
-export default async function AdminUsersPage({ params }: { params: Promise<{ locale: string }> }) {
+export default async function AdminDashboardPage({ params }: { params: Promise<{ locale: string }> }) {
     const { locale } = await params;
-    const token = await getTokenFromCookie();
+    const cookieStore = await cookies();
+    const token = cookieStore.get('auth_token')?.value;
+
     if (!token) {
         redirect(`/${locale}/login`);
     }
 
     const users = await fetchUsers(token);
 
+    const totalUsers = users.length;
+    const adminCount = users.filter(u => u.role?.name?.toLowerCase().includes('admin')).length;
+    const minorCount = users.filter(u => u.is_minor).length;
+
     return (
-        <div className="bg-white rounded-3xl p-8 border border-gray-100 shadow-sm">
-            <div className="flex justify-between items-center mb-6">
-                <h2 className="text-2xl font-bold text-gray-800">User Management</h2>
-                <span className="bg-blue-100 text-blue-700 px-3 py-1 rounded-full text-sm font-medium">
-                    {users.length} Total Users
-                </span>
+        <div className="space-y-6">
+            {/* Stats cards */}
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                <div className="bg-white rounded-2xl p-6 border border-gray-100 shadow-sm">
+                    <p className="text-sm text-gray-400 font-medium">Total Users</p>
+                    <p className="text-3xl font-bold text-gray-800 mt-1">{totalUsers}</p>
+                </div>
+                <div className="bg-white rounded-2xl p-6 border border-gray-100 shadow-sm">
+                    <p className="text-sm text-gray-400 font-medium">Admins</p>
+                    <p className="text-3xl font-bold text-purple-600 mt-1">{adminCount}</p>
+                </div>
+                <div className="bg-white rounded-2xl p-6 border border-gray-100 shadow-sm">
+                    <p className="text-sm text-gray-400 font-medium">Minors</p>
+                    <p className="text-3xl font-bold text-amber-600 mt-1">{minorCount}</p>
+                </div>
             </div>
 
-            <div className="overflow-x-auto">
-                <table className="w-full text-left">
-                    <thead>
-                        <tr className="border-b border-gray-100 text-gray-400 text-sm">
-                            <th className="pb-4 font-medium">User</th>
-                            <th className="pb-4 font-medium">Email</th>
-                            <th className="pb-4 font-medium">Role</th>
-                            <th className="pb-4 font-medium text-right">Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody className="divide-y divide-gray-50">
-                        {users.map((user) => {
-                            const roleName = typeof user.role === 'string' ? user.role : user.role?.name ?? 'Unknown';
-                            const roleLabel = roleName.toString();
+            {/* Users table */}
+            <div className="bg-white rounded-3xl p-8 border border-gray-100 shadow-sm">
+                <div className="flex justify-between items-center mb-6">
+                    <h2 className="text-2xl font-bold text-gray-800">User Management</h2>
+                    <span className="bg-blue-100 text-blue-700 px-3 py-1 rounded-full text-sm font-medium">
+                        {totalUsers} Total Users
+                    </span>
+                </div>
 
-                            return (
-                                <tr key={user.id} className="group hover:bg-gray-50 transition-colors">
-                                    <td className="py-4 font-medium text-gray-700">{user.first_name} {user.last_name}</td>
-                                    <td className="py-4 text-gray-500">{user.email}</td>
-                                    <td className="py-4">
-                                        <span
-                                            className={`px-2 py-1 rounded-lg text-xs font-semibold ${
-                                                roleLabel.toLowerCase().includes('admin')
-                                                    ? 'bg-purple-100 text-purple-700'
-                                                    : 'bg-emerald-100 text-emerald-700'
-                                            }`}
-                                        >
-                                            {roleLabel}
-                                        </span>
-                                    </td>
-                                    <td className="py-4 text-right">
-                                        <form action={toggleRole} className="inline">
-                                            <input type="hidden" name="userId" value={user.id} />
-                                            <input type="hidden" name="currentRole" value={roleLabel} />
-                                            <input type="hidden" name="locale" value={locale} />
-                                            <button className="text-indigo-600 hover:text-indigo-900 mr-4 text-sm font-bold transition-colors">
-                                                Toggle Role
-                                            </button>
-                                        </form>
-                                        <form action={deleteUser} className="inline">
-                                            <input type="hidden" name="userId" value={user.id} />
-                                            <input type="hidden" name="locale" value={locale} />
-                                            <button
-                                                type="submit"
-                                                className="text-rose-500 hover:text-rose-700 text-sm font-bold transition-colors"
+                <div className="overflow-x-auto">
+                    <table className="w-full text-left">
+                        <thead>
+                            <tr className="border-b border-gray-100 text-gray-400 text-sm">
+                                <th className="pb-4 font-medium">User</th>
+                                <th className="pb-4 font-medium">Email</th>
+                                <th className="pb-4 font-medium">Role</th>
+                                <th className="pb-4 font-medium">Minor</th>
+                            </tr>
+                        </thead>
+                        <tbody className="divide-y divide-gray-50">
+                            {users.map((user) => {
+                                const roleName = user.role?.name ?? 'Unknown';
+
+                                return (
+                                    <tr key={user.id} className="group hover:bg-gray-50 transition-colors">
+                                        <td className="py-4 font-medium text-gray-700">
+                                            {user.first_name} {user.last_name}
+                                        </td>
+                                        <td className="py-4 text-gray-500">{user.email}</td>
+                                        <td className="py-4">
+                                            <span
+                                                className={`px-2 py-1 rounded-lg text-xs font-semibold ${
+                                                    roleName.toLowerCase().includes('admin')
+                                                        ? 'bg-purple-100 text-purple-700'
+                                                        : 'bg-emerald-100 text-emerald-700'
+                                                }`}
                                             >
-                                                Delete
-                                            </button>
-                                        </form>
-                                    </td>
-                                </tr>
-                            );
-                        })}
-                    </tbody>
-                </table>
+                                                {roleName}
+                                            </span>
+                                        </td>
+                                        <td className="py-4">
+                                            {user.is_minor && (
+                                                <span className="px-2 py-1 rounded-lg text-xs font-semibold bg-amber-100 text-amber-700">
+                                                    Minor
+                                                </span>
+                                            )}
+                                        </td>
+                                    </tr>
+                                );
+                            })}
+                        </tbody>
+                    </table>
+                </div>
             </div>
         </div>
     );
