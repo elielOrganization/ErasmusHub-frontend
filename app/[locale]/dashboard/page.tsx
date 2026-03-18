@@ -3,6 +3,7 @@ import { useTranslations } from "next-intl";
 import { useAuth } from "@/context/AuthContext";
 import { useApi } from "@/hooks/useApi";
 import { Link } from "@/i18n/routing";
+import { useRoleTheme } from "@/hooks/useRoleTheme";
 import PageLoading from "@/components/PageLoading";
 
 function useGreeting() {
@@ -17,6 +18,7 @@ export default function DashboardHome() {
     const t = useTranslations("dashboard");
     const { user, loading } = useAuth();
     const greeting = useGreeting();
+    const theme = useRoleTheme();
 
     const roleName = user?.role?.name || "";
     const isStudent = roleName.includes("Student");
@@ -99,11 +101,11 @@ export default function DashboardHome() {
     return (
         <div className="space-y-6">
             {/* Welcome header */}
-            <div className="bg-gradient-to-r from-blue-600 to-blue-700 rounded-2xl p-8 text-white">
+            <div className={`bg-gradient-to-r ${theme.gradientFrom} ${theme.gradientTo} rounded-2xl p-8 text-white`}>
                 <h1 className="text-2xl font-bold mb-1">
                     {t("welcomeBack", { greeting, name: user?.first_name || "" })}
                 </h1>
-                <p className="text-blue-100 text-sm">
+                <p className={`${theme.gradientSubtext} text-sm`}>
                     {t("welcomeSubtitle")}
                 </p>
             </div>
@@ -156,7 +158,7 @@ export default function DashboardHome() {
                                     {action.icon}
                                 </svg>
                             </div>
-                            <h3 className="text-sm font-semibold text-gray-700 group-hover:text-blue-600 transition-colors">
+                            <h3 className={`text-sm font-semibold text-gray-700 ${theme.actionHover} transition-colors`}>
                                 {action.title}
                             </h3>
                         </Link>

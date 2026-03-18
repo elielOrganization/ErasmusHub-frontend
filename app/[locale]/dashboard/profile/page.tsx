@@ -2,11 +2,13 @@
 
 import { useTranslations } from "next-intl";
 import { useAuth } from "@/context/AuthContext";
+import { useRoleTheme } from "@/hooks/useRoleTheme";
 import PageLoading from "@/components/PageLoading";
 
 export default function UserProfilePage() {
     const t = useTranslations("userProfile");
     const { user, loading } = useAuth();
+    const theme = useRoleTheme();
 
     if (loading) return <PageLoading />;
 
@@ -31,13 +33,13 @@ export default function UserProfilePage() {
         <div className="max-w-4xl mx-auto space-y-6 p-4 sm:p-6">
             {/* Header card */}
             <div className="bg-white rounded-3xl border border-gray-100 shadow-sm overflow-hidden">
-                <div className="h-32 bg-gradient-to-r from-blue-500 to-blue-700" />
+                <div className={`h-32 bg-gradient-to-r ${theme.gradientFrom} ${theme.gradientTo}`} />
                 <div className="px-6 sm:px-8 pb-8">
                     <div className="flex flex-col sm:flex-row items-center sm:items-end gap-4 -mt-14">
                         <div
                             className="w-28 h-28 rounded-full flex items-center justify-center text-white text-3xl font-bold shadow-lg border-4 border-white shrink-0"
                             style={{
-                                background: "linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%)",
+                                background: `linear-gradient(135deg, ${theme.avatarFrom} 0%, ${theme.avatarTo} 100%)`,
                             }}
                         >
                             {initials}
@@ -51,11 +53,7 @@ export default function UserProfilePage() {
                             <p className="text-gray-500 mt-0.5">{user.email}</p>
                         </div>
                         <span
-                            className={`px-3 py-1.5 rounded-full text-sm font-semibold ${
-                                user.role?.name?.toLowerCase().includes("admin")
-                                    ? "bg-purple-100 text-purple-700"
-                                    : "bg-emerald-100 text-emerald-700"
-                            }`}
+                            className={`px-3 py-1.5 rounded-full text-sm font-semibold ${theme.pillBg} ${theme.pillText}`}
                         >
                             {user.role?.name || t("notProvided")}
                         </span>
