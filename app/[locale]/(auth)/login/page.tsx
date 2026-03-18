@@ -1,8 +1,8 @@
 "use client"
 import { useTranslations } from 'next-intl';
-import AuthLayout from "@/components/AuthLayout";
-import InputField from "@/components/InputField";
-import SubmitButton from "@/components/SubmitButton";
+import AuthLayout from "@/components/layout/AuthLayout";
+import FormInput from "@/components/form/FormInput";
+import FormSubmitButton from "@/components/form/FormSubmitButton";
 import { useLogin } from '@/services/useLogin';
 
 export default function Login() {
@@ -46,7 +46,7 @@ export default function Login() {
       )}
 
       <form className="space-y-5" onSubmit={handleSubmit} noValidate>
-        <InputField
+        <FormInput
           label={t('dniLabel')}
           type="text"
           name="rodne_cislo"
@@ -56,7 +56,7 @@ export default function Login() {
           icon={idIcon}
           required
         />
-        <InputField
+        <FormInput
           label={t('passwordLabel')}
           type="password"
           name="password"
@@ -67,9 +67,9 @@ export default function Login() {
           required
         />
         <div className="pt-2">
-          <SubmitButton disabled={loading || authLoading}>
+          <FormSubmitButton disabled={loading || authLoading}>
             {loading ? t('loading') : t('signIn')}
-          </SubmitButton>
+          </FormSubmitButton>
         </div>
       </form>
 

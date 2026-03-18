@@ -2,7 +2,7 @@
 import { useEffect } from 'react';
 import { useRouter } from '@/i18n/routing';
 import { useAuth } from '@/context/AuthContext';
-import PageLoading from '@/components/PageLoading';
+import LoadingSpinner from '@/components/ui/LoadingSpinner';
 
 export default function RootPage() {
     const { user, loading } = useAuth();
@@ -18,5 +18,5 @@ export default function RootPage() {
         }
     }, [user, loading, router]);
 
-    return <PageLoading fullScreen />;
+    return <LoadingSpinner fullScreen />;
 }

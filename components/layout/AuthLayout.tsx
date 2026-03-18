@@ -1,5 +1,5 @@
 import { ReactNode } from "react";
-import LanguageSelector from "./LanguageSelector";
+import LanguageSwitcher from "../dropdowns/LanguageSwitcher";
 
 interface AuthLayoutProps {
     children: ReactNode;
@@ -16,7 +16,7 @@ export default function AuthLayout({ children }: AuthLayoutProps) {
         >
             {/* --- NUEVO: Selector de idioma posicionado arriba a la derecha --- */}
             <div className="absolute top-6 right-6 z-50">
-                <LanguageSelector />
+                <LanguageSwitcher />
             </div>
 
             {/* Decorative circles background */}

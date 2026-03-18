@@ -4,7 +4,7 @@ import { useAuth } from "@/context/AuthContext";
 import { useApi } from "@/hooks/useApi";
 import { Link } from "@/i18n/routing";
 import { useRoleTheme } from "@/hooks/useRoleTheme";
-import PageLoading from "@/components/PageLoading";
+import LoadingSpinner from "@/components/ui/LoadingSpinner";
 
 function useGreeting() {
     const t = useTranslations("dashboard");
@@ -96,7 +96,7 @@ export default function DashboardHome() {
 
     const actions = isStudent ? studentActions : defaultActions;
 
-    if (loading) return <PageLoading />;
+    if (loading) return <LoadingSpinner />;
 
     return (
         <div className="space-y-6">

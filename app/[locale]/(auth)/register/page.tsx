@@ -1,8 +1,8 @@
 "use client"
 import { useTranslations } from 'next-intl';
-import AuthLayout from "@/components/AuthLayout";
-import InputField from "@/components/InputField";
-import SubmitButton from "@/components/SubmitButton";
+import AuthLayout from "@/components/layout/AuthLayout";
+import FormInput from "@/components/form/FormInput";
+import FormSubmitButton from "@/components/form/FormSubmitButton";
 import { useRegister } from '@/services/useRegister';
 
 export default function Register() {
@@ -88,7 +88,7 @@ export default function Register() {
                 {step === 1 && (
                     <div className="space-y-4 animate-fadeIn">
                         <div className="grid grid-cols-2 gap-4">
-                            <InputField
+                            <FormInput
                                 label={t('nameLabel')}
                                 type="text"
                                 name="first_name"
@@ -99,7 +99,7 @@ export default function Register() {
                                 error={errors.first_name}
                                 required
                             />
-                            <InputField
+                            <FormInput
                                 label={t('lastNameLabel')}
                                 type="text"
                                 name="last_name"
@@ -148,7 +148,7 @@ export default function Register() {
                             )}
                         </div>
 
-                        <InputField
+                        <FormInput
                             label={t('dniLabel')}
                             type="text"
                             name="rodne_cislo"
@@ -161,7 +161,7 @@ export default function Register() {
                         />
 
                         {/* Birth date - read-only, auto-filled from Rodné číslo */}
-                        <InputField
+                        <FormInput
                             label={t('birthdateLabel')}
                             type="text"
                             name="birth_date"
@@ -182,7 +182,7 @@ export default function Register() {
                 {/* STEP 2: Contact Data */}
                 {step === 2 && (
                     <div className="space-y-4 animate-fadeIn">
-                        <InputField
+                        <FormInput
                             label={t('emailLabel')}
                             type="email"
                             name="email"
@@ -193,7 +193,7 @@ export default function Register() {
                             error={errors.email}
                             required
                         />
-                        <InputField
+                        <FormInput
                             label={t('addressLabel')}
                             type="text"
                             name="address"
@@ -204,7 +204,7 @@ export default function Register() {
                             error={errors.address}
                             required
                         />
-                        <InputField
+                        <FormInput
                             label={t('phoneLabel')}
                             type="text"
                             name="phone"
@@ -221,7 +221,7 @@ export default function Register() {
                 {/* STEP 3: Security */}
                 {step === 3 && (
                     <div className="space-y-4 animate-fadeIn">
-                        <InputField
+                        <FormInput
                             label={t('passwordLabel')}
                             type="password"
                             name="password"
@@ -232,7 +232,7 @@ export default function Register() {
                             error={errors.password}
                             required
                         />
-                        <InputField
+                        <FormInput
                             label={t('confirmPasswordLabel')}
                             type="password"
                             name="confirmPassword"
@@ -266,9 +266,9 @@ export default function Register() {
                             {t('nextButton')}
                         </button>
                     ) : (
-                        <SubmitButton disabled={loading}>
+                        <FormSubmitButton disabled={loading}>
                             {loading ? t('registering') : t('finishButton')}
-                        </SubmitButton>
+                        </FormSubmitButton>
                     )}
                 </div>
             </form>
