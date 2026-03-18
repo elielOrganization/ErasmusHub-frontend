@@ -30,6 +30,10 @@ const adminTheme = {
     selectedBg: 'bg-purple-50',
     selectedText: 'text-purple-700',
     borderLight: 'border-purple-100',
+    // Dropdown hover
+    hoverBg: 'hover:bg-purple-50',
+    hoverText: 'hover:text-purple-600',
+    groupHoverIcon: 'group-hover:text-purple-600',
 };
 
 const studentTheme = {
@@ -54,6 +58,9 @@ const studentTheme = {
     selectedBg: 'bg-emerald-50',
     selectedText: 'text-emerald-700',
     borderLight: 'border-emerald-100',
+    hoverBg: 'hover:bg-emerald-50',
+    hoverText: 'hover:text-emerald-600',
+    groupHoverIcon: 'group-hover:text-emerald-600',
 };
 
 const teacherTheme = {
@@ -78,31 +85,37 @@ const teacherTheme = {
     selectedBg: 'bg-blue-50',
     selectedText: 'text-blue-700',
     borderLight: 'border-blue-100',
+    hoverBg: 'hover:bg-blue-50',
+    hoverText: 'hover:text-blue-600',
+    groupHoverIcon: 'group-hover:text-blue-600',
 };
 
-// Default & Lector: gray
+// Default & Lector: light gray
 const defaultTheme = {
-    logoBg: 'bg-gray-100',
-    activeBg: 'bg-gray-100',
-    activeText: 'text-gray-700',
-    activeIcon: 'text-gray-600',
-    installBg: 'bg-gray-600',
-    installHover: 'hover:bg-gray-700',
-    titleText: 'text-gray-600',
-    titleHover: 'hover:text-gray-700',
-    gradientFrom: 'from-gray-600',
-    gradientTo: 'to-gray-700',
-    gradientSubtext: 'text-gray-300',
-    spinnerBorder: 'border-gray-600/20',
-    spinnerTop: 'border-t-gray-600',
-    actionHover: 'group-hover:text-gray-600',
-    avatarFrom: '#4b5563',
-    avatarTo: '#374151',
-    pillBg: 'bg-gray-100',
-    pillText: 'text-gray-700',
-    selectedBg: 'bg-gray-100',
-    selectedText: 'text-gray-700',
-    borderLight: 'border-gray-200',
+    logoBg: 'bg-gray-50',
+    activeBg: 'bg-gray-50',
+    activeText: 'text-gray-600',
+    activeIcon: 'text-gray-500',
+    installBg: 'bg-gray-500',
+    installHover: 'hover:bg-gray-600',
+    titleText: 'text-gray-500',
+    titleHover: 'hover:text-gray-600',
+    gradientFrom: 'from-gray-500',
+    gradientTo: 'to-gray-600',
+    gradientSubtext: 'text-gray-200',
+    spinnerBorder: 'border-gray-400/20',
+    spinnerTop: 'border-t-gray-400',
+    actionHover: 'group-hover:text-gray-500',
+    avatarFrom: '#6b7280',
+    avatarTo: '#4b5563',
+    pillBg: 'bg-gray-50',
+    pillText: 'text-gray-600',
+    selectedBg: 'bg-gray-50',
+    selectedText: 'text-gray-600',
+    borderLight: 'border-gray-100',
+    hoverBg: 'hover:bg-gray-50',
+    hoverText: 'hover:text-gray-600',
+    groupHoverIcon: 'group-hover:text-gray-500',
 };
 
 export type RoleTheme = typeof adminTheme;

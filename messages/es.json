@@ -231,7 +231,26 @@
     "email": "Correo",
     "role": "Rol",
     "minor": "Menor",
-    "unknown": "Desconocido"
+    "unknown": "Desconocido",
+    "phone": "Teléfono",
+    "birthDate": "Fecha de nacimiento",
+    "createdAt": "Fecha de registro",
+    "actions": "Acciones",
+    "editUser": "Editar Usuario",
+    "deleteUser": "Eliminar Usuario",
+    "save": "Guardar",
+    "cancel": "Cancelar",
+    "delete": "Eliminar",
+    "editUserDescription": "Modifica la información del usuario.",
+    "deleteUserDescription": "Esta acción no se puede deshacer. El usuario y todos sus datos asociados se eliminarán permanentemente.",
+    "firstName": "Nombre",
+    "lastName": "Apellido",
+    "address": "Dirección",
+    "filterByRole": "Todos los roles",
+    "filterByMinor": "Todos los usuarios",
+    "onlyMinors": "Solo menores",
+    "onlyAdults": "Solo adultos",
+    "noResults": "Ningún usuario coincide con los filtros seleccionados."
   },
 
   "offline": {

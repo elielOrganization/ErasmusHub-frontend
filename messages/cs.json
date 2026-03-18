@@ -231,7 +231,26 @@
     "email": "E-mail",
     "role": "Role",
     "minor": "Nezletilý",
-    "unknown": "Neznámý"
+    "unknown": "Neznámý",
+    "phone": "Telefon",
+    "birthDate": "Datum narození",
+    "createdAt": "Registrován",
+    "actions": "Akce",
+    "editUser": "Upravit uživatele",
+    "deleteUser": "Smazat uživatele",
+    "save": "Uložit",
+    "cancel": "Zrušit",
+    "delete": "Smazat",
+    "editUserDescription": "Upravte informace o uživateli.",
+    "deleteUserDescription": "Tuto akci nelze vrátit zpět. Uživatel a všechna přidružená data budou trvale odstraněna.",
+    "firstName": "Jméno",
+    "lastName": "Příjmení",
+    "address": "Adresa",
+    "filterByRole": "Všechny role",
+    "filterByMinor": "Všichni uživatelé",
+    "onlyMinors": "Pouze nezletilí",
+    "onlyAdults": "Pouze dospělí",
+    "noResults": "Žádní uživatelé neodpovídají vybraným filtrům."
   },
 
   "offline": {
