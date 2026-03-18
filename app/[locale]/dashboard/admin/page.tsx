@@ -1,5 +1,6 @@
 import { cookies } from 'next/headers';
 import { redirect } from 'next/navigation';
+import { getTranslations } from 'next-intl/server';
 import { SERVER_API_URL } from '@/lib/api';
 
 interface Role {
@@ -37,6 +38,7 @@ export default async function AdminDashboardPage({ params }: { params: Promise<{
         redirect(`/${locale}/login`);
     }
 
+    const t = await getTranslations('adminDashboard');
     const users = await fetchUsers(token);
 
     const totalUsers = users.length;
@@ -48,15 +50,15 @@ export default async function AdminDashboardPage({ params }: { params: Promise<{
             {/* Stats cards */}
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                 <div className="bg-white rounded-2xl p-6 border border-gray-100 shadow-sm">
-                    <p className="text-sm text-gray-400 font-medium">Total Users</p>
+                    <p className="text-sm text-gray-400 font-medium">{t('totalUsers')}</p>
                     <p className="text-3xl font-bold text-gray-800 mt-1">{totalUsers}</p>
                 </div>
                 <div className="bg-white rounded-2xl p-6 border border-gray-100 shadow-sm">
-                    <p className="text-sm text-gray-400 font-medium">Admins</p>
+                    <p className="text-sm text-gray-400 font-medium">{t('admins')}</p>
                     <p className="text-3xl font-bold text-purple-600 mt-1">{adminCount}</p>
                 </div>
                 <div className="bg-white rounded-2xl p-6 border border-gray-100 shadow-sm">
-                    <p className="text-sm text-gray-400 font-medium">Minors</p>
+                    <p className="text-sm text-gray-400 font-medium">{t('minors')}</p>
                     <p className="text-3xl font-bold text-amber-600 mt-1">{minorCount}</p>
                 </div>
             </div>
@@ -64,9 +66,9 @@ export default async function AdminDashboardPage({ params }: { params: Promise<{
             {/* Users table */}
             <div className="bg-white rounded-3xl p-8 border border-gray-100 shadow-sm">
                 <div className="flex justify-between items-center mb-6">
-                    <h2 className="text-2xl font-bold text-gray-800">User Management</h2>
+                    <h2 className="text-2xl font-bold text-gray-800">{t('userManagement')}</h2>
                     <span className="bg-blue-100 text-blue-700 px-3 py-1 rounded-full text-sm font-medium">
-                        {totalUsers} Total Users
+                        {totalUsers} {t('totalUsers')}
                     </span>
                 </div>
 
@@ -74,15 +76,15 @@ export default async function AdminDashboardPage({ params }: { params: Promise<{
                     <table className="w-full text-left">
                         <thead>
                             <tr className="border-b border-gray-100 text-gray-400 text-sm">
-                                <th className="pb-4 font-medium">User</th>
-                                <th className="pb-4 font-medium">Email</th>
-                                <th className="pb-4 font-medium">Role</th>
-                                <th className="pb-4 font-medium">Minor</th>
+                                <th className="pb-4 font-medium">{t('user')}</th>
+                                <th className="pb-4 font-medium">{t('email')}</th>
+                                <th className="pb-4 font-medium">{t('role')}</th>
+                                <th className="pb-4 font-medium">{t('minor')}</th>
                             </tr>
                         </thead>
                         <tbody className="divide-y divide-gray-50">
                             {users.map((user) => {
-                                const roleName = user.role?.name ?? 'Unknown';
+                                const roleName = user.role?.name ?? t('unknown');
 
                                 return (
                                     <tr key={user.id} className="group hover:bg-gray-50 transition-colors">
@@ -104,7 +106,7 @@ export default async function AdminDashboardPage({ params }: { params: Promise<{
                                         <td className="py-4">
                                             {user.is_minor && (
                                                 <span className="px-2 py-1 rounded-lg text-xs font-semibold bg-amber-100 text-amber-700">
-                                                    Minor
+                                                    {t('minor')}
                                                 </span>
                                             )}
                                         </td>

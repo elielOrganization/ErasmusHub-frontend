@@ -180,6 +180,18 @@
     "showing": "Mostrando {from} a {to} de {total} registros"
   },
 
+  "adminDashboard": {
+    "totalUsers": "Usuarios Totales",
+    "admins": "Administradores",
+    "minors": "Menores",
+    "userManagement": "Gestión de Usuarios",
+    "user": "Usuario",
+    "email": "Correo",
+    "role": "Rol",
+    "minor": "Menor",
+    "unknown": "Desconocido"
+  },
+
   "offline": {
     "title": "Sin conexión",
     "description": "Comprueba tu conexión a internet e inténtalo de nuevo.",

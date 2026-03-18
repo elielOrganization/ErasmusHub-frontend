@@ -180,6 +180,18 @@
     "showing": "Showing {from} to {to} of {total} records"
   },
 
+  "adminDashboard": {
+    "totalUsers": "Total Users",
+    "admins": "Admins",
+    "minors": "Minors",
+    "userManagement": "User Management",
+    "user": "User",
+    "email": "Email",
+    "role": "Role",
+    "minor": "Minor",
+    "unknown": "Unknown"
+  },
+
   "offline": {
     "title": "You are offline",
     "description": "Please check your internet connection and try again.",
