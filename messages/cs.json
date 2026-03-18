@@ -180,6 +180,26 @@
     "showing": "Zobrazeno {from} až {to} z {total} záznamů"
   },
 
+  "userProfile": {
+    "title": "Můj profil",
+    "personalInfo": "Osobní údaje",
+    "contactInfo": "Kontaktní údaje",
+    "accountInfo": "Informace o účtu",
+    "firstName": "Jméno",
+    "lastName": "Příjmení",
+    "rodneCislo": "Rodné číslo",
+    "birthDate": "Datum narození",
+    "isMinor": "Nezletilý",
+    "email": "E-mail",
+    "phone": "Telefon",
+    "address": "Adresa",
+    "role": "Role",
+    "memberSince": "Členem od",
+    "notProvided": "Neuvedeno",
+    "yes": "Ano",
+    "no": "Ne"
+  },
+
   "adminDashboard": {
     "totalUsers": "Celkem uživatelů",
     "admins": "Administrátoři",

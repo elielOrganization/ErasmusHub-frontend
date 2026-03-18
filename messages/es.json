@@ -180,6 +180,26 @@
     "showing": "Mostrando {from} a {to} de {total} registros"
   },
 
+  "userProfile": {
+    "title": "Mi Perfil",
+    "personalInfo": "Información Personal",
+    "contactInfo": "Información de Contacto",
+    "accountInfo": "Información de la Cuenta",
+    "firstName": "Nombre",
+    "lastName": "Apellidos",
+    "rodneCislo": "Rodné číslo",
+    "birthDate": "Fecha de Nacimiento",
+    "isMinor": "Menor de edad",
+    "email": "Correo Electrónico",
+    "phone": "Teléfono",
+    "address": "Dirección",
+    "role": "Rol",
+    "memberSince": "Miembro desde",
+    "notProvided": "No proporcionado",
+    "yes": "Sí",
+    "no": "No"
+  },
+
   "adminDashboard": {
     "totalUsers": "Usuarios Totales",
     "admins": "Administradores",

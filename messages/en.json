@@ -180,6 +180,26 @@
     "showing": "Showing {from} to {to} of {total} records"
   },
 
+  "userProfile": {
+    "title": "My Profile",
+    "personalInfo": "Personal Information",
+    "contactInfo": "Contact Information",
+    "accountInfo": "Account Information",
+    "firstName": "First Name",
+    "lastName": "Last Name",
+    "rodneCislo": "Rodné číslo",
+    "birthDate": "Date of Birth",
+    "isMinor": "Minor",
+    "email": "Email",
+    "phone": "Phone",
+    "address": "Address",
+    "role": "Role",
+    "memberSince": "Member Since",
+    "notProvided": "Not provided",
+    "yes": "Yes",
+    "no": "No"
+  },
+
   "adminDashboard": {
     "totalUsers": "Total Users",
     "admins": "Admins",
