@@ -253,6 +253,27 @@
     "noResults": "Ningún usuario coincide con los filtros seleccionados."
   },
 
+  "studentsDashboard": {
+    "title": "Gestión de Estudiantes",
+    "eligibleStudents": "Estudiantes Elegibles",
+    "totalStudents": "Total Estudiantes",
+    "studentsLabel": "estudiantes",
+    "student": "Estudiante",
+    "email": "Correo",
+    "phone": "Teléfono",
+    "birthDate": "Fecha de nacimiento",
+    "createdAt": "Fecha de registro",
+    "assignBtn": "Asignar a Oportunidad",
+    "assignToOpportunity": "Asignar a Oportunidad",
+    "assignDescription": "Selecciona una oportunidad para asignar a este estudiante. Esta funcionalidad estará disponible próximamente.",
+    "selectOpportunity": "Oportunidad",
+    "noOpportunitiesYet": "Sin oportunidades disponibles todavía",
+    "assign": "Asignar",
+    "cancel": "Cancelar",
+    "searchPlaceholder": "Buscar estudiante...",
+    "noResults": "No se encontraron estudiantes que coincidan con los criterios."
+  },
+
   "offline": {
     "title": "Sin conexión",
     "description": "Comprueba tu conexión a internet e inténtalo de nuevo.",

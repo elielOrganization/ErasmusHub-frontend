@@ -253,6 +253,27 @@
     "noResults": "No users match the selected filters."
   },
 
+  "studentsDashboard": {
+    "title": "Student Management",
+    "eligibleStudents": "Eligible Students",
+    "totalStudents": "Total Students",
+    "studentsLabel": "students",
+    "student": "Student",
+    "email": "Email",
+    "phone": "Phone",
+    "birthDate": "Birth Date",
+    "createdAt": "Registered",
+    "assignBtn": "Assign to Opportunity",
+    "assignToOpportunity": "Assign to Opportunity",
+    "assignDescription": "Select an opportunity to assign this student. This feature will be available soon.",
+    "selectOpportunity": "Opportunity",
+    "noOpportunitiesYet": "No opportunities available yet",
+    "assign": "Assign",
+    "cancel": "Cancel",
+    "searchPlaceholder": "Search student...",
+    "noResults": "No students match the criteria."
+  },
+
   "offline": {
     "title": "You are offline",
     "description": "Please check your internet connection and try again.",

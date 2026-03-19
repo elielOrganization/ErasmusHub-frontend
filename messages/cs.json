@@ -253,6 +253,27 @@
     "noResults": "Žádní uživatelé neodpovídají vybraným filtrům."
   },
 
+  "studentsDashboard": {
+    "title": "Správa studentů",
+    "eligibleStudents": "Způsobilí studenti",
+    "totalStudents": "Celkem studentů",
+    "studentsLabel": "studentů",
+    "student": "Student",
+    "email": "E-mail",
+    "phone": "Telefon",
+    "birthDate": "Datum narození",
+    "createdAt": "Registrován",
+    "assignBtn": "Přiřadit k příležitosti",
+    "assignToOpportunity": "Přiřadit k příležitosti",
+    "assignDescription": "Vyberte příležitost pro přiřazení tohoto studenta. Tato funkce bude brzy k dispozici.",
+    "selectOpportunity": "Příležitost",
+    "noOpportunitiesYet": "Zatím nejsou k dispozici žádné příležitosti",
+    "assign": "Přiřadit",
+    "cancel": "Zrušit",
+    "searchPlaceholder": "Hledat studenta...",
+    "noResults": "Žádní studenti neodpovídají kritériím."
+  },
+
   "offline": {
     "title": "Jste offline",
     "description": "Zkontrolujte prosím připojení k internetu a zkuste to znovu.",
