@@ -4,6 +4,8 @@ node_modules/
 # Next.js build
 .next/
 out/
+.vscode/
+.claude/
 
 # Python venv
 venv/
