@@ -5,7 +5,7 @@ import { useRouter } from "@/i18n/routing";
 import { useAuth } from "@/context/AuthContext";
 import { useRoleTheme } from "@/hooks/useRoleTheme";
 
-export default function UserDropdown() {
+export default function UserMenuDropdown() {
     const [isOpen, setIsOpen] = useState(false);
     const t = useTranslations("dashboard");
     const router = useRouter();

@@ -2,7 +2,7 @@
 import { useTranslations } from "next-intl";
 import { useRoleTheme } from "@/hooks/useRoleTheme";
 
-export default function PageLoading({ fullScreen = false }: { fullScreen?: boolean }) {
+export default function LoadingSpinner({ fullScreen = false }: { fullScreen?: boolean }) {
     const t = useTranslations("dashboard");
     const theme = useRoleTheme();
 

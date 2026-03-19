@@ -1,9 +1,9 @@
 import { cookies } from 'next/headers';
 import { redirect } from 'next/navigation';
-import Sidebar from "@/components/Sidebar";
-import Header from "@/components/Header";
+import DashboardSidebar from "@/components/layout/DashboardSidebar";
+import DashboardHeader from "@/components/layout/DashboardHeader";
 import { SidebarProvider } from "@/context/SidebarContext";
-import DashboardContent from "../../../components/DashboardContent";
+import MainContentWrapper from "@/components/layout/MainContentWrapper";
 import { SERVER_API_URL } from '@/lib/api';
 
 export default async function DashboardLayout({ children }: { children: React.ReactNode }) {
@@ -45,11 +45,11 @@ export default async function DashboardLayout({ children }: { children: React.Re
     return (
         <SidebarProvider initialCollapsed={initialCollapsed}>
             <div className="min-h-screen bg-gray-50">
-                <Header />
-                <Sidebar />
-                <DashboardContent>
+                <DashboardHeader />
+                <DashboardSidebar />
+                <MainContentWrapper>
                     {children}
-                </DashboardContent>
+                </MainContentWrapper>
             </div>
         </SidebarProvider>
     );

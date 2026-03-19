@@ -10,7 +10,7 @@ const languages = [
     { code: "cs", name: "CS", fullName: "Čeština", flag: "https://flagcdn.com/w40/cz.png" },
 ];
 
-export default function LanguageSelector({ dropUp = false }: { dropUp?: boolean }) {
+export default function LanguageSwitcher({ dropUp = false }: { dropUp?: boolean }) {
     const [isOpen, setIsOpen] = useState(false);
     const dropdownRef = useRef<HTMLDivElement>(null);
     const theme = useRoleTheme();

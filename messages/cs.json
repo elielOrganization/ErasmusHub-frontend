@@ -257,5 +257,15 @@
     "title": "Jste offline",
     "description": "Zkontrolujte prosím připojení k internetu a zkuste to znovu.",
     "retry": "Zkusit znovu"
+  },
+
+  "errors": {
+    "notFoundTitle": "Stránka nenalezena",
+    "notFoundDescription": "Stránka, kterou hledáte, neexistuje nebo byla přesunuta.",
+    "notFoundButton": "Zpět na úvod",
+    "errorTitle": "Něco se pokazilo",
+    "errorDescription": "Došlo k neočekávané chybě. Zkuste to prosím znovu.",
+    "errorRetry": "Zkusit znovu",
+    "errorGoHome": "Na úvod"
   }
 }

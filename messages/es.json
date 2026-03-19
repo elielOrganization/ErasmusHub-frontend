@@ -257,5 +257,15 @@
     "title": "Sin conexión",
     "description": "Comprueba tu conexión a internet e inténtalo de nuevo.",
     "retry": "Reintentar"
+  },
+
+  "errors": {
+    "notFoundTitle": "Página no encontrada",
+    "notFoundDescription": "La página que buscas no existe o ha sido movida.",
+    "notFoundButton": "Volver al inicio",
+    "errorTitle": "Algo salió mal",
+    "errorDescription": "Ha ocurrido un error inesperado. Por favor, inténtalo de nuevo.",
+    "errorRetry": "Reintentar",
+    "errorGoHome": "Ir al inicio"
   }
 }

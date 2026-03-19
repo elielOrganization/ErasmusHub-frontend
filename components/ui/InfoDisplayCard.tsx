@@ -10,7 +10,7 @@ interface InfoCardProps {
     fields: InfoField[];
 }
 
-export default function InfoCard({ title, fields }: InfoCardProps) {
+export default function InfoDisplayCard({ title, fields }: InfoCardProps) {
     return (
         <div className="flex-1">
             <h3 className="text-sm font-semibold text-gray-900 mb-3">{title}</h3>

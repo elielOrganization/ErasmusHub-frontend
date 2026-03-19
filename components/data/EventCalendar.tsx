@@ -26,7 +26,7 @@ const eventColors: Record<string, string> = {
 
 const DAYS = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
 
-export default function CalendarView({ events, onMonthChange }: CalendarViewProps) {
+export default function EventCalendar({ events, onMonthChange }: CalendarViewProps) {
     const t = useTranslations('practicas');
     const [currentDate, setCurrentDate] = useState(new Date());
 

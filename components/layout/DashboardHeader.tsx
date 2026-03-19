@@ -1,13 +1,13 @@
 "use client"
 import Image from 'next/image';
-import LanguageSelector from "./LanguageSelector";
-import UserDropdown from "./UserDropdown";
-import NotificationDropdown from "./NotificationDropdown";
+import LanguageSwitcher from "../dropdowns/LanguageSwitcher";
+import UserMenuDropdown from "../dropdowns/UserMenuDropdown";
+import NotificationDropdown from "../dropdowns/NotificationDropdown";
 import { Link } from '@/i18n/routing';
 import { useSidebar } from '@/context/SidebarContext';
 import { useRoleTheme } from '@/hooks/useRoleTheme';
 
-export default function Header() {
+export default function DashboardHeader() {
     const { isCollapsed, toggleSidebar } = useSidebar();
     const theme = useRoleTheme();
 
@@ -39,9 +39,9 @@ export default function Header() {
                 <NotificationDropdown />
                 <div className="h-6 w-px bg-gray-100 mx-1 hidden md:block"></div>
                 <div className="hidden md:block">
-                    <LanguageSelector />
+                    <LanguageSwitcher />
                 </div>
-                <UserDropdown />
+                <UserMenuDropdown />
             </div>
         </header>
     );
