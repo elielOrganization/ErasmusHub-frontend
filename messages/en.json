@@ -231,7 +231,26 @@
     "email": "Email",
     "role": "Role",
     "minor": "Minor",
-    "unknown": "Unknown"
+    "unknown": "Unknown",
+    "phone": "Phone",
+    "birthDate": "Birth Date",
+    "createdAt": "Registered",
+    "actions": "Actions",
+    "editUser": "Edit User",
+    "deleteUser": "Delete User",
+    "save": "Save",
+    "cancel": "Cancel",
+    "delete": "Delete",
+    "editUserDescription": "Modify the user's information.",
+    "deleteUserDescription": "This action cannot be undone. The user and all associated data will be permanently removed.",
+    "firstName": "First Name",
+    "lastName": "Last Name",
+    "address": "Address",
+    "filterByRole": "All roles",
+    "filterByMinor": "All users",
+    "onlyMinors": "Minors only",
+    "onlyAdults": "Adults only",
+    "noResults": "No users match the selected filters."
   },
 
   "offline": {
