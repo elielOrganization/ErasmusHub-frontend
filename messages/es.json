@@ -87,6 +87,8 @@
     "welcomeBack": "{greeting}, {name}",
     "welcomeSubtitle": "Aquí tienes un resumen de tu actividad en ErasmusHub.",
     "quickActions": "Accesos rápidos",
+    "calendar": "Calendario",
+    "calendarToday": "Hoy",
     "myInternships": "Mis Prácticas",
     "myInternshipsDesc": "Consulta y gestiona tus prácticas activas",
     "myTasks": "Mis Tareas",
@@ -197,8 +199,10 @@
     "show": "Mostrar",
     "records": "registros",
     "search": "Buscar:",
+    "first": "Primera",
     "previous": "Anterior",
     "next": "Siguiente",
+    "last": "Última",
     "noResults": "Ningún dato disponible en esta tabla",
     "showing": "Mostrando {from} a {to} de {total} registros"
   },
@@ -251,7 +255,24 @@
     "filterByMinor": "Todos los usuarios",
     "onlyMinors": "Solo menores",
     "onlyAdults": "Solo adultos",
-    "noResults": "Ningún usuario coincide con los filtros seleccionados."
+    "noResults": "Ningún usuario coincide con los filtros seleccionados.",
+    "searchPlaceholder": "Buscar usuario...",
+    "addUser": "Nuevo Usuario",
+    "addTitle": "Crear Usuario",
+    "createSuccess": "Usuario creado correctamente",
+    "createError": "Error al crear el usuario",
+    "creating": "Creando...",
+    "fieldEmail": "Correo electrónico",
+    "fieldEmailPlaceholder": "Ej: usuario@email.com",
+    "fieldPhone": "Teléfono",
+    "fieldPhonePlaceholder": "Ej: +34 600 000 000",
+    "fieldRole": "Rol",
+    "selectRolePlaceholder": "Selecciona un rol",
+    "filters": "Filtros",
+    "clearFilters": "Limpiar filtros",
+    "applyFilters": "Aplicar filtros",
+    "roleLabel": "Rol",
+    "ageLabel": "Edad"
   },
 
   "opportunitiesDashboard": {
@@ -295,7 +316,13 @@
     "editError": "Error al actualizar la oportunidad",
     "open": "Abierta",
     "closed": "Cerrada",
-    "searchPlaceholder": "Buscar oportunidad..."
+    "searchPlaceholder": "Buscar oportunidad...",
+    "filterByStatus": "Todos los estados",
+    "filterByCountry": "Todos los países",
+    "filters": "Filtros",
+    "clearFilters": "Limpiar filtros",
+    "applyFilters": "Aplicar filtros",
+    "statusLabel": "Estado"
   },
 
   "studentsDashboard": {
@@ -337,5 +364,11 @@
     "errorDescription": "Ha ocurrido un error inesperado. Por favor, inténtalo de nuevo.",
     "errorRetry": "Reintentar",
     "errorGoHome": "Ir al inicio"
+  },
+
+  "accessDenied": {
+    "title": "Acceso denegado",
+    "message": "No tienes permisos para ver esta página. Si crees que es un error, contacta con tu administrador.",
+    "backLabel": "Volver al inicio"
   }
 }

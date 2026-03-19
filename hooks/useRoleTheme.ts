@@ -34,6 +34,20 @@ const adminTheme = {
     hoverBg: 'hover:bg-purple-50',
     hoverText: 'hover:text-purple-600',
     groupHoverIcon: 'group-hover:text-purple-600',
+    // General UI
+    btnPrimary: 'bg-purple-600',
+    btnPrimaryHover: 'hover:bg-purple-700',
+    btnDisabled: 'bg-purple-400',
+    focusRing: 'focus:ring-purple-200 focus:border-purple-400',
+    softHover: 'hover:bg-purple-100',
+    accent: 'text-purple-600',
+    accentHover: 'hover:text-purple-700',
+    accentBgHover: 'hover:bg-purple-50',
+    accentBg: 'bg-purple-50',
+    accentText: 'text-purple-700',
+    checkboxBg: 'bg-purple-600 border-purple-600',
+    badgeBg: 'bg-purple-600',
+    softBgHalf: 'bg-purple-50/30',
 };
 
 const studentTheme = {
@@ -61,6 +75,19 @@ const studentTheme = {
     hoverBg: 'hover:bg-emerald-50',
     hoverText: 'hover:text-emerald-600',
     groupHoverIcon: 'group-hover:text-emerald-600',
+    btnPrimary: 'bg-emerald-600',
+    btnPrimaryHover: 'hover:bg-emerald-700',
+    btnDisabled: 'bg-emerald-400',
+    focusRing: 'focus:ring-emerald-200 focus:border-emerald-400',
+    softHover: 'hover:bg-emerald-100',
+    accent: 'text-emerald-600',
+    accentHover: 'hover:text-emerald-700',
+    accentBgHover: 'hover:bg-emerald-50',
+    accentBg: 'bg-emerald-50',
+    accentText: 'text-emerald-700',
+    checkboxBg: 'bg-emerald-600 border-emerald-600',
+    badgeBg: 'bg-emerald-600',
+    softBgHalf: 'bg-emerald-50/30',
 };
 
 const teacherTheme = {
@@ -88,6 +115,19 @@ const teacherTheme = {
     hoverBg: 'hover:bg-blue-50',
     hoverText: 'hover:text-blue-600',
     groupHoverIcon: 'group-hover:text-blue-600',
+    btnPrimary: 'bg-blue-600',
+    btnPrimaryHover: 'hover:bg-blue-700',
+    btnDisabled: 'bg-blue-400',
+    focusRing: 'focus:ring-blue-200 focus:border-blue-400',
+    softHover: 'hover:bg-blue-100',
+    accent: 'text-blue-600',
+    accentHover: 'hover:text-blue-700',
+    accentBgHover: 'hover:bg-blue-50',
+    accentBg: 'bg-blue-50',
+    accentText: 'text-blue-700',
+    checkboxBg: 'bg-blue-600 border-blue-600',
+    badgeBg: 'bg-blue-600',
+    softBgHalf: 'bg-blue-50/30',
 };
 
 // Default & Lector: light gray
@@ -116,6 +156,19 @@ const defaultTheme = {
     hoverBg: 'hover:bg-gray-50',
     hoverText: 'hover:text-gray-600',
     groupHoverIcon: 'group-hover:text-gray-500',
+    btnPrimary: 'bg-gray-500',
+    btnPrimaryHover: 'hover:bg-gray-600',
+    btnDisabled: 'bg-gray-300',
+    focusRing: 'focus:ring-gray-200 focus:border-gray-400',
+    softHover: 'hover:bg-gray-100',
+    accent: 'text-gray-500',
+    accentHover: 'hover:text-gray-600',
+    accentBgHover: 'hover:bg-gray-50',
+    accentBg: 'bg-gray-50',
+    accentText: 'text-gray-600',
+    checkboxBg: 'bg-gray-500 border-gray-500',
+    badgeBg: 'bg-gray-500',
+    softBgHalf: 'bg-gray-50/30',
 };
 
 export type RoleTheme = typeof adminTheme;

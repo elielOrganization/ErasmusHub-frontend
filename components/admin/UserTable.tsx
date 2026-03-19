@@ -2,7 +2,13 @@
 
 import { useMemo, useState } from 'react';
 import { useTranslations } from 'next-intl';
+import Cookies from 'js-cookie';
+import { API_URL } from '@/lib/api';
+import FilterBar from '@/components/ui/FilterBar';
+import Pagination from '@/components/ui/Pagination';
 import type { User, Role } from '@/services/userService';
+
+const PAGE_SIZE = 10;
 
 /* ── Icon components ────────────────────────────────────────── */
 
@@ -84,27 +90,133 @@ function ActionButtons({ onEdit, onDelete }: { onEdit: () => void; onDelete: () 
     );
 }
 
-/* ── Styled select wrapper ──────────────────────────────────── */
-
-function StyledSelect({ value, onChange, children, className = '' }: {
-    value: string;
-    onChange: (v: string) => void;
-    children: React.ReactNode;
-    className?: string;
-}) {
+function PlusIcon() {
     return (
-        <div className={`relative ${className}`}>
-            <select
-                value={value}
-                onChange={(e) => onChange(e.target.value)}
-                className="w-full appearance-none rounded-xl border border-gray-200 bg-white px-3 py-2 pr-8 text-sm text-gray-700 focus:outline-none focus:ring-2 focus:ring-purple-200 focus:border-purple-400 transition-colors cursor-pointer"
-            >
-                {children}
-            </select>
-            <div className="absolute inset-y-0 right-2 flex items-center text-gray-400">
-                <ChevronDownIcon />
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="w-5 h-5">
+            <path d="M10.75 4.75a.75.75 0 00-1.5 0v4.5h-4.5a.75.75 0 000 1.5h4.5v4.5a.75.75 0 001.5 0v-4.5h4.5a.75.75 0 000-1.5h-4.5v-4.5z" />
+        </svg>
+    );
+}
+
+/* ── Create user modal ─────────────────────────────────────── */
+
+function CreateUserModal({ roles, open, onClose, onCreated }: { roles: Role[]; open: boolean; onClose: () => void; onCreated: () => void }) {
+    const t = useTranslations('adminDashboard');
+    const [form, setForm] = useState({
+        first_name: '', last_name: '', email: '', phone: '', role_id: '',
+    });
+    const [creating, setCreating] = useState(false);
+    const [msg, setMsg] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
+
+    const updateField = (key: string, value: string) => setForm(f => ({ ...f, [key]: value }));
+
+    const handleCreate = async () => {
+        if (!form.first_name.trim() || !form.email.trim()) return;
+        setCreating(true);
+        setMsg(null);
+        try {
+            const token = Cookies.get('auth_token');
+            const body: Record<string, unknown> = {
+                first_name: form.first_name,
+                last_name: form.last_name,
+                email: form.email,
+                phone: form.phone || null,
+                role_id: form.role_id ? parseInt(form.role_id) : null,
+            };
+            const res = await fetch(`${API_URL}/users/`, {
+                method: 'POST',
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(body),
+            });
+            if (res.ok) {
+                setMsg({ type: 'success', text: t('createSuccess') });
+                setTimeout(() => { onCreated(); onClose(); }, 1000);
+            } else {
+                const err = await res.json().catch(() => null);
+                setMsg({ type: 'error', text: err?.detail || t('createError') });
+            }
+        } catch {
+            setMsg({ type: 'error', text: t('createError') });
+        } finally {
+            setCreating(false);
+        }
+    };
+
+    if (!open) return null;
+
+    return (
+        <Modal open={open} onClose={onClose}>
+            <div className="flex items-center justify-between">
+                <h3 className="text-lg font-bold text-gray-800">{t('addTitle')}</h3>
+                <button onClick={onClose} className="p-1 rounded-lg text-gray-400 hover:text-gray-600 hover:bg-gray-100 transition-colors cursor-pointer">
+                    <XMarkIcon />
+                </button>
             </div>
-        </div>
+
+            <div className="space-y-3">
+                <div className="grid grid-cols-2 gap-3">
+                    <div>
+                        <label className="block text-xs font-medium text-gray-500 mb-1">{t('firstName')}</label>
+                        <input type="text" value={form.first_name} onChange={e => updateField('first_name', e.target.value)}
+                            className="w-full rounded-xl border border-gray-200 px-3 py-2 text-sm text-gray-700 focus:outline-none focus:ring-2 focus:ring-purple-200 focus:border-purple-400 transition-colors" />
+                    </div>
+                    <div>
+                        <label className="block text-xs font-medium text-gray-500 mb-1">{t('lastName')}</label>
+                        <input type="text" value={form.last_name} onChange={e => updateField('last_name', e.target.value)}
+                            className="w-full rounded-xl border border-gray-200 px-3 py-2 text-sm text-gray-700 focus:outline-none focus:ring-2 focus:ring-purple-200 focus:border-purple-400 transition-colors" />
+                    </div>
+                </div>
+                <div>
+                    <label className="block text-xs font-medium text-gray-500 mb-1">{t('fieldEmail')}</label>
+                    <input type="email" value={form.email} onChange={e => updateField('email', e.target.value)}
+                        placeholder={t('fieldEmailPlaceholder')}
+                        className="w-full rounded-xl border border-gray-200 px-3 py-2 text-sm text-gray-700 focus:outline-none focus:ring-2 focus:ring-purple-200 focus:border-purple-400 transition-colors" />
+                </div>
+                <div className="grid grid-cols-2 gap-3">
+                    <div>
+                        <label className="block text-xs font-medium text-gray-500 mb-1">{t('fieldPhone')}</label>
+                        <input type="tel" value={form.phone} onChange={e => updateField('phone', e.target.value)}
+                            placeholder={t('fieldPhonePlaceholder')}
+                            className="w-full rounded-xl border border-gray-200 px-3 py-2 text-sm text-gray-700 focus:outline-none focus:ring-2 focus:ring-purple-200 focus:border-purple-400 transition-colors" />
+                    </div>
+                    <div>
+                        <label className="block text-xs font-medium text-gray-500 mb-1">{t('fieldRole')}</label>
+                        <div className="relative">
+                            <select value={form.role_id} onChange={e => updateField('role_id', e.target.value)}
+                                className="w-full appearance-none rounded-xl border border-gray-200 bg-white px-3 py-2 pr-8 text-sm text-gray-700 focus:outline-none focus:ring-2 focus:ring-purple-200 focus:border-purple-400 transition-colors cursor-pointer">
+                                <option value="">{t('selectRolePlaceholder')}</option>
+                                {roles.map((role) => (
+                                    <option key={role.id} value={role.id.toString()}>{role.name}</option>
+                                ))}
+                            </select>
+                            <div className="absolute inset-y-0 right-2 flex items-center text-gray-400 pointer-events-none">
+                                <ChevronDownIcon />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            {msg && (
+                <div className={`rounded-xl border p-3 text-sm font-medium ${msg.type === 'success' ? 'bg-emerald-50 border-emerald-100 text-emerald-700' : 'bg-red-50 border-red-100 text-red-700'}`}>
+                    {msg.text}
+                </div>
+            )}
+
+            <div className="flex justify-end gap-2 pt-2">
+                <button onClick={onClose}
+                    className="px-4 py-2 rounded-xl text-sm font-medium text-gray-600 hover:bg-gray-100 transition-colors cursor-pointer">
+                    {t('cancel')}
+                </button>
+                <button onClick={handleCreate} disabled={!form.first_name.trim() || !form.email.trim() || creating}
+                    className={`px-4 py-2 rounded-xl text-sm font-medium text-white transition-colors ${!form.first_name.trim() || !form.email.trim() || creating ? 'bg-purple-400 cursor-not-allowed opacity-60' : 'bg-purple-600 hover:bg-purple-700 cursor-pointer'}`}>
+                    {creating ? t('creating') : t('save')}
+                </button>
+            </div>
+        </Modal>
     );
 }
 
@@ -255,8 +367,11 @@ function DeleteModal({ user, open, onClose }: { user: User | null; open: boolean
 
 export default function UserTable({ users }: { users: User[] }) {
     const t = useTranslations('adminDashboard');
+    const [searchQuery, setSearchQuery] = useState('');
     const [editUser, setEditUser] = useState<User | null>(null);
     const [deleteUser, setDeleteUser] = useState<User | null>(null);
+    const [showCreate, setShowCreate] = useState(false);
+    const [page, setPage] = useState(1);
 
     // Filters
     const [roleFilter, setRoleFilter] = useState('');
@@ -273,33 +388,73 @@ export default function UserTable({ users }: { users: User[] }) {
 
     // Filtered users
     const filteredUsers = useMemo(() => {
+        setPage(1);
         return users.filter((u) => {
+            if (searchQuery.trim()) {
+                const q = searchQuery.toLowerCase();
+                if (!`${u.first_name} ${u.last_name}`.toLowerCase().includes(q) &&
+                    !u.email.toLowerCase().includes(q)) {
+                    return false;
+                }
+            }
             if (roleFilter && u.role?.id?.toString() !== roleFilter) return false;
             if (minorFilter === 'minor' && !u.is_minor) return false;
             if (minorFilter === 'adult' && u.is_minor) return false;
             return true;
         });
-    }, [users, roleFilter, minorFilter]);
+    }, [users, searchQuery, roleFilter, minorFilter]);
+
+    const totalPages = Math.ceil(filteredUsers.length / PAGE_SIZE);
+    const paginatedUsers = filteredUsers.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
 
     return (
         <>
-            {/* Filters */}
-            <div className="flex flex-wrap gap-3 mb-5">
-                <StyledSelect value={roleFilter} onChange={setRoleFilter} className="w-full sm:w-48">
-                    <option value="">{t('filterByRole')}</option>
-                    {roles.map((role) => (
-                        <option key={role.id} value={role.id.toString()}>
-                            {role.name}
-                        </option>
-                    ))}
-                </StyledSelect>
-
-                <StyledSelect value={minorFilter} onChange={(v) => setMinorFilter(v as '' | 'minor' | 'adult')} className="w-full sm:w-48">
-                    <option value="">{t('filterByMinor')}</option>
-                    <option value="minor">{t('onlyMinors')}</option>
-                    <option value="adult">{t('onlyAdults')}</option>
-                </StyledSelect>
-            </div>
+            <FilterBar
+                searchValue={searchQuery}
+                onSearchChange={setSearchQuery}
+                searchPlaceholder={t('searchPlaceholder')}
+                filterLabel={t('filters')}
+                clearLabel={t('clearFilters')}
+                applyLabel={t('applyFilters')}
+                filters={[
+                    {
+                        type: 'checkbox',
+                        key: 'role',
+                        label: t('roleLabel'),
+                        iconColor: 'text-purple-500',
+                        icon: (
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="w-4 h-4">
+                                <path d="M7 8a3 3 0 100-6 3 3 0 000 6zM14.5 9a2.5 2.5 0 100-5 2.5 2.5 0 000 5zM1.615 16.428a1.224 1.224 0 01-.569-1.175 6.002 6.002 0 0111.908 0c.058.467-.172.92-.57 1.174A9.953 9.953 0 017 18a9.953 9.953 0 01-5.385-1.572zM14.5 16h-.106c.07-.297.088-.611.048-.933a7.47 7.47 0 00-1.588-3.755 4.502 4.502 0 015.874 2.636.818.818 0 01-.36.98A7.465 7.465 0 0114.5 16z" />
+                            </svg>
+                        ),
+                        value: roleFilter,
+                        onChange: setRoleFilter,
+                        options: roles.map(r => ({ value: r.id.toString(), label: r.name })),
+                    },
+                    {
+                        type: 'checkbox',
+                        key: 'minor',
+                        label: t('ageLabel'),
+                        iconColor: 'text-amber-500',
+                        icon: (
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="w-4 h-4">
+                                <path fillRule="evenodd" d="M5.75 2a.75.75 0 01.75.75V4h7V2.75a.75.75 0 011.5 0V4h.25A2.75 2.75 0 0118 6.75v8.5A2.75 2.75 0 0115.25 18H4.75A2.75 2.75 0 012 15.25v-8.5A2.75 2.75 0 014.75 4H5V2.75A.75.75 0 015.75 2zm-1 5.5c-.69 0-1.25.56-1.25 1.25v6.5c0 .69.56 1.25 1.25 1.25h10.5c.69 0 1.25-.56 1.25-1.25v-6.5c0-.69-.56-1.25-1.25-1.25H4.75z" clipRule="evenodd" />
+                            </svg>
+                        ),
+                        value: minorFilter,
+                        onChange: (v) => setMinorFilter(v as '' | 'minor' | 'adult'),
+                        options: [
+                            { value: 'minor', label: t('onlyMinors') },
+                            { value: 'adult', label: t('onlyAdults') },
+                        ],
+                    },
+                ]}
+                actionButton={{
+                    label: t('addUser'),
+                    onClick: () => setShowCreate(true),
+                    icon: <PlusIcon />,
+                }}
+            />
 
             {filteredUsers.length === 0 ? (
                 <p className="text-center text-gray-400 py-10 text-sm">{t('noResults')}</p>
@@ -321,7 +476,7 @@ export default function UserTable({ users }: { users: User[] }) {
                                 </tr>
                             </thead>
                             <tbody className="divide-y divide-gray-50">
-                                {filteredUsers.map((user) => {
+                                {paginatedUsers.map((user) => {
                                     const roleName = user.role?.name ?? t('unknown');
                                     const pillClasses = getRolePillClasses(roleName);
 
@@ -367,7 +522,7 @@ export default function UserTable({ users }: { users: User[] }) {
 
                     {/* Mobile cards */}
                     <div className="lg:hidden space-y-3">
-                        {filteredUsers.map((user) => {
+                        {paginatedUsers.map((user) => {
                             const roleName = user.role?.name ?? t('unknown');
                             const pillClasses = getRolePillClasses(roleName);
 
@@ -420,10 +575,19 @@ export default function UserTable({ users }: { users: User[] }) {
                             );
                         })}
                     </div>
+
+                    <Pagination
+                        page={page}
+                        totalPages={totalPages}
+                        totalItems={filteredUsers.length}
+                        pageSize={PAGE_SIZE}
+                        onPageChange={setPage}
+                    />
                 </>
             )}
 
             {/* Modals */}
+            <CreateUserModal roles={roles} open={showCreate} onClose={() => setShowCreate(false)} onCreated={() => window.location.reload()} />
             <EditModal user={editUser} roles={roles} open={!!editUser} onClose={() => setEditUser(null)} />
             <DeleteModal user={deleteUser} open={!!deleteUser} onClose={() => setDeleteUser(null)} />
         </>

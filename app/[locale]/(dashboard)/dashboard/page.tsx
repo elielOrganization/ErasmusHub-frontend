@@ -5,6 +5,7 @@ import { useApi } from "@/hooks/useApi";
 import { Link } from "@/i18n/routing";
 import { useRoleTheme } from "@/hooks/useRoleTheme";
 import LoadingSpinner from "@/components/ui/LoadingSpinner";
+import DashboardCalendar from "@/components/ui/DashboardCalendar";
 
 function useGreeting() {
     const t = useTranslations("dashboard");
@@ -164,6 +165,12 @@ export default function DashboardHome() {
                         </Link>
                     ))}
                 </div>
+            </div>
+
+            {/* Calendar */}
+            <div>
+                <h2 className="text-lg font-semibold text-gray-800 mb-4">{t("calendar")}</h2>
+                <DashboardCalendar />
             </div>
         </div>
     );

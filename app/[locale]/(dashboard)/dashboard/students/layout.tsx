@@ -1,6 +1,8 @@
 import { cookies } from 'next/headers';
 import { redirect } from 'next/navigation';
+import { getTranslations } from 'next-intl/server';
 import { SERVER_API_URL } from '@/lib/api';
+import AccessDenied from '@/components/ui/AccessDenied';
 
 export default async function StudentsLayout({ children }: { children: React.ReactNode }) {
     const cookieStore = await cookies();
@@ -10,8 +12,7 @@ export default async function StudentsLayout({ children }: { children: React.Rea
         redirect('/login');
     }
 
-    let shouldRedirectLogin = false;
-    let shouldRedirectUnauthorized = false;
+    let allowed = false;
 
     try {
         const response = await fetch(`${SERVER_API_URL}/auth/me`, {
@@ -24,32 +25,32 @@ export default async function StudentsLayout({ children }: { children: React.Rea
         });
 
         if (!response.ok) {
-            shouldRedirectLogin = true;
-        } else {
-            const userData = await response.json();
-
-            const roleName = typeof userData.role === 'string'
-                ? userData.role
-                : userData.role?.name;
-
-            const lower = roleName?.toLowerCase() || '';
-            const isAllowed = lower.includes('admin') || lower.includes('teacher') || lower.includes('profesor');
-
-            if (!isAllowed) {
-                shouldRedirectUnauthorized = true;
-            }
+            redirect('/login');
         }
+
+        const userData = await response.json();
+
+        const roleName = typeof userData.role === 'string'
+            ? userData.role
+            : userData.role?.name;
+
+        const lower = roleName?.toLowerCase() || '';
+        allowed = lower.includes('admin') || lower.includes('teacher') || lower.includes('profesor');
+
     } catch (error) {
         console.error("Students auth validation failed:", error);
-        shouldRedirectLogin = true;
-    }
-
-    if (shouldRedirectLogin) {
         redirect('/login');
     }
 
-    if (shouldRedirectUnauthorized) {
-        redirect('/dashboard/unauthorized');
+    if (!allowed) {
+        const t = await getTranslations('accessDenied');
+        return (
+            <AccessDenied
+                title={t('title')}
+                message={t('message')}
+                backLabel={t('backLabel')}
+            />
+        );
     }
 
     return <>{children}</>;

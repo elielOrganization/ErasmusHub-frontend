@@ -1,6 +1,8 @@
 import { cookies } from 'next/headers';
 import { redirect } from 'next/navigation';
+import { getTranslations } from 'next-intl/server';
 import { SERVER_API_URL } from '@/lib/api';
+import AccessDenied from '@/components/ui/AccessDenied';
 
 export default async function AdminLayout({ children }: { children: React.ReactNode }) {
     const cookieStore = await cookies();
@@ -9,6 +11,8 @@ export default async function AdminLayout({ children }: { children: React.ReactN
     if (!token) {
         redirect('/login');
     }
+
+    let allowed = false;
 
     try {
         const response = await fetch(`${SERVER_API_URL}/auth/me`, {
@@ -30,13 +34,22 @@ export default async function AdminLayout({ children }: { children: React.ReactN
             ? userData.role
             : userData.role?.name;
 
-        if (!roleName || !roleName.toLowerCase().includes('admin')) {
-            redirect('/dashboard/unauthorized');
-        }
+        allowed = !!roleName && roleName.toLowerCase().includes('admin');
 
     } catch (error) {
         console.error("Admin auth validation failed:", error);
         redirect('/login');
+    }
+
+    if (!allowed) {
+        const t = await getTranslations('accessDenied');
+        return (
+            <AccessDenied
+                title={t('title')}
+                message={t('message')}
+                backLabel={t('backLabel')}
+            />
+        );
     }
 
     return <>{children}</>;

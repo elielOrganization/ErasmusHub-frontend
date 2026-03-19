@@ -1,0 +1,9 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npx next build)",
+      "Bash(find \"/c/Users/Marcos/Documents/GitHub/ErasmusHub-frontend/app/[locale]/\\(dashboard\\)/dashboard\" -type f -name \"*.tsx\")",
+      "Bash(ls -R /c/Users/Marcos/Documents/GitHub/ErasmusHub-frontend/app/[locale]/\\\\\\(dashboard\\\\\\)/dashboard/)"
+    ]
+  }
+}

@@ -4,8 +4,13 @@ import { useEffect, useMemo, useState } from 'react';
 import { useTranslations } from 'next-intl';
 import { useAuth } from '@/context/AuthContext';
 import { API_URL } from '@/lib/api';
+import { getCountryFlagUrl } from '@/lib/countryFlags';
+import FilterBar from '@/components/ui/FilterBar';
+import Pagination from '@/components/ui/Pagination';
 import Cookies from 'js-cookie';
 import type { Opportunity } from '@/services/opportunityService';
+
+const PAGE_SIZE = 10;
 
 /* ── Types ─────────────────────────────────────────────────── */
 
@@ -394,42 +399,97 @@ export default function OpportunityTable({ opportunities }: { opportunities: Opp
     const t = useTranslations('opportunitiesDashboard');
     const { user } = useAuth();
     const [searchQuery, setSearchQuery] = useState('');
+    const [statusFilter, setStatusFilter] = useState('');
+    const [countryFilter, setCountryFilter] = useState<string[]>([]);
     const [showCreate, setShowCreate] = useState(false);
     const [editOpp, setEditOpp] = useState<OpportunityWithStudents | null>(null);
+    const [page, setPage] = useState(1);
 
     const roleName = user?.role?.name?.toLowerCase() || '';
     const canManage = roleName.includes('admin') || roleName.includes('teacher') || roleName.includes('profesor');
 
+    const countries = useMemo(() => {
+        const set = new Set<string>();
+        for (const o of opportunities) {
+            if (o.country) set.add(o.country);
+        }
+        return Array.from(set).sort();
+    }, [opportunities]);
+
     const filtered = useMemo(() => {
-        if (!searchQuery.trim()) return opportunities;
-        const q = searchQuery.toLowerCase();
-        return opportunities.filter(o =>
-            o.name.toLowerCase().includes(q) ||
-            (o.country || '').toLowerCase().includes(q) ||
-            (o.city || '').toLowerCase().includes(q)
-        );
-    }, [opportunities, searchQuery]);
+        setPage(1);
+        return opportunities.filter(o => {
+            if (searchQuery.trim()) {
+                const q = searchQuery.toLowerCase();
+                if (!o.name.toLowerCase().includes(q) &&
+                    !(o.country || '').toLowerCase().includes(q) &&
+                    !(o.city || '').toLowerCase().includes(q)) {
+                    return false;
+                }
+            }
+            if (statusFilter && o.status !== statusFilter) return false;
+            if (countryFilter.length > 0 && (!o.country || !countryFilter.includes(o.country))) return false;
+            return true;
+        });
+    }, [opportunities, searchQuery, statusFilter, countryFilter]);
+
+    const totalPages = Math.ceil(filtered.length / PAGE_SIZE);
+    const paginatedOpps = filtered.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
 
     return (
         <>
-            {/* Toolbar */}
-            <div className="flex flex-wrap items-center gap-3 mb-5">
-                <div className="relative flex-1 min-w-[200px] max-w-xs">
-                    <svg className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                    </svg>
-                    <input type="text" value={searchQuery} onChange={e => setSearchQuery(e.target.value)}
-                        placeholder={t('searchPlaceholder')}
-                        className="w-full rounded-xl border border-gray-200 bg-white pl-9 pr-3 py-2 text-sm text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-200 focus:border-blue-400 transition-colors" />
-                </div>
-                {canManage && (
-                    <button onClick={() => setShowCreate(true)}
-                        className="flex items-center gap-1.5 px-4 py-2 rounded-xl text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 transition-colors cursor-pointer">
-                        <PlusIcon />
-                        {t('addOpportunity')}
-                    </button>
-                )}
-            </div>
+            <FilterBar
+                searchValue={searchQuery}
+                onSearchChange={setSearchQuery}
+                searchPlaceholder={t('searchPlaceholder')}
+                filterLabel={t('filters')}
+                clearLabel={t('clearFilters')}
+                applyLabel={t('applyFilters')}
+                filters={[
+                    {
+                        type: 'checkbox',
+                        key: 'status',
+                        label: t('statusLabel'),
+                        iconColor: 'text-emerald-500',
+                        icon: (
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="w-4 h-4">
+                                <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.857-9.809a.75.75 0 00-1.214-.882l-3.483 4.79-1.88-1.88a.75.75 0 10-1.06 1.061l2.5 2.5a.75.75 0 001.137-.089l4-5.5z" clipRule="evenodd" />
+                            </svg>
+                        ),
+                        value: statusFilter,
+                        onChange: setStatusFilter,
+                        options: [
+                            { value: 'open', label: t('open') },
+                            { value: 'closed', label: t('closed') },
+                        ],
+                    },
+                    {
+                        type: 'pills',
+                        key: 'country',
+                        label: t('country'),
+                        iconColor: 'text-blue-500',
+                        icon: (
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="w-4 h-4">
+                                <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-1.5 0a6.5 6.5 0 11-11-4.69v.001a6.489 6.489 0 003.995 2.127.75.75 0 01.654.741v.674c0 .37.27.688.636.74a6.547 6.547 0 001.43 0 .751.751 0 01.636-.74v-.674a.75.75 0 01.654-.741A6.489 6.489 0 0016.5 5.312 6.5 6.5 0 0116.5 10z" clipRule="evenodd" />
+                            </svg>
+                        ),
+                        value: countryFilter,
+                        onChange: setCountryFilter,
+                        options: countries.map(c => ({
+                            value: c,
+                            label: c,
+                            icon: getCountryFlagUrl(c) ? (
+                                <img src={getCountryFlagUrl(c)!} alt="" className="w-4 h-auto rounded-sm" />
+                            ) : undefined,
+                        })),
+                    },
+                ]}
+                actionButton={canManage ? {
+                    label: t('addOpportunity'),
+                    onClick: () => setShowCreate(true),
+                    icon: <PlusIcon />,
+                } : undefined}
+            />
 
             {filtered.length === 0 ? (
                 <p className="text-center text-gray-400 py-10 text-sm">{t('noResults')}</p>
@@ -440,26 +500,39 @@ export default function OpportunityTable({ opportunities }: { opportunities: Opp
                         <table className="w-full text-left">
                             <thead>
                                 <tr className="border-b border-gray-100 text-gray-400 text-sm">
-                                    <th className="pb-4 font-medium">{t('name')}</th>
-                                    <th className="pb-4 font-medium">{t('country')}</th>
-                                    <th className="pb-4 font-medium">{t('status')}</th>
-                                    <th className="pb-4 font-medium">{t('slots')}</th>
-                                    <th className="pb-4 font-medium">{t('startDate')}</th>
+                                    <th className="pb-4 pr-6 font-medium">{t('name')}</th>
+                                    <th className="pb-4 pr-6 font-medium">{t('country')}</th>
+                                    <th className="pb-4 pr-6 font-medium">{t('status')}</th>
+                                    <th className="pb-4 pr-6 font-medium">{t('slots')}</th>
+                                    <th className="pb-4 pr-6 font-medium">{t('startDate')}</th>
                                     <th className="pb-4 font-medium">{t('assignedStudents')}</th>
                                     {canManage && <th className="pb-4 font-medium w-20" />}
                                 </tr>
                             </thead>
                             <tbody className="divide-y divide-gray-50">
-                                {filtered.map(opp => (
+                                {paginatedOpps.map(opp => (
                                     <tr key={opp.id} className="group hover:bg-gray-50/80 transition-colors">
-                                        <td className="py-4">
+                                        <td className="py-4 pr-6">
                                             <p className="font-medium text-gray-700">{opp.name}</p>
                                             {opp.city && <p className="text-xs text-gray-400">{opp.city}</p>}
                                         </td>
-                                        <td className="py-4 text-gray-500 text-sm">{opp.country || '—'}</td>
-                                        <td className="py-4"><StatusPill status={opp.status} t={t} /></td>
-                                        <td className="py-4"><SlotsBar filled={opp.filled_slots} max={opp.max_slots} /></td>
-                                        <td className="py-4 text-gray-500 text-sm">
+                                        <td className="py-4 pr-6 text-gray-500 text-sm">
+                                            {opp.country ? (
+                                                <span className="inline-flex items-center gap-1.5">
+                                                    {getCountryFlagUrl(opp.country) && (
+                                                        <img
+                                                            src={getCountryFlagUrl(opp.country)!}
+                                                            alt=""
+                                                            className="w-5 h-auto rounded-sm shrink-0"
+                                                        />
+                                                    )}
+                                                    {opp.country}
+                                                </span>
+                                            ) : '—'}
+                                        </td>
+                                        <td className="py-4 pr-6"><StatusPill status={opp.status} t={t} /></td>
+                                        <td className="py-4 pr-6"><SlotsBar filled={opp.filled_slots} max={opp.max_slots} /></td>
+                                        <td className="py-4 pr-6 text-gray-500 text-sm">
                                             {opp.start_date ? new Date(opp.start_date).toLocaleDateString() : '—'}
                                         </td>
                                         <td className="py-4"><StudentPills students={opp.students} t={t} /></td>
@@ -486,12 +559,19 @@ export default function OpportunityTable({ opportunities }: { opportunities: Opp
 
                     {/* Mobile cards */}
                     <div className="lg:hidden space-y-3">
-                        {filtered.map(opp => (
+                        {paginatedOpps.map(opp => (
                             <div key={opp.id} className="rounded-2xl border border-gray-100 p-4 space-y-3">
                                 <div className="flex items-start justify-between gap-2">
                                     <div>
                                         <p className="font-semibold text-gray-800">{opp.name}</p>
-                                        <p className="text-xs text-gray-400">
+                                        <p className="text-xs text-gray-400 inline-flex items-center gap-1.5">
+                                            {opp.country && getCountryFlagUrl(opp.country) && (
+                                                <img
+                                                    src={getCountryFlagUrl(opp.country)!}
+                                                    alt=""
+                                                    className="w-4 h-auto rounded-sm shrink-0"
+                                                />
+                                            )}
                                             {[opp.city, opp.country].filter(Boolean).join(', ') || '—'}
                                         </p>
                                     </div>
@@ -523,6 +603,14 @@ export default function OpportunityTable({ opportunities }: { opportunities: Opp
                             </div>
                         ))}
                     </div>
+
+                    <Pagination
+                        page={page}
+                        totalPages={totalPages}
+                        totalItems={filtered.length}
+                        pageSize={PAGE_SIZE}
+                        onPageChange={setPage}
+                    />
                 </>
             )}
 

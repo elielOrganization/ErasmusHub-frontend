@@ -87,6 +87,8 @@
     "welcomeBack": "{greeting}, {name}",
     "welcomeSubtitle": "Here's a summary of your activity on ErasmusHub.",
     "quickActions": "Quick actions",
+    "calendar": "Calendar",
+    "calendarToday": "Today",
     "myInternships": "My Internships",
     "myInternshipsDesc": "View and manage your active internships",
     "myTasks": "My Tasks",
@@ -197,8 +199,10 @@
     "show": "Show",
     "records": "records",
     "search": "Search:",
+    "first": "First",
     "previous": "Previous",
     "next": "Next",
+    "last": "Last",
     "noResults": "No data available in this table",
     "showing": "Showing {from} to {to} of {total} records"
   },
@@ -251,7 +255,24 @@
     "filterByMinor": "All users",
     "onlyMinors": "Minors only",
     "onlyAdults": "Adults only",
-    "noResults": "No users match the selected filters."
+    "noResults": "No users match the selected filters.",
+    "searchPlaceholder": "Search user...",
+    "addUser": "New User",
+    "addTitle": "Create User",
+    "createSuccess": "User created successfully",
+    "createError": "Error creating user",
+    "creating": "Creating...",
+    "fieldEmail": "Email",
+    "fieldEmailPlaceholder": "E.g.: user@email.com",
+    "fieldPhone": "Phone",
+    "fieldPhonePlaceholder": "E.g.: +34 600 000 000",
+    "fieldRole": "Role",
+    "selectRolePlaceholder": "Select a role",
+    "filters": "Filters",
+    "clearFilters": "Clear filters",
+    "applyFilters": "Apply filters",
+    "roleLabel": "Role",
+    "ageLabel": "Age"
   },
 
   "opportunitiesDashboard": {
@@ -295,7 +316,13 @@
     "editError": "Error updating opportunity",
     "open": "Open",
     "closed": "Closed",
-    "searchPlaceholder": "Search opportunity..."
+    "searchPlaceholder": "Search opportunity...",
+    "filterByStatus": "All statuses",
+    "filterByCountry": "All countries",
+    "filters": "Filters",
+    "clearFilters": "Clear filters",
+    "applyFilters": "Apply filters",
+    "statusLabel": "Status"
   },
 
   "studentsDashboard": {
@@ -337,5 +364,11 @@
     "errorDescription": "An unexpected error occurred. Please try again.",
     "errorRetry": "Try again",
     "errorGoHome": "Go home"
+  },
+
+  "accessDenied": {
+    "title": "Access Denied",
+    "message": "You don't have permission to view this page. If you believe this is an error, please contact your administrator.",
+    "backLabel": "Back to dashboard"
   }
 }
