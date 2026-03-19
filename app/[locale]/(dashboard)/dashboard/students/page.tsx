@@ -2,6 +2,7 @@ import { cookies } from 'next/headers';
 import { redirect } from 'next/navigation';
 import { getTranslations } from 'next-intl/server';
 import { fetchUsersServer } from '@/services/userService';
+import { fetchOpportunitiesServer } from '@/services/opportunityService';
 import StudentTable from '@/components/students/StudentTable';
 
 export default async function StudentsPage({ params }: { params: Promise<{ locale: string }> }) {
@@ -14,7 +15,10 @@ export default async function StudentsPage({ params }: { params: Promise<{ local
     }
 
     const t = await getTranslations('studentsDashboard');
-    const users = await fetchUsersServer(token);
+    const [users, opportunities] = await Promise.all([
+        fetchUsersServer(token),
+        fetchOpportunitiesServer(token),
+    ]);
 
     // Count eligible students (adults with Student role, excluding lector)
     const eligibleStudents = users.filter(u => {
@@ -47,7 +51,7 @@ export default async function StudentsPage({ params }: { params: Promise<{ local
                     </span>
                 </div>
 
-                <StudentTable users={users} />
+                <StudentTable users={users} opportunities={opportunities} />
             </div>
         </div>
     );

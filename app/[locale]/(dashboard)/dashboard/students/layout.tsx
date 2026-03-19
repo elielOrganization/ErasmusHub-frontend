@@ -10,6 +10,9 @@ export default async function StudentsLayout({ children }: { children: React.Rea
         redirect('/login');
     }
 
+    let shouldRedirectLogin = false;
+    let shouldRedirectUnauthorized = false;
+
     try {
         const response = await fetch(`${SERVER_API_URL}/auth/me`, {
             method: 'GET',
@@ -21,25 +24,32 @@ export default async function StudentsLayout({ children }: { children: React.Rea
         });
 
         if (!response.ok) {
-            redirect('/login');
+            shouldRedirectLogin = true;
+        } else {
+            const userData = await response.json();
+
+            const roleName = typeof userData.role === 'string'
+                ? userData.role
+                : userData.role?.name;
+
+            const lower = roleName?.toLowerCase() || '';
+            const isAllowed = lower.includes('admin') || lower.includes('teacher') || lower.includes('profesor');
+
+            if (!isAllowed) {
+                shouldRedirectUnauthorized = true;
+            }
         }
-
-        const userData = await response.json();
-
-        const roleName = typeof userData.role === 'string'
-            ? userData.role
-            : userData.role?.name;
-
-        const lower = roleName?.toLowerCase() || '';
-        const isAllowed = lower.includes('admin') || lower.includes('teacher') || lower.includes('profesor');
-
-        if (!isAllowed) {
-            redirect('/dashboard/unauthorized');
-        }
-
     } catch (error) {
         console.error("Students auth validation failed:", error);
+        shouldRedirectLogin = true;
+    }
+
+    if (shouldRedirectLogin) {
         redirect('/login');
+    }
+
+    if (shouldRedirectUnauthorized) {
+        redirect('/dashboard/unauthorized');
     }
 
     return <>{children}</>;

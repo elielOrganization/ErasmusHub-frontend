@@ -2,7 +2,10 @@
 
 import { useMemo, useState } from 'react';
 import { useTranslations } from 'next-intl';
+import Cookies from 'js-cookie';
+import { API_URL } from '@/lib/api';
 import type { User } from '@/services/userService';
+import type { Opportunity } from '@/services/opportunityService';
 
 /* ── Icon helpers ──────────────────────────────────────────── */
 
@@ -14,36 +17,54 @@ function ChevronDownIcon() {
     );
 }
 
-/* ── Styled select ─────────────────────────────────────────── */
-
-function StyledSelect({ value, onChange, children, className = '' }: {
-    value: string;
-    onChange: (v: string) => void;
-    children: React.ReactNode;
-    className?: string;
-}) {
-    return (
-        <div className={`relative ${className}`}>
-            <select
-                value={value}
-                onChange={(e) => onChange(e.target.value)}
-                className="w-full appearance-none rounded-xl border border-gray-200 bg-white px-3 py-2 pr-8 text-sm text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-200 focus:border-blue-400 transition-colors cursor-pointer"
-            >
-                {children}
-            </select>
-            <div className="absolute inset-y-0 right-2 flex items-center text-gray-400">
-                <ChevronDownIcon />
-            </div>
-        </div>
-    );
-}
-
 /* ── Assign modal ──────────────────────────────────────────── */
 
-function AssignModal({ student, open, onClose }: { student: User | null; open: boolean; onClose: () => void }) {
+function AssignModal({ student, open, onClose, opportunities }: {
+    student: User | null;
+    open: boolean;
+    onClose: () => void;
+    opportunities: Opportunity[];
+}) {
     const t = useTranslations('studentsDashboard');
+    const [selectedOpp, setSelectedOpp] = useState('');
+    const [assigning, setAssigning] = useState(false);
+    const [successMsg, setSuccessMsg] = useState('');
+    const [errorMsg, setErrorMsg] = useState('');
+
+    const handleAssign = async () => {
+        if (!selectedOpp || !student) return;
+        setAssigning(true);
+        setErrorMsg('');
+        try {
+            const token = Cookies.get('auth_token');
+            const res = await fetch(`${API_URL}/applications/`, {
+                method: 'POST',
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    opportunity_id: parseInt(selectedOpp),
+                    user_id: student.id,
+                }),
+            });
+            if (res.ok) {
+                setSuccessMsg(t('assignSuccess'));
+                setTimeout(() => onClose(), 1500);
+            } else {
+                const err = await res.json().catch(() => null);
+                setErrorMsg(err?.detail || t('assignError'));
+            }
+        } catch {
+            setErrorMsg(t('assignError'));
+        } finally {
+            setAssigning(false);
+        }
+    };
 
     if (!open || !student) return null;
+
+    const openOpportunities = opportunities.filter(o => o.status === 'open');
 
     return (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
@@ -65,22 +86,44 @@ function AssignModal({ student, open, onClose }: { student: User | null; open: b
                     <p className="text-xs text-blue-500">{student.email}</p>
                 </div>
 
-                <p className="text-sm text-gray-500">{t('assignDescription')}</p>
-
                 <div>
                     <label className="block text-xs font-medium text-gray-500 mb-1">{t('selectOpportunity')}</label>
-                    <div className="relative">
-                        <select
-                            disabled
-                            className="w-full appearance-none rounded-xl border border-gray-200 bg-gray-50 px-3 py-2 pr-8 text-sm text-gray-400 cursor-not-allowed"
-                        >
-                            <option>{t('noOpportunitiesYet')}</option>
-                        </select>
-                        <div className="absolute inset-y-0 right-2 flex items-center text-gray-300">
-                            <ChevronDownIcon />
+                    {openOpportunities.length === 0 ? (
+                        <div className="rounded-xl border border-gray-200 bg-gray-50 px-3 py-2 text-sm text-gray-400">
+                            {t('noOpportunitiesYet')}
                         </div>
-                    </div>
+                    ) : (
+                        <div className="relative">
+                            <select
+                                value={selectedOpp}
+                                onChange={(e) => setSelectedOpp(e.target.value)}
+                                className="w-full appearance-none rounded-xl border border-gray-200 bg-white px-3 py-2 pr-8 text-sm text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-200 focus:border-blue-400 transition-colors cursor-pointer"
+                            >
+                                <option value="">{t('selectOpportunityPlaceholder')}</option>
+                                {openOpportunities.map((opp) => (
+                                    <option key={opp.id} value={opp.id.toString()}>
+                                        {opp.name}{opp.city ? ` — ${opp.city}` : ''}{opp.country ? `, ${opp.country}` : ''}
+                                    </option>
+                                ))}
+                            </select>
+                            <div className="absolute inset-y-0 right-2 flex items-center text-gray-400">
+                                <ChevronDownIcon />
+                            </div>
+                        </div>
+                    )}
                 </div>
+
+                {successMsg && (
+                    <div className="rounded-xl bg-emerald-50 border border-emerald-100 p-3 text-sm text-emerald-700 font-medium">
+                        {successMsg}
+                    </div>
+                )}
+
+                {errorMsg && (
+                    <div className="rounded-xl bg-red-50 border border-red-100 p-3 text-sm text-red-700 font-medium">
+                        {errorMsg}
+                    </div>
+                )}
 
                 <div className="flex justify-end gap-2 pt-2">
                     <button
@@ -90,10 +133,15 @@ function AssignModal({ student, open, onClose }: { student: User | null; open: b
                         {t('cancel')}
                     </button>
                     <button
-                        disabled
-                        className="px-4 py-2 rounded-xl text-sm font-medium text-white bg-blue-400 cursor-not-allowed opacity-60"
+                        onClick={handleAssign}
+                        disabled={!selectedOpp || assigning || openOpportunities.length === 0}
+                        className={`px-4 py-2 rounded-xl text-sm font-medium text-white transition-colors ${
+                            !selectedOpp || assigning || openOpportunities.length === 0
+                                ? 'bg-blue-400 cursor-not-allowed opacity-60'
+                                : 'bg-blue-600 hover:bg-blue-700 cursor-pointer'
+                        }`}
                     >
-                        {t('assign')}
+                        {assigning ? t('assigning') : t('assign')}
                     </button>
                 </div>
             </div>
@@ -103,7 +151,7 @@ function AssignModal({ student, open, onClose }: { student: User | null; open: b
 
 /* ── Main component ────────────────────────────────────────── */
 
-export default function StudentTable({ users }: { users: User[] }) {
+export default function StudentTable({ users, opportunities }: { users: User[]; opportunities: Opportunity[] }) {
     const t = useTranslations('studentsDashboard');
     const [assignStudent, setAssignStudent] = useState<User | null>(null);
     const [searchQuery, setSearchQuery] = useState('');
@@ -241,7 +289,12 @@ export default function StudentTable({ users }: { users: User[] }) {
             )}
 
             {/* Assign modal */}
-            <AssignModal student={assignStudent} open={!!assignStudent} onClose={() => setAssignStudent(null)} />
+            <AssignModal
+                student={assignStudent}
+                open={!!assignStudent}
+                onClose={() => setAssignStudent(null)}
+                opportunities={opportunities}
+            />
         </>
     );
 }
