@@ -4,6 +4,7 @@ import { getTranslations } from 'next-intl/server';
 import { fetchUsersServer } from '@/services/userService';
 import { fetchOpportunitiesServer } from '@/services/opportunityService';
 import StudentTable from '@/components/students/StudentTable';
+import StatCards from '@/components/ui/StatCards';
 
 export default async function StudentsPage({ params }: { params: Promise<{ locale: string }> }) {
     const { locale } = await params;
@@ -28,19 +29,19 @@ export default async function StudentsPage({ params }: { params: Promise<{ local
 
     return (
         <div className="space-y-6">
-            {/* Stats cards */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div className="bg-white rounded-2xl p-6 border border-gray-100 shadow-sm">
-                    <p className="text-sm text-gray-400 font-medium">{t('eligibleStudents')}</p>
-                    <p className="text-3xl font-bold text-emerald-600 mt-1">{eligibleStudents.length}</p>
-                </div>
-                <div className="bg-white rounded-2xl p-6 border border-gray-100 shadow-sm">
-                    <p className="text-sm text-gray-400 font-medium">{t('totalStudents')}</p>
-                    <p className="text-3xl font-bold text-gray-800 mt-1">
-                        {users.filter(u => u.role?.name?.toLowerCase().includes('student')).length}
-                    </p>
-                </div>
-            </div>
+            <StatCards items={[
+                {
+                    label: t('eligibleStudents'),
+                    value: eligibleStudents.length,
+                    color: 'text-emerald-600',
+                    icon: <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="w-5 h-5"><path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.857-9.809a.75.75 0 00-1.214-.882l-3.483 4.79-1.88-1.88a.75.75 0 10-1.06 1.061l2.5 2.5a.75.75 0 001.137-.089l4-5.5z" clipRule="evenodd" /></svg>,
+                },
+                {
+                    label: t('totalStudents'),
+                    value: users.filter(u => u.role?.name?.toLowerCase().includes('student')).length,
+                    icon: <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="w-5 h-5"><path d="M10 9a3 3 0 100-6 3 3 0 000 6zM6 8a2 2 0 11-4 0 2 2 0 014 0zM1.49 15.326a.78.78 0 01-.358-.442 3 3 0 014.308-3.516 6.484 6.484 0 00-1.905 3.959c-.023.222-.014.442.025.654a4.97 4.97 0 01-2.07-.655zM16.44 15.98a4.97 4.97 0 002.07-.654.78.78 0 00.357-.442 3 3 0 00-4.308-3.517 6.484 6.484 0 011.907 3.96 2.32 2.32 0 01-.026.654zM18 8a2 2 0 11-4 0 2 2 0 014 0zM5.304 16.19a.844.844 0 01-.277-.71 5 5 0 019.947 0 .843.843 0 01-.277.71A6.975 6.975 0 0110 18a6.975 6.975 0 01-4.696-1.81z" /></svg>,
+                },
+            ]} />
 
             {/* Students section */}
             <div className="bg-white rounded-3xl p-4 sm:p-8 border border-gray-100 shadow-sm">

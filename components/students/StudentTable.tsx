@@ -4,8 +4,12 @@ import { useMemo, useState } from 'react';
 import { useTranslations } from 'next-intl';
 import Cookies from 'js-cookie';
 import { API_URL } from '@/lib/api';
+import FilterBar from '@/components/ui/FilterBar';
+import Pagination from '@/components/ui/Pagination';
 import type { User } from '@/services/userService';
 import type { Opportunity } from '@/services/opportunityService';
+
+const PAGE_SIZE = 10;
 
 /* ── Icon helpers ──────────────────────────────────────────── */
 
@@ -155,6 +159,7 @@ export default function StudentTable({ users, opportunities }: { users: User[]; 
     const t = useTranslations('studentsDashboard');
     const [assignStudent, setAssignStudent] = useState<User | null>(null);
     const [searchQuery, setSearchQuery] = useState('');
+    const [page, setPage] = useState(1);
 
     // Filter: only students, adults (not minors), and role is not "lector"
     const students = useMemo(() => {
@@ -169,6 +174,7 @@ export default function StudentTable({ users, opportunities }: { users: User[]; 
 
     // Search filter
     const filteredStudents = useMemo(() => {
+        setPage(1);
         if (!searchQuery.trim()) return students;
         const q = searchQuery.toLowerCase();
         return students.filter((s) =>
@@ -177,23 +183,16 @@ export default function StudentTable({ users, opportunities }: { users: User[]; 
         );
     }, [students, searchQuery]);
 
+    const totalPages = Math.ceil(filteredStudents.length / PAGE_SIZE);
+    const paginatedStudents = filteredStudents.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
+
     return (
         <>
-            {/* Search */}
-            <div className="flex flex-wrap gap-3 mb-5">
-                <div className="relative w-full sm:w-64">
-                    <svg className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                    </svg>
-                    <input
-                        type="text"
-                        value={searchQuery}
-                        onChange={(e) => setSearchQuery(e.target.value)}
-                        placeholder={t('searchPlaceholder')}
-                        className="w-full rounded-xl border border-gray-200 bg-white pl-9 pr-3 py-2 text-sm text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-200 focus:border-blue-400 transition-colors"
-                    />
-                </div>
-            </div>
+            <FilterBar
+                searchValue={searchQuery}
+                onSearchChange={setSearchQuery}
+                searchPlaceholder={t('searchPlaceholder')}
+            />
 
             {filteredStudents.length === 0 ? (
                 <p className="text-center text-gray-400 py-10 text-sm">{t('noResults')}</p>
@@ -213,7 +212,7 @@ export default function StudentTable({ users, opportunities }: { users: User[]; 
                                 </tr>
                             </thead>
                             <tbody className="divide-y divide-gray-50">
-                                {filteredStudents.map((student) => (
+                                {paginatedStudents.map((student) => (
                                     <tr key={student.id} className="group hover:bg-gray-50/80 transition-colors">
                                         <td className="py-4 font-medium text-gray-700">
                                             {student.first_name} {student.last_name}
@@ -242,7 +241,7 @@ export default function StudentTable({ users, opportunities }: { users: User[]; 
 
                     {/* Mobile cards */}
                     <div className="lg:hidden space-y-3">
-                        {filteredStudents.map((student) => (
+                        {paginatedStudents.map((student) => (
                             <div key={student.id} className="rounded-2xl border border-gray-100 p-4 space-y-3">
                                 <div className="flex items-center justify-between">
                                     <p className="font-semibold text-gray-800">
@@ -285,6 +284,14 @@ export default function StudentTable({ users, opportunities }: { users: User[]; 
                             </div>
                         ))}
                     </div>
+
+                    <Pagination
+                        page={page}
+                        totalPages={totalPages}
+                        totalItems={filteredStudents.length}
+                        pageSize={PAGE_SIZE}
+                        onPageChange={setPage}
+                    />
                 </>
             )}
 

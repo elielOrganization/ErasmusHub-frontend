@@ -87,6 +87,8 @@
     "welcomeBack": "{greeting}, {name}",
     "welcomeSubtitle": "Zde je přehled vaší aktivity na ErasmusHub.",
     "quickActions": "Rychlé akce",
+    "calendar": "Kalendář",
+    "calendarToday": "Dnes",
     "myInternships": "Mé praxe",
     "myInternshipsDesc": "Zobrazit a spravovat vaše aktivní praxe",
     "myTasks": "Mé úkoly",
@@ -197,8 +199,10 @@
     "show": "Zobrazit",
     "records": "záznamů",
     "search": "Hledat:",
+    "first": "První",
     "previous": "Předchozí",
     "next": "Další",
+    "last": "Poslední",
     "noResults": "V této tabulce nejsou k dispozici žádná data",
     "showing": "Zobrazeno {from} až {to} z {total} záznamů"
   },
@@ -251,7 +255,24 @@
     "filterByMinor": "Všichni uživatelé",
     "onlyMinors": "Pouze nezletilí",
     "onlyAdults": "Pouze dospělí",
-    "noResults": "Žádní uživatelé neodpovídají vybraným filtrům."
+    "noResults": "Žádní uživatelé neodpovídají vybraným filtrům.",
+    "searchPlaceholder": "Hledat uživatele...",
+    "addUser": "Nový uživatel",
+    "addTitle": "Vytvořit uživatele",
+    "createSuccess": "Uživatel úspěšně vytvořen",
+    "createError": "Chyba při vytváření uživatele",
+    "creating": "Vytváření...",
+    "fieldEmail": "E-mail",
+    "fieldEmailPlaceholder": "Např.: uzivatel@email.com",
+    "fieldPhone": "Telefon",
+    "fieldPhonePlaceholder": "Např.: +420 600 000 000",
+    "fieldRole": "Role",
+    "selectRolePlaceholder": "Vyberte roli",
+    "filters": "Filtry",
+    "clearFilters": "Vymazat filtry",
+    "applyFilters": "Použít filtry",
+    "roleLabel": "Role",
+    "ageLabel": "Věk"
   },
 
   "opportunitiesDashboard": {
@@ -295,7 +316,13 @@
     "editError": "Chyba při aktualizaci příležitosti",
     "open": "Otevřená",
     "closed": "Zavřená",
-    "searchPlaceholder": "Hledat příležitost..."
+    "searchPlaceholder": "Hledat příležitost...",
+    "filterByStatus": "Všechny stavy",
+    "filterByCountry": "Všechny země",
+    "filters": "Filtry",
+    "clearFilters": "Vymazat filtry",
+    "applyFilters": "Použít filtry",
+    "statusLabel": "Stav"
   },
 
   "studentsDashboard": {
@@ -337,5 +364,11 @@
     "errorDescription": "Došlo k neočekávané chybě. Zkuste to prosím znovu.",
     "errorRetry": "Zkusit znovu",
     "errorGoHome": "Na úvod"
+  },
+
+  "accessDenied": {
+    "title": "Přístup odepřen",
+    "message": "Nemáte oprávnění k zobrazení této stránky. Pokud si myslíte, že jde o chybu, kontaktujte svého administrátora.",
+    "backLabel": "Zpět na hlavní panel"
   }
 }
