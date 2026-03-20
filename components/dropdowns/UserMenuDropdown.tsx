@@ -4,10 +4,12 @@ import { useTranslations } from "next-intl";
 import { useRouter } from "@/i18n/routing";
 import { useAuth } from "@/context/AuthContext";
 import { useRoleTheme } from "@/hooks/useRoleTheme";
+import { translateRole } from "@/lib/translateRole";
 
 export default function UserMenuDropdown() {
     const [isOpen, setIsOpen] = useState(false);
     const t = useTranslations("dashboard");
+    const tRoles = useTranslations("roles");
     const router = useRouter();
     const menuRef = useRef<HTMLDivElement>(null);
 
@@ -63,7 +65,7 @@ export default function UserMenuDropdown() {
                         </p>
                         <p className="text-xs text-gray-400 text-center">{user?.email}</p>
                         <p className="text-xs text-gray-500 mt-1">
-                            {user?.role?.name || 'Sin rol'}
+                            {translateRole(user?.role?.name, tRoles)}
                         </p>
                     </div>
 

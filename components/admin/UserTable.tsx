@@ -6,6 +6,8 @@ import Cookies from 'js-cookie';
 import { API_URL } from '@/lib/api';
 import FilterBar from '@/components/ui/FilterBar';
 import Pagination from '@/components/ui/Pagination';
+import { useRoleTheme } from '@/hooks/useRoleTheme';
+import { translateRole } from '@/lib/translateRole';
 import type { User, Role } from '@/services/userService';
 
 const PAGE_SIZE = 10;
@@ -72,11 +74,12 @@ function Modal({ open, onClose, children }: { open: boolean; onClose: () => void
 /* ── Action buttons ─────────────────────────────────────────── */
 
 function ActionButtons({ onEdit, onDelete }: { onEdit: () => void; onDelete: () => void }) {
+    const theme = useRoleTheme();
     return (
         <div className="flex items-center gap-1">
             <button
                 onClick={onEdit}
-                className="p-1.5 rounded-lg text-gray-400 hover:text-purple-600 hover:bg-purple-50 transition-colors cursor-pointer"
+                className={`p-1.5 rounded-lg text-gray-400 ${theme.hoverText} ${theme.hoverBg} transition-colors cursor-pointer`}
             >
                 <PencilIcon />
             </button>
@@ -102,6 +105,8 @@ function PlusIcon() {
 
 function CreateUserModal({ roles, open, onClose, onCreated }: { roles: Role[]; open: boolean; onClose: () => void; onCreated: () => void }) {
     const t = useTranslations('adminDashboard');
+    const tRoles = useTranslations('roles');
+    const theme = useRoleTheme();
     const [form, setForm] = useState({
         first_name: '', last_name: '', email: '', phone: '', role_id: '',
     });
@@ -161,35 +166,35 @@ function CreateUserModal({ roles, open, onClose, onCreated }: { roles: Role[]; o
                     <div>
                         <label className="block text-xs font-medium text-gray-500 mb-1">{t('firstName')}</label>
                         <input type="text" value={form.first_name} onChange={e => updateField('first_name', e.target.value)}
-                            className="w-full rounded-xl border border-gray-200 px-3 py-2 text-sm text-gray-700 focus:outline-none focus:ring-2 focus:ring-purple-200 focus:border-purple-400 transition-colors" />
+                            className={`w-full rounded-xl border border-gray-200 px-3 py-2 text-sm text-gray-700 focus:outline-none focus:ring-2 ${theme.focusRing} transition-colors`} />
                     </div>
                     <div>
                         <label className="block text-xs font-medium text-gray-500 mb-1">{t('lastName')}</label>
                         <input type="text" value={form.last_name} onChange={e => updateField('last_name', e.target.value)}
-                            className="w-full rounded-xl border border-gray-200 px-3 py-2 text-sm text-gray-700 focus:outline-none focus:ring-2 focus:ring-purple-200 focus:border-purple-400 transition-colors" />
+                            className={`w-full rounded-xl border border-gray-200 px-3 py-2 text-sm text-gray-700 focus:outline-none focus:ring-2 ${theme.focusRing} transition-colors`} />
                     </div>
                 </div>
                 <div>
                     <label className="block text-xs font-medium text-gray-500 mb-1">{t('fieldEmail')}</label>
                     <input type="email" value={form.email} onChange={e => updateField('email', e.target.value)}
                         placeholder={t('fieldEmailPlaceholder')}
-                        className="w-full rounded-xl border border-gray-200 px-3 py-2 text-sm text-gray-700 focus:outline-none focus:ring-2 focus:ring-purple-200 focus:border-purple-400 transition-colors" />
+                        className={`w-full rounded-xl border border-gray-200 px-3 py-2 text-sm text-gray-700 focus:outline-none focus:ring-2 ${theme.focusRing} transition-colors`} />
                 </div>
                 <div className="grid grid-cols-2 gap-3">
                     <div>
                         <label className="block text-xs font-medium text-gray-500 mb-1">{t('fieldPhone')}</label>
                         <input type="tel" value={form.phone} onChange={e => updateField('phone', e.target.value)}
                             placeholder={t('fieldPhonePlaceholder')}
-                            className="w-full rounded-xl border border-gray-200 px-3 py-2 text-sm text-gray-700 focus:outline-none focus:ring-2 focus:ring-purple-200 focus:border-purple-400 transition-colors" />
+                            className={`w-full rounded-xl border border-gray-200 px-3 py-2 text-sm text-gray-700 focus:outline-none focus:ring-2 ${theme.focusRing} transition-colors`} />
                     </div>
                     <div>
                         <label className="block text-xs font-medium text-gray-500 mb-1">{t('fieldRole')}</label>
                         <div className="relative">
                             <select value={form.role_id} onChange={e => updateField('role_id', e.target.value)}
-                                className="w-full appearance-none rounded-xl border border-gray-200 bg-white px-3 py-2 pr-8 text-sm text-gray-700 focus:outline-none focus:ring-2 focus:ring-purple-200 focus:border-purple-400 transition-colors cursor-pointer">
+                                className={`w-full appearance-none rounded-xl border border-gray-200 bg-white px-3 py-2 pr-8 text-sm text-gray-700 focus:outline-none focus:ring-2 ${theme.focusRing} transition-colors cursor-pointer`}>
                                 <option value="">{t('selectRolePlaceholder')}</option>
                                 {roles.map((role) => (
-                                    <option key={role.id} value={role.id.toString()}>{role.name}</option>
+                                    <option key={role.id} value={role.id.toString()}>{translateRole(role.name, tRoles)}</option>
                                 ))}
                             </select>
                             <div className="absolute inset-y-0 right-2 flex items-center text-gray-400 pointer-events-none">
@@ -212,7 +217,7 @@ function CreateUserModal({ roles, open, onClose, onCreated }: { roles: Role[]; o
                     {t('cancel')}
                 </button>
                 <button onClick={handleCreate} disabled={!form.first_name.trim() || !form.email.trim() || creating}
-                    className={`px-4 py-2 rounded-xl text-sm font-medium text-white transition-colors ${!form.first_name.trim() || !form.email.trim() || creating ? 'bg-purple-400 cursor-not-allowed opacity-60' : 'bg-purple-600 hover:bg-purple-700 cursor-pointer'}`}>
+                    className={`px-4 py-2 rounded-xl text-sm font-medium text-white transition-colors ${!form.first_name.trim() || !form.email.trim() || creating ? `${theme.btnDisabled} cursor-not-allowed opacity-60` : `${theme.btnPrimary} ${theme.btnPrimaryHover} cursor-pointer`}`}>
                     {creating ? t('creating') : t('save')}
                 </button>
             </div>
@@ -224,6 +229,8 @@ function CreateUserModal({ roles, open, onClose, onCreated }: { roles: Role[]; o
 
 function EditModal({ user, roles, open, onClose }: { user: User | null; roles: Role[]; open: boolean; onClose: () => void }) {
     const t = useTranslations('adminDashboard');
+    const tRoles = useTranslations('roles');
+    const theme = useRoleTheme();
     if (!user) return null;
 
     return (
@@ -243,7 +250,7 @@ function EditModal({ user, roles, open, onClose }: { user: User | null; roles: R
                         <input
                             type="text"
                             defaultValue={user.first_name}
-                            className="w-full rounded-xl border border-gray-200 px-3 py-2 text-sm text-gray-700 focus:outline-none focus:ring-2 focus:ring-purple-200 focus:border-purple-400 transition-colors"
+                            className={`w-full rounded-xl border border-gray-200 px-3 py-2 text-sm text-gray-700 focus:outline-none focus:ring-2 ${theme.focusRing} transition-colors`}
                         />
                     </div>
                     <div>
@@ -251,7 +258,7 @@ function EditModal({ user, roles, open, onClose }: { user: User | null; roles: R
                         <input
                             type="text"
                             defaultValue={user.last_name}
-                            className="w-full rounded-xl border border-gray-200 px-3 py-2 text-sm text-gray-700 focus:outline-none focus:ring-2 focus:ring-purple-200 focus:border-purple-400 transition-colors"
+                            className={`w-full rounded-xl border border-gray-200 px-3 py-2 text-sm text-gray-700 focus:outline-none focus:ring-2 ${theme.focusRing} transition-colors`}
                         />
                     </div>
                 </div>
@@ -260,7 +267,7 @@ function EditModal({ user, roles, open, onClose }: { user: User | null; roles: R
                     <input
                         type="email"
                         defaultValue={user.email}
-                        className="w-full rounded-xl border border-gray-200 px-3 py-2 text-sm text-gray-700 focus:outline-none focus:ring-2 focus:ring-purple-200 focus:border-purple-400 transition-colors"
+                        className={`w-full rounded-xl border border-gray-200 px-3 py-2 text-sm text-gray-700 focus:outline-none focus:ring-2 ${theme.focusRing} transition-colors`}
                     />
                 </div>
                 <div className="grid grid-cols-2 gap-3">
@@ -269,7 +276,7 @@ function EditModal({ user, roles, open, onClose }: { user: User | null; roles: R
                         <input
                             type="tel"
                             defaultValue={user.phone}
-                            className="w-full rounded-xl border border-gray-200 px-3 py-2 text-sm text-gray-700 focus:outline-none focus:ring-2 focus:ring-purple-200 focus:border-purple-400 transition-colors"
+                            className={`w-full rounded-xl border border-gray-200 px-3 py-2 text-sm text-gray-700 focus:outline-none focus:ring-2 ${theme.focusRing} transition-colors`}
                         />
                     </div>
                     <div>
@@ -277,11 +284,11 @@ function EditModal({ user, roles, open, onClose }: { user: User | null; roles: R
                         <div className="relative">
                             <select
                                 defaultValue={user.role?.id?.toString() ?? ''}
-                                className="w-full appearance-none rounded-xl border border-gray-200 bg-white px-3 py-2 pr-8 text-sm text-gray-700 focus:outline-none focus:ring-2 focus:ring-purple-200 focus:border-purple-400 transition-colors cursor-pointer"
+                                className={`w-full appearance-none rounded-xl border border-gray-200 bg-white px-3 py-2 pr-8 text-sm text-gray-700 focus:outline-none focus:ring-2 ${theme.focusRing} transition-colors cursor-pointer`}
                             >
                                 {roles.map((role) => (
                                     <option key={role.id} value={role.id.toString()}>
-                                        {role.name}
+                                        {translateRole(role.name, tRoles)}
                                     </option>
                                 ))}
                             </select>
@@ -296,7 +303,7 @@ function EditModal({ user, roles, open, onClose }: { user: User | null; roles: R
                     <input
                         type="text"
                         defaultValue={user.address}
-                        className="w-full rounded-xl border border-gray-200 px-3 py-2 text-sm text-gray-700 focus:outline-none focus:ring-2 focus:ring-purple-200 focus:border-purple-400 transition-colors"
+                        className={`w-full rounded-xl border border-gray-200 px-3 py-2 text-sm text-gray-700 focus:outline-none focus:ring-2 ${theme.focusRing} transition-colors`}
                     />
                 </div>
             </div>
@@ -310,7 +317,7 @@ function EditModal({ user, roles, open, onClose }: { user: User | null; roles: R
                 </button>
                 <button
                     onClick={onClose}
-                    className="px-4 py-2 rounded-xl text-sm font-medium text-white bg-purple-600 hover:bg-purple-700 transition-colors cursor-pointer"
+                    className={`px-4 py-2 rounded-xl text-sm font-medium text-white ${theme.btnPrimary} ${theme.btnPrimaryHover} transition-colors cursor-pointer`}
                 >
                     {t('save')}
                 </button>
@@ -367,6 +374,7 @@ function DeleteModal({ user, open, onClose }: { user: User | null; open: boolean
 
 export default function UserTable({ users }: { users: User[] }) {
     const t = useTranslations('adminDashboard');
+    const tRoles = useTranslations('roles');
     const [searchQuery, setSearchQuery] = useState('');
     const [editUser, setEditUser] = useState<User | null>(null);
     const [deleteUser, setDeleteUser] = useState<User | null>(null);
@@ -429,7 +437,7 @@ export default function UserTable({ users }: { users: User[] }) {
                         ),
                         value: roleFilter,
                         onChange: setRoleFilter,
-                        options: roles.map(r => ({ value: r.id.toString(), label: r.name })),
+                        options: roles.map(r => ({ value: r.id.toString(), label: translateRole(r.name, tRoles) })),
                     },
                     {
                         type: 'checkbox',
@@ -477,8 +485,9 @@ export default function UserTable({ users }: { users: User[] }) {
                             </thead>
                             <tbody className="divide-y divide-gray-50">
                                 {paginatedUsers.map((user) => {
-                                    const roleName = user.role?.name ?? t('unknown');
-                                    const pillClasses = getRolePillClasses(roleName);
+                                    const rawRole = user.role?.name ?? '';
+                                    const displayRole = rawRole ? translateRole(rawRole, tRoles) : t('unknown');
+                                    const pillClasses = getRolePillClasses(rawRole);
 
                                     return (
                                         <tr key={user.id} className="group hover:bg-gray-50/80 transition-colors">
@@ -489,7 +498,7 @@ export default function UserTable({ users }: { users: User[] }) {
                                             <td className="py-4 text-gray-500">{user.phone || '—'}</td>
                                             <td className="py-4">
                                                 <span className={`px-2 py-1 rounded-lg text-xs font-semibold ${pillClasses}`}>
-                                                    {roleName}
+                                                    {displayRole}
                                                 </span>
                                             </td>
                                             <td className="py-4 text-gray-500 text-sm">
@@ -523,8 +532,9 @@ export default function UserTable({ users }: { users: User[] }) {
                     {/* Mobile cards */}
                     <div className="lg:hidden space-y-3">
                         {paginatedUsers.map((user) => {
-                            const roleName = user.role?.name ?? t('unknown');
-                            const pillClasses = getRolePillClasses(roleName);
+                            const rawRole = user.role?.name ?? '';
+                            const displayRole = rawRole ? translateRole(rawRole, tRoles) : t('unknown');
+                            const pillClasses = getRolePillClasses(rawRole);
 
                             return (
                                 <div key={user.id} className="rounded-2xl border border-gray-100 p-4 space-y-3">
@@ -539,7 +549,7 @@ export default function UserTable({ users }: { users: User[] }) {
                                                 </span>
                                             )}
                                             <span className={`px-2 py-0.5 rounded-lg text-xs font-semibold ${pillClasses}`}>
-                                                {roleName}
+                                                {displayRole}
                                             </span>
                                         </div>
                                     </div>

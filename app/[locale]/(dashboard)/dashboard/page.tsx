@@ -102,13 +102,28 @@ export default function DashboardHome() {
     return (
         <div className="space-y-6">
             {/* Welcome header */}
-            <div className={`bg-gradient-to-r ${theme.gradientFrom} ${theme.gradientTo} rounded-2xl p-8 text-white`}>
-                <h1 className="text-2xl font-bold mb-1">
-                    {t("welcomeBack", { greeting, name: user?.first_name || "" })}
-                </h1>
-                <p className={`${theme.gradientSubtext} text-sm`}>
-                    {t("welcomeSubtitle")}
-                </p>
+            <div className="relative bg-white rounded-3xl border border-gray-100 shadow-sm overflow-hidden">
+                {/* Accent bar */}
+                <div className={`absolute inset-y-0 left-0 w-1.5 bg-gradient-to-b ${theme.gradientFrom} ${theme.gradientTo}`} />
+                <div className="flex items-center gap-5 px-8 py-7">
+                    {/* Avatar */}
+                    <div
+                        className="hidden sm:flex w-14 h-14 rounded-2xl items-center justify-center text-white text-lg font-bold shrink-0 shadow-sm"
+                        style={{ background: `linear-gradient(135deg, var(--tw-gradient-from, #7c3aed), var(--tw-gradient-to, #6d28d9))` }}
+                    >
+                        <span className={`w-14 h-14 rounded-2xl flex items-center justify-center bg-gradient-to-br ${theme.gradientFrom} ${theme.gradientTo}`}>
+                            {user?.first_name?.charAt(0)}{user?.last_name?.charAt(0)}
+                        </span>
+                    </div>
+                    <div className="min-w-0">
+                        <h1 className="text-xl sm:text-2xl font-bold text-gray-800 truncate">
+                            {t("welcomeBack", { greeting, name: user?.first_name || "" })}
+                        </h1>
+                        <p className="text-sm text-gray-400 mt-0.5">
+                            {t("welcomeSubtitle")}
+                        </p>
+                    </div>
+                </div>
             </div>
 
             {/* Stats cards - only for students */}
