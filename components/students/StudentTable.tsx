@@ -6,6 +6,8 @@ import Cookies from 'js-cookie';
 import { API_URL } from '@/lib/api';
 import FilterBar from '@/components/ui/FilterBar';
 import Pagination from '@/components/ui/Pagination';
+import { useRoleTheme } from '@/hooks/useRoleTheme';
+import { translateRole } from '@/lib/translateRole';
 import type { User } from '@/services/userService';
 import type { Opportunity } from '@/services/opportunityService';
 
@@ -30,6 +32,7 @@ function AssignModal({ student, open, onClose, opportunities }: {
     opportunities: Opportunity[];
 }) {
     const t = useTranslations('studentsDashboard');
+    const theme = useRoleTheme();
     const [selectedOpp, setSelectedOpp] = useState('');
     const [assigning, setAssigning] = useState(false);
     const [successMsg, setSuccessMsg] = useState('');
@@ -83,11 +86,11 @@ function AssignModal({ student, open, onClose, opportunities }: {
                     </button>
                 </div>
 
-                <div className="rounded-xl bg-blue-50 border border-blue-100 p-3">
-                    <p className="text-sm font-medium text-blue-700">
+                <div className={`rounded-xl ${theme.accentBg} border ${theme.borderLight} p-3`}>
+                    <p className={`text-sm font-medium ${theme.accentText}`}>
                         {student.first_name} {student.last_name}
                     </p>
-                    <p className="text-xs text-blue-500">{student.email}</p>
+                    <p className={`text-xs ${theme.accent}`}>{student.email}</p>
                 </div>
 
                 <div>
@@ -101,7 +104,7 @@ function AssignModal({ student, open, onClose, opportunities }: {
                             <select
                                 value={selectedOpp}
                                 onChange={(e) => setSelectedOpp(e.target.value)}
-                                className="w-full appearance-none rounded-xl border border-gray-200 bg-white px-3 py-2 pr-8 text-sm text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-200 focus:border-blue-400 transition-colors cursor-pointer"
+                                className={`w-full appearance-none rounded-xl border border-gray-200 bg-white px-3 py-2 pr-8 text-sm text-gray-700 focus:outline-none focus:ring-2 ${theme.focusRing} transition-colors cursor-pointer`}
                             >
                                 <option value="">{t('selectOpportunityPlaceholder')}</option>
                                 {openOpportunities.map((opp) => (
@@ -141,8 +144,8 @@ function AssignModal({ student, open, onClose, opportunities }: {
                         disabled={!selectedOpp || assigning || openOpportunities.length === 0}
                         className={`px-4 py-2 rounded-xl text-sm font-medium text-white transition-colors ${
                             !selectedOpp || assigning || openOpportunities.length === 0
-                                ? 'bg-blue-400 cursor-not-allowed opacity-60'
-                                : 'bg-blue-600 hover:bg-blue-700 cursor-pointer'
+                                ? `${theme.btnDisabled} cursor-not-allowed opacity-60`
+                                : `${theme.btnPrimary} ${theme.btnPrimaryHover} cursor-pointer`
                         }`}
                     >
                         {assigning ? t('assigning') : t('assign')}
@@ -157,6 +160,8 @@ function AssignModal({ student, open, onClose, opportunities }: {
 
 export default function StudentTable({ users, opportunities }: { users: User[]; opportunities: Opportunity[] }) {
     const t = useTranslations('studentsDashboard');
+    const tRoles = useTranslations('roles');
+    const theme = useRoleTheme();
     const [assignStudent, setAssignStudent] = useState<User | null>(null);
     const [searchQuery, setSearchQuery] = useState('');
     const [page, setPage] = useState(1);
@@ -228,7 +233,7 @@ export default function StudentTable({ users, opportunities }: { users: User[]; 
                                         <td className="py-4">
                                             <button
                                                 onClick={() => setAssignStudent(student)}
-                                                className="px-3 py-1.5 rounded-lg text-xs font-semibold text-blue-700 bg-blue-50 hover:bg-blue-100 transition-colors cursor-pointer"
+                                                className={`px-3 py-1.5 rounded-lg text-xs font-semibold ${theme.accentText} ${theme.accentBg} ${theme.softHover} transition-colors cursor-pointer`}
                                             >
                                                 {t('assignBtn')}
                                             </button>
@@ -248,7 +253,7 @@ export default function StudentTable({ users, opportunities }: { users: User[]; 
                                         {student.first_name} {student.last_name}
                                     </p>
                                     <span className="px-2 py-0.5 rounded-lg text-xs font-semibold bg-emerald-100 text-emerald-700">
-                                        {student.role?.name ?? t('student')}
+                                        {translateRole(student.role?.name, tRoles)}
                                     </span>
                                 </div>
                                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-1.5 text-sm">
@@ -276,7 +281,7 @@ export default function StudentTable({ users, opportunities }: { users: User[]; 
                                 <div className="flex justify-end border-t border-gray-50 pt-2">
                                     <button
                                         onClick={() => setAssignStudent(student)}
-                                        className="px-3 py-1.5 rounded-lg text-xs font-semibold text-blue-700 bg-blue-50 hover:bg-blue-100 transition-colors cursor-pointer"
+                                        className={`px-3 py-1.5 rounded-lg text-xs font-semibold ${theme.accentText} ${theme.accentBg} ${theme.softHover} transition-colors cursor-pointer`}
                                     >
                                         {t('assignBtn')}
                                     </button>

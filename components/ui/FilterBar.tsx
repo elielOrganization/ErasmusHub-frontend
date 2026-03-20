@@ -1,6 +1,7 @@
 'use client';
 
 import { ReactNode, useCallback, useEffect, useRef, useState } from 'react';
+import { useTranslations } from 'next-intl';
 import { useRoleTheme } from '@/hooks/useRoleTheme';
 import type { RoleTheme } from '@/hooks/useRoleTheme';
 
@@ -205,11 +206,15 @@ export default function FilterBar({
     onSearchChange,
     searchPlaceholder = '',
     filters = [],
-    filterLabel = 'Filters',
-    clearLabel = 'Clear filters',
-    applyLabel = 'Apply filters',
+    filterLabel: filterLabelProp,
+    clearLabel: clearLabelProp,
+    applyLabel: applyLabelProp,
     actionButton,
 }: FilterBarProps) {
+    const tCommon = useTranslations('common');
+    const filterLabel = filterLabelProp ?? tCommon('filters');
+    const clearLabel = clearLabelProp ?? tCommon('clearFilters');
+    const applyLabel = applyLabelProp ?? tCommon('applyFilters');
     const theme = useRoleTheme();
     const [open, setOpen] = useState(false);
     const [visible, setVisible] = useState(false);   // keeps modal mounted during exit animation

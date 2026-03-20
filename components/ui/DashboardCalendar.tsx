@@ -2,6 +2,7 @@
 
 import { useState, useMemo } from 'react';
 import { useLocale, useTranslations } from 'next-intl';
+import { useRoleTheme } from '@/hooks/useRoleTheme';
 
 /* ── Helpers ─────────────────────────────────────────────── */
 
@@ -31,6 +32,7 @@ const WEEKDAYS_SHORT: Record<string, string[]> = {
 export default function DashboardCalendar() {
     const locale = useLocale();
     const t = useTranslations('dashboard');
+    const theme = useRoleTheme();
     const today = new Date();
     const [year, setYear] = useState(today.getFullYear());
     const [month, setMonth] = useState(today.getMonth());
@@ -89,7 +91,7 @@ export default function DashboardCalendar() {
                     <h2 className="text-lg font-semibold text-gray-800">{monthLabel}</h2>
                     <button
                         onClick={goToday}
-                        className="text-xs text-blue-600 hover:text-blue-700 font-medium px-2 py-0.5 rounded-md hover:bg-blue-50 transition-colors cursor-pointer"
+                        className={`text-xs ${theme.accent} ${theme.accentHover} font-medium px-2 py-0.5 rounded-md ${theme.accentBgHover} transition-colors cursor-pointer`}
                     >
                         {t('calendarToday')}
                     </button>
@@ -139,7 +141,7 @@ export default function DashboardCalendar() {
                                                 ? 'bg-gray-50/50'
                                                 : isWeekend
                                                   ? 'bg-gray-50/30'
-                                                  : 'hover:bg-blue-50/30'
+                                                  : theme.hoverSoftBgHalf
                                         }`}
                                     >
                                         {day !== null && (
@@ -147,7 +149,7 @@ export default function DashboardCalendar() {
                                                 <span
                                                     className={`text-sm font-medium inline-flex items-center justify-center w-7 h-7 rounded-full ${
                                                         todayCell
-                                                            ? 'bg-blue-600 text-white'
+                                                            ? `${theme.btnPrimary} text-white`
                                                             : isWeekend
                                                               ? 'text-gray-300'
                                                               : 'text-gray-600'

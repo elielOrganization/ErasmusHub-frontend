@@ -64,7 +64,10 @@
     "loading": "Cargando...",
     "unknownError": "Error desconocido",
     "yes": "Sí",
-    "no": "No"
+    "no": "No",
+    "filters": "Filtros",
+    "clearFilters": "Limpiar filtros",
+    "applyFilters": "Aplicar filtros"
   },
 
   "dashboard": {
@@ -364,6 +367,19 @@
     "errorDescription": "Ha ocurrido un error inesperado. Por favor, inténtalo de nuevo.",
     "errorRetry": "Reintentar",
     "errorGoHome": "Ir al inicio"
+  },
+
+  "roles": {
+    "admin": "Administrador",
+    "administrator": "Administrador",
+    "student": "Estudiante",
+    "teacher": "Profesor",
+    "profesor": "Profesor",
+    "coordinador": "Coordinador",
+    "coordinator": "Coordinador",
+    "lector": "Lector",
+    "reader": "Lector",
+    "noRole": "Sin rol"
   },
 
   "accessDenied": {

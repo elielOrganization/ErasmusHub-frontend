@@ -7,6 +7,7 @@ import { API_URL } from '@/lib/api';
 import { getCountryFlagUrl } from '@/lib/countryFlags';
 import FilterBar from '@/components/ui/FilterBar';
 import Pagination from '@/components/ui/Pagination';
+import { useRoleTheme } from '@/hooks/useRoleTheme';
 import Cookies from 'js-cookie';
 import type { Opportunity } from '@/services/opportunityService';
 
@@ -81,7 +82,7 @@ function SlotsBar({ filled, max }: { filled: number; max: number }) {
 
 /* ── Student pills for assigned students ───────────────────── */
 
-function StudentPills({ students, t }: { students: AssignedStudent[]; t: (key: string) => string }) {
+function StudentPills({ students, t, theme }: { students: AssignedStudent[]; t: (key: string) => string; theme: ReturnType<typeof useRoleTheme> }) {
     if (students.length === 0) {
         return <span className="text-xs text-gray-400 italic">{t('noStudentsAssigned')}</span>;
     }
@@ -90,7 +91,7 @@ function StudentPills({ students, t }: { students: AssignedStudent[]; t: (key: s
             {students.map((s) => (
                 <span
                     key={s.application_id}
-                    className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium bg-blue-50 text-blue-700"
+                    className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium ${theme.accentBg} ${theme.accentText}`}
                     title={s.email}
                 >
                     {s.first_name} {s.last_name}
@@ -105,6 +106,7 @@ function StudentPills({ students, t }: { students: AssignedStudent[]; t: (key: s
 
 function CreateModal({ open, onClose, onCreated }: { open: boolean; onClose: () => void; onCreated: () => void }) {
     const t = useTranslations('opportunitiesDashboard');
+    const theme = useRoleTheme();
     const [form, setForm] = useState({
         name: '', description: '', country: '', city: '',
         max_slots: '1', start_date: '', end_date: '',
@@ -170,43 +172,43 @@ function CreateModal({ open, onClose, onCreated }: { open: boolean; onClose: () 
                         <label className="block text-xs font-medium text-gray-500 mb-1">{t('fieldName')}</label>
                         <input type="text" value={form.name} onChange={e => updateField('name', e.target.value)}
                             placeholder={t('fieldNamePlaceholder')}
-                            className="w-full rounded-xl border border-gray-200 px-3 py-2 text-sm text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-200 focus:border-blue-400 transition-colors" />
+                            className={`w-full rounded-xl border border-gray-200 px-3 py-2 text-sm text-gray-700 focus:outline-none focus:ring-2 ${theme.focusRing} transition-colors`} />
                     </div>
                     <div>
                         <label className="block text-xs font-medium text-gray-500 mb-1">{t('fieldDescription')}</label>
                         <textarea value={form.description} onChange={e => updateField('description', e.target.value)}
                             placeholder={t('fieldDescriptionPlaceholder')} rows={2}
-                            className="w-full rounded-xl border border-gray-200 px-3 py-2 text-sm text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-200 focus:border-blue-400 transition-colors resize-none" />
+                            className={`w-full rounded-xl border border-gray-200 px-3 py-2 text-sm text-gray-700 focus:outline-none focus:ring-2 ${theme.focusRing} transition-colors resize-none`} />
                     </div>
                     <div className="grid grid-cols-2 gap-3">
                         <div>
                             <label className="block text-xs font-medium text-gray-500 mb-1">{t('fieldCountry')}</label>
                             <input type="text" value={form.country} onChange={e => updateField('country', e.target.value)}
                                 placeholder={t('fieldCountryPlaceholder')}
-                                className="w-full rounded-xl border border-gray-200 px-3 py-2 text-sm text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-200 focus:border-blue-400 transition-colors" />
+                                className={`w-full rounded-xl border border-gray-200 px-3 py-2 text-sm text-gray-700 focus:outline-none focus:ring-2 ${theme.focusRing} transition-colors`} />
                         </div>
                         <div>
                             <label className="block text-xs font-medium text-gray-500 mb-1">{t('fieldCity')}</label>
                             <input type="text" value={form.city} onChange={e => updateField('city', e.target.value)}
                                 placeholder={t('fieldCityPlaceholder')}
-                                className="w-full rounded-xl border border-gray-200 px-3 py-2 text-sm text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-200 focus:border-blue-400 transition-colors" />
+                                className={`w-full rounded-xl border border-gray-200 px-3 py-2 text-sm text-gray-700 focus:outline-none focus:ring-2 ${theme.focusRing} transition-colors`} />
                         </div>
                     </div>
                     <div className="grid grid-cols-3 gap-3">
                         <div>
                             <label className="block text-xs font-medium text-gray-500 mb-1">{t('fieldMaxSlots')}</label>
                             <input type="number" min="1" value={form.max_slots} onChange={e => updateField('max_slots', e.target.value)}
-                                className="w-full rounded-xl border border-gray-200 px-3 py-2 text-sm text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-200 focus:border-blue-400 transition-colors" />
+                                className={`w-full rounded-xl border border-gray-200 px-3 py-2 text-sm text-gray-700 focus:outline-none focus:ring-2 ${theme.focusRing} transition-colors`} />
                         </div>
                         <div>
                             <label className="block text-xs font-medium text-gray-500 mb-1">{t('fieldStartDate')}</label>
                             <input type="date" value={form.start_date} onChange={e => updateField('start_date', e.target.value)}
-                                className="w-full rounded-xl border border-gray-200 px-3 py-2 text-sm text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-200 focus:border-blue-400 transition-colors" />
+                                className={`w-full rounded-xl border border-gray-200 px-3 py-2 text-sm text-gray-700 focus:outline-none focus:ring-2 ${theme.focusRing} transition-colors`} />
                         </div>
                         <div>
                             <label className="block text-xs font-medium text-gray-500 mb-1">{t('fieldEndDate')}</label>
                             <input type="date" value={form.end_date} onChange={e => updateField('end_date', e.target.value)}
-                                className="w-full rounded-xl border border-gray-200 px-3 py-2 text-sm text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-200 focus:border-blue-400 transition-colors" />
+                                className={`w-full rounded-xl border border-gray-200 px-3 py-2 text-sm text-gray-700 focus:outline-none focus:ring-2 ${theme.focusRing} transition-colors`} />
                         </div>
                     </div>
                 </div>
@@ -223,7 +225,7 @@ function CreateModal({ open, onClose, onCreated }: { open: boolean; onClose: () 
                         {t('cancel')}
                     </button>
                     <button onClick={handleCreate} disabled={!form.name.trim() || creating}
-                        className={`px-4 py-2 rounded-xl text-sm font-medium text-white transition-colors ${!form.name.trim() || creating ? 'bg-blue-400 cursor-not-allowed opacity-60' : 'bg-blue-600 hover:bg-blue-700 cursor-pointer'}`}>
+                        className={`px-4 py-2 rounded-xl text-sm font-medium text-white transition-colors ${!form.name.trim() || creating ? `${theme.btnDisabled} cursor-not-allowed opacity-60` : `${theme.btnPrimary} ${theme.btnPrimaryHover} cursor-pointer`}`}>
                         {creating ? t('creating') : t('create')}
                     </button>
                 </div>
@@ -236,6 +238,7 @@ function CreateModal({ open, onClose, onCreated }: { open: boolean; onClose: () 
 
 function EditModal({ opp, open, onClose, onUpdated }: { opp: OpportunityWithStudents | null; open: boolean; onClose: () => void; onUpdated: () => void }) {
     const t = useTranslations('opportunitiesDashboard');
+    const theme = useRoleTheme();
     const [form, setForm] = useState({
         name: '', description: '', country: '', city: '',
         max_slots: '1', status: 'open', start_date: '', end_date: '',
@@ -318,39 +321,39 @@ function EditModal({ opp, open, onClose, onUpdated }: { opp: OpportunityWithStud
                         <label className="block text-xs font-medium text-gray-500 mb-1">{t('fieldName')}</label>
                         <input type="text" value={form.name} onChange={e => updateField('name', e.target.value)}
                             placeholder={t('fieldNamePlaceholder')}
-                            className="w-full rounded-xl border border-gray-200 px-3 py-2 text-sm text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-200 focus:border-blue-400 transition-colors" />
+                            className={`w-full rounded-xl border border-gray-200 px-3 py-2 text-sm text-gray-700 focus:outline-none focus:ring-2 ${theme.focusRing} transition-colors`} />
                     </div>
                     <div>
                         <label className="block text-xs font-medium text-gray-500 mb-1">{t('fieldDescription')}</label>
                         <textarea value={form.description} onChange={e => updateField('description', e.target.value)}
                             placeholder={t('fieldDescriptionPlaceholder')} rows={2}
-                            className="w-full rounded-xl border border-gray-200 px-3 py-2 text-sm text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-200 focus:border-blue-400 transition-colors resize-none" />
+                            className={`w-full rounded-xl border border-gray-200 px-3 py-2 text-sm text-gray-700 focus:outline-none focus:ring-2 ${theme.focusRing} transition-colors resize-none`} />
                     </div>
                     <div className="grid grid-cols-2 gap-3">
                         <div>
                             <label className="block text-xs font-medium text-gray-500 mb-1">{t('fieldCountry')}</label>
                             <input type="text" value={form.country} onChange={e => updateField('country', e.target.value)}
                                 placeholder={t('fieldCountryPlaceholder')}
-                                className="w-full rounded-xl border border-gray-200 px-3 py-2 text-sm text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-200 focus:border-blue-400 transition-colors" />
+                                className={`w-full rounded-xl border border-gray-200 px-3 py-2 text-sm text-gray-700 focus:outline-none focus:ring-2 ${theme.focusRing} transition-colors`} />
                         </div>
                         <div>
                             <label className="block text-xs font-medium text-gray-500 mb-1">{t('fieldCity')}</label>
                             <input type="text" value={form.city} onChange={e => updateField('city', e.target.value)}
                                 placeholder={t('fieldCityPlaceholder')}
-                                className="w-full rounded-xl border border-gray-200 px-3 py-2 text-sm text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-200 focus:border-blue-400 transition-colors" />
+                                className={`w-full rounded-xl border border-gray-200 px-3 py-2 text-sm text-gray-700 focus:outline-none focus:ring-2 ${theme.focusRing} transition-colors`} />
                         </div>
                     </div>
                     <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
                         <div>
                             <label className="block text-xs font-medium text-gray-500 mb-1">{t('fieldMaxSlots')}</label>
                             <input type="number" min="1" value={form.max_slots} onChange={e => updateField('max_slots', e.target.value)}
-                                className="w-full rounded-xl border border-gray-200 px-3 py-2 text-sm text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-200 focus:border-blue-400 transition-colors" />
+                                className={`w-full rounded-xl border border-gray-200 px-3 py-2 text-sm text-gray-700 focus:outline-none focus:ring-2 ${theme.focusRing} transition-colors`} />
                         </div>
                         <div>
                             <label className="block text-xs font-medium text-gray-500 mb-1">{t('status')}</label>
                             <div className="relative">
                                 <select value={form.status} onChange={e => updateField('status', e.target.value)}
-                                    className="w-full appearance-none rounded-xl border border-gray-200 bg-white px-3 py-2 pr-8 text-sm text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-200 focus:border-blue-400 transition-colors cursor-pointer">
+                                    className={`w-full appearance-none rounded-xl border border-gray-200 bg-white px-3 py-2 pr-8 text-sm text-gray-700 focus:outline-none focus:ring-2 ${theme.focusRing} transition-colors cursor-pointer`}>
                                     <option value="open">{t('open')}</option>
                                     <option value="closed">{t('closed')}</option>
                                 </select>
@@ -362,12 +365,12 @@ function EditModal({ opp, open, onClose, onUpdated }: { opp: OpportunityWithStud
                         <div>
                             <label className="block text-xs font-medium text-gray-500 mb-1">{t('fieldStartDate')}</label>
                             <input type="date" value={form.start_date} onChange={e => updateField('start_date', e.target.value)}
-                                className="w-full rounded-xl border border-gray-200 px-3 py-2 text-sm text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-200 focus:border-blue-400 transition-colors" />
+                                className={`w-full rounded-xl border border-gray-200 px-3 py-2 text-sm text-gray-700 focus:outline-none focus:ring-2 ${theme.focusRing} transition-colors`} />
                         </div>
                         <div>
                             <label className="block text-xs font-medium text-gray-500 mb-1">{t('fieldEndDate')}</label>
                             <input type="date" value={form.end_date} onChange={e => updateField('end_date', e.target.value)}
-                                className="w-full rounded-xl border border-gray-200 px-3 py-2 text-sm text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-200 focus:border-blue-400 transition-colors" />
+                                className={`w-full rounded-xl border border-gray-200 px-3 py-2 text-sm text-gray-700 focus:outline-none focus:ring-2 ${theme.focusRing} transition-colors`} />
                         </div>
                     </div>
                 </div>
@@ -384,7 +387,7 @@ function EditModal({ opp, open, onClose, onUpdated }: { opp: OpportunityWithStud
                         {t('cancel')}
                     </button>
                     <button onClick={handleSave} disabled={!form.name.trim() || saving}
-                        className={`px-4 py-2 rounded-xl text-sm font-medium text-white transition-colors ${!form.name.trim() || saving ? 'bg-blue-400 cursor-not-allowed opacity-60' : 'bg-blue-600 hover:bg-blue-700 cursor-pointer'}`}>
+                        className={`px-4 py-2 rounded-xl text-sm font-medium text-white transition-colors ${!form.name.trim() || saving ? `${theme.btnDisabled} cursor-not-allowed opacity-60` : `${theme.btnPrimary} ${theme.btnPrimaryHover} cursor-pointer`}`}>
                         {saving ? t('saving') : t('save')}
                     </button>
                 </div>
@@ -398,6 +401,7 @@ function EditModal({ opp, open, onClose, onUpdated }: { opp: OpportunityWithStud
 export default function OpportunityTable({ opportunities }: { opportunities: OpportunityWithStudents[] }) {
     const t = useTranslations('opportunitiesDashboard');
     const { user } = useAuth();
+    const theme = useRoleTheme();
     const [searchQuery, setSearchQuery] = useState('');
     const [statusFilter, setStatusFilter] = useState('');
     const [countryFilter, setCountryFilter] = useState<string[]>([]);
@@ -467,7 +471,7 @@ export default function OpportunityTable({ opportunities }: { opportunities: Opp
                         type: 'pills',
                         key: 'country',
                         label: t('country'),
-                        iconColor: 'text-blue-500',
+                        iconColor: theme.accent,
                         icon: (
                             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="w-4 h-4">
                                 <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-1.5 0a6.5 6.5 0 11-11-4.69v.001a6.489 6.489 0 003.995 2.127.75.75 0 01.654.741v.674c0 .37.27.688.636.74a6.547 6.547 0 001.43 0 .751.751 0 01.636-.74v-.674a.75.75 0 01.654-.741A6.489 6.489 0 0016.5 5.312 6.5 6.5 0 0116.5 10z" clipRule="evenodd" />
@@ -535,13 +539,13 @@ export default function OpportunityTable({ opportunities }: { opportunities: Opp
                                         <td className="py-4 pr-6 text-gray-500 text-sm">
                                             {opp.start_date ? new Date(opp.start_date).toLocaleDateString() : '—'}
                                         </td>
-                                        <td className="py-4"><StudentPills students={opp.students} t={t} /></td>
+                                        <td className="py-4"><StudentPills students={opp.students} t={t} theme={theme} /></td>
                                         {canManage && (
                                             <td className="py-4">
                                                 <div className="opacity-0 group-hover:opacity-100 transition-opacity">
                                                     <button
                                                         onClick={() => setEditOpp(opp)}
-                                                        className="p-1.5 rounded-lg text-gray-400 hover:text-blue-600 hover:bg-blue-50 transition-colors cursor-pointer"
+                                                        className={`p-1.5 rounded-lg text-gray-400 ${theme.hoverText} ${theme.hoverBg} transition-colors cursor-pointer`}
                                                         title={t('editTitle')}
                                                     >
                                                         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="w-4 h-4">
@@ -588,13 +592,13 @@ export default function OpportunityTable({ opportunities }: { opportunities: Opp
                                 </div>
                                 <div>
                                     <p className="text-xs text-gray-400 mb-1">{t('assignedStudents')}:</p>
-                                    <StudentPills students={opp.students} t={t} />
+                                    <StudentPills students={opp.students} t={t} theme={theme} />
                                 </div>
                                 {canManage && (
                                     <div className="flex justify-end border-t border-gray-50 pt-2">
                                         <button
                                             onClick={() => setEditOpp(opp)}
-                                            className="px-3 py-1.5 rounded-lg text-xs font-semibold text-blue-700 bg-blue-50 hover:bg-blue-100 transition-colors cursor-pointer"
+                                            className={`px-3 py-1.5 rounded-lg text-xs font-semibold ${theme.accentText} ${theme.accentBg} ${theme.softHover} transition-colors cursor-pointer`}
                                         >
                                             {t('editTitle')}
                                         </button>

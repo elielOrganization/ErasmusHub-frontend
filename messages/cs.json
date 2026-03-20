@@ -64,7 +64,10 @@
     "loading": "Načítání...",
     "unknownError": "Neznámá chyba",
     "yes": "Ano",
-    "no": "Ne"
+    "no": "Ne",
+    "filters": "Filtry",
+    "clearFilters": "Vymazat filtry",
+    "applyFilters": "Použít filtry"
   },
 
   "dashboard": {
@@ -364,6 +367,19 @@
     "errorDescription": "Došlo k neočekávané chybě. Zkuste to prosím znovu.",
     "errorRetry": "Zkusit znovu",
     "errorGoHome": "Na úvod"
+  },
+
+  "roles": {
+    "admin": "Administrátor",
+    "administrator": "Administrátor",
+    "student": "Student",
+    "teacher": "Učitel",
+    "profesor": "Učitel",
+    "coordinador": "Koordinátor",
+    "coordinator": "Koordinátor",
+    "lector": "Lektor",
+    "reader": "Čtenář",
+    "noRole": "Bez role"
   },
 
   "accessDenied": {

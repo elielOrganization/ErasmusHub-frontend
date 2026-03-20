@@ -3,10 +3,12 @@
 import { useTranslations } from "next-intl";
 import { useAuth } from "@/context/AuthContext";
 import { useRoleTheme } from "@/hooks/useRoleTheme";
+import { translateRole } from "@/lib/translateRole";
 import LoadingSpinner from "@/components/ui/LoadingSpinner";
 
 export default function UserProfilePage() {
     const t = useTranslations("userProfile");
+    const tRoles = useTranslations("roles");
     const { user, loading } = useAuth();
     const theme = useRoleTheme();
 
@@ -55,7 +57,7 @@ export default function UserProfilePage() {
                         <span
                             className={`px-3 py-1.5 rounded-full text-sm font-semibold ${theme.pillBg} ${theme.pillText}`}
                         >
-                            {user.role?.name || t("notProvided")}
+                            {user.role?.name ? translateRole(user.role.name, tRoles) : t("notProvided")}
                         </span>
                     </div>
                 </div>
@@ -114,7 +116,7 @@ export default function UserProfilePage() {
                     <h2 className="text-lg font-bold text-gray-800">{t("accountInfo")}</h2>
                 </div>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    <InfoRow label={t("role")} value={user.role?.name} badge={
+                    <InfoRow label={t("role")} value={user.role?.name ? translateRole(user.role.name, tRoles) : undefined} badge={
                         user.role?.name?.toLowerCase().includes("admin") ? "purple" : "green"
                     } />
                     <InfoRow label={t("memberSince")} value={formatDate(user.created_at)} />

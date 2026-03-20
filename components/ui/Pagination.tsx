@@ -1,6 +1,7 @@
 'use client';
 
 import { useTranslations } from 'next-intl';
+import { useRoleTheme } from '@/hooks/useRoleTheme';
 
 interface PaginationProps {
     page: number;
@@ -12,6 +13,7 @@ interface PaginationProps {
 
 export default function Pagination({ page, totalPages, totalItems, pageSize, onPageChange }: PaginationProps) {
     const t = useTranslations('table');
+    const theme = useRoleTheme();
 
     if (totalPages <= 1) return null;
 
@@ -75,7 +77,7 @@ export default function Pagination({ page, totalPages, totalItems, pageSize, onP
                             onClick={() => onPageChange(item)}
                             className={`w-8 h-8 text-sm rounded-lg font-medium transition-colors cursor-pointer ${
                                 page === item
-                                    ? 'bg-blue-600 text-white'
+                                    ? `${theme.btnPrimary} text-white`
                                     : 'text-gray-500 hover:bg-gray-100'
                             }`}
                         >

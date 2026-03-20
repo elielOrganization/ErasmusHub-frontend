@@ -64,7 +64,10 @@
     "loading": "Loading...",
     "unknownError": "Unknown error",
     "yes": "Yes",
-    "no": "No"
+    "no": "No",
+    "filters": "Filters",
+    "clearFilters": "Clear filters",
+    "applyFilters": "Apply filters"
   },
 
   "dashboard": {
@@ -364,6 +367,19 @@
     "errorDescription": "An unexpected error occurred. Please try again.",
     "errorRetry": "Try again",
     "errorGoHome": "Go home"
+  },
+
+  "roles": {
+    "admin": "Administrator",
+    "administrator": "Administrator",
+    "student": "Student",
+    "teacher": "Teacher",
+    "profesor": "Teacher",
+    "coordinador": "Coordinator",
+    "coordinator": "Coordinator",
+    "lector": "Lector",
+    "reader": "Reader",
+    "noRole": "No role"
   },
 
   "accessDenied": {

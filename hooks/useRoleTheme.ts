@@ -48,6 +48,7 @@ const adminTheme = {
     checkboxBg: 'bg-purple-600 border-purple-600',
     badgeBg: 'bg-purple-600',
     softBgHalf: 'bg-purple-50/30',
+    hoverSoftBgHalf: 'hover:bg-purple-50/30',
 };
 
 const studentTheme = {
@@ -88,6 +89,7 @@ const studentTheme = {
     checkboxBg: 'bg-emerald-600 border-emerald-600',
     badgeBg: 'bg-emerald-600',
     softBgHalf: 'bg-emerald-50/30',
+    hoverSoftBgHalf: 'hover:bg-emerald-50/30',
 };
 
 const teacherTheme = {
@@ -128,6 +130,7 @@ const teacherTheme = {
     checkboxBg: 'bg-blue-600 border-blue-600',
     badgeBg: 'bg-blue-600',
     softBgHalf: 'bg-blue-50/30',
+    hoverSoftBgHalf: 'hover:bg-blue-50/30',
 };
 
 // Default & Lector: light gray
@@ -169,6 +172,7 @@ const defaultTheme = {
     checkboxBg: 'bg-gray-500 border-gray-500',
     badgeBg: 'bg-gray-500',
     softBgHalf: 'bg-gray-50/30',
+    hoverSoftBgHalf: 'hover:bg-gray-50/30',
 };
 
 export type RoleTheme = typeof adminTheme;
