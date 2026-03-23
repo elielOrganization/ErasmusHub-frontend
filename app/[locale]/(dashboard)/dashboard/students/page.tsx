@@ -44,10 +44,10 @@ export default async function StudentsPage({ params }: { params: Promise<{ local
             ]} />
 
             {/* Students section */}
-            <div className="bg-white rounded-3xl p-4 sm:p-8 border border-gray-100 shadow-sm">
+            <div className="bg-white dark:bg-gray-900 rounded-3xl p-4 sm:p-8 border border-gray-100 dark:border-gray-800 shadow-sm">
                 <div className="flex justify-between items-center mb-6">
-                    <h2 className="text-xl sm:text-2xl font-bold text-gray-800">{t('title')}</h2>
-                    <span className="bg-emerald-100 text-emerald-700 px-3 py-1 rounded-full text-sm font-medium">
+                    <h2 className="text-xl sm:text-2xl font-bold text-gray-800 dark:text-gray-100">{t('title')}</h2>
+                    <span className="bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-300 px-3 py-1 rounded-full text-sm font-medium">
                         {eligibleStudents.length} {t('studentsLabel')}
                     </span>
                 </div>

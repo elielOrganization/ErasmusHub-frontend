@@ -107,7 +107,7 @@ function Modal({ open, onClose, children }: { open: boolean; onClose: () => void
     return (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
             <div className="fixed inset-0 bg-black/40 backdrop-blur-sm" onClick={onClose} />
-            <div className="relative bg-white rounded-2xl shadow-xl w-full max-w-md p-6 space-y-4">
+            <div className="relative bg-white dark:bg-gray-900 rounded-2xl shadow-xl w-full max-w-md p-6 space-y-4">
                 {children}
             </div>
         </div>
@@ -274,7 +274,7 @@ function CreateUserModal({ open, onClose, onCreated }: { open: boolean; onClose:
     if (!open) return null;
 
     const inputClass = (field?: string) =>
-        `w-full rounded-xl border px-3 py-2 text-sm text-gray-700 focus:outline-none focus:ring-2 ${theme.focusRing} transition-colors ${field && errors[field] ? 'border-red-300 bg-red-50' : 'border-gray-200'}`;
+        `w-full rounded-xl border px-3 py-2 text-sm text-gray-700 dark:text-gray-200 bg-white dark:bg-gray-800 focus:outline-none focus:ring-2 ${theme.focusRing} transition-colors ${field && errors[field] ? 'border-red-300 bg-red-50 dark:bg-red-900/20' : 'border-gray-200 dark:border-gray-700'}`;
 
     const errorMsg = (field: string) => errors[field] ? (
         <p className="mt-1 text-xs text-red-600">{errors[field]}</p>
@@ -286,8 +286,8 @@ function CreateUserModal({ open, onClose, onCreated }: { open: boolean; onClose:
         <Modal open={open} onClose={handleClose}>
             {/* Header */}
             <div className="flex items-center justify-between">
-                <h3 className="text-lg font-bold text-gray-800">{t('addTitle')}</h3>
-                <button onClick={handleClose} className="p-1 rounded-lg text-gray-400 hover:text-gray-600 hover:bg-gray-100 transition-colors cursor-pointer">
+                <h3 className="text-lg font-bold text-gray-800 dark:text-gray-100">{t('addTitle')}</h3>
+                <button onClick={handleClose} className="p-1 rounded-lg text-gray-400 hover:text-gray-600 hover:bg-gray-100 dark:hover:bg-gray-800 dark:hover:text-gray-300 transition-colors cursor-pointer">
                     <XMarkIcon />
                 </button>
             </div>
@@ -297,7 +297,7 @@ function CreateUserModal({ open, onClose, onCreated }: { open: boolean; onClose:
                 <p className="text-xs text-gray-400 text-center">
                     {stepLabels[step - 1]} ({step}/{totalSteps})
                 </p>
-                <div className="w-full bg-gray-200 rounded-full h-1.5">
+                <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-1.5">
                     <div className={`h-1.5 rounded-full transition-all ${theme.btnPrimary}`} style={{ width: `${(step / totalSteps) * 100}%` }} />
                 </div>
             </div>
@@ -307,23 +307,23 @@ function CreateUserModal({ open, onClose, onCreated }: { open: boolean; onClose:
                 <div className="space-y-3">
                     <div className="grid grid-cols-2 gap-3">
                         <div>
-                            <label className="block text-xs font-medium text-gray-500 mb-1">{t('firstName')} *</label>
+                            <label className="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">{t('firstName')} *</label>
                             <input type="text" value={form.first_name} onChange={e => updateField('first_name', e.target.value)}
                                 className={inputClass('first_name')} />
                             {errorMsg('first_name')}
                         </div>
                         <div>
-                            <label className="block text-xs font-medium text-gray-500 mb-1">{t('lastName')} *</label>
+                            <label className="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">{t('lastName')} *</label>
                             <input type="text" value={form.last_name} onChange={e => updateField('last_name', e.target.value)}
                                 className={inputClass('last_name')} />
                             {errorMsg('last_name')}
                         </div>
                     </div>
                     <div>
-                        <label className="block text-xs font-medium text-gray-500 mb-1">{t('fieldGender')} *</label>
+                        <label className="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">{t('fieldGender')} *</label>
                         <div className="relative">
                             <select value={form.gender} onChange={e => updateField('gender', e.target.value)}
-                                className={`${inputClass('gender')} appearance-none pr-8 bg-white cursor-pointer`}>
+                                className={`${inputClass('gender')} appearance-none pr-8 bg-white dark:bg-gray-800 cursor-pointer`}>
                                 <option value="">{t('genderPlaceholder')}</option>
                                 <option value="male">{t('genderMale')}</option>
                                 <option value="female">{t('genderFemale')}</option>
@@ -335,18 +335,18 @@ function CreateUserModal({ open, onClose, onCreated }: { open: boolean; onClose:
                         {errorMsg('gender')}
                     </div>
                     <div>
-                        <label className="block text-xs font-medium text-gray-500 mb-1">{t('fieldRodneCislo')} *</label>
+                        <label className="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">{t('fieldRodneCislo')} *</label>
                         <input type="text" value={form.rodne_cislo} onChange={e => updateField('rodne_cislo', e.target.value)}
                             placeholder={t('fieldRodneCisloPlaceholder')}
                             className={inputClass('rodne_cislo')} />
                         {errorMsg('rodne_cislo')}
                     </div>
                     <div>
-                        <label className="block text-xs font-medium text-gray-500 mb-1">{t('fieldBirthDate')}</label>
+                        <label className="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">{t('fieldBirthDate')}</label>
                         <input type="text" readOnly tabIndex={-1}
                             value={rcParsed ? formatBirthDate(rcParsed.birthDate) : ''}
                             placeholder={t('fieldBirthDatePlaceholder')}
-                            className="w-full rounded-xl border border-gray-200 bg-gray-50 px-3 py-2 text-sm text-gray-500 cursor-not-allowed" />
+                            className="w-full rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 px-3 py-2 text-sm text-gray-500 dark:text-gray-400 cursor-not-allowed" />
                     </div>
                     {rcParsed?.isMinor && (
                         <p className="text-xs text-amber-700 bg-amber-50 rounded-lg px-3 py-2 border border-amber-200">
@@ -360,21 +360,21 @@ function CreateUserModal({ open, onClose, onCreated }: { open: boolean; onClose:
             {step === 2 && (
                 <div className="space-y-3">
                     <div>
-                        <label className="block text-xs font-medium text-gray-500 mb-1">{t('fieldEmail')} *</label>
+                        <label className="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">{t('fieldEmail')} *</label>
                         <input type="email" value={form.email} onChange={e => updateField('email', e.target.value)}
                             placeholder={t('fieldEmailPlaceholder')}
                             className={inputClass('email')} />
                         {errorMsg('email')}
                     </div>
                     <div>
-                        <label className="block text-xs font-medium text-gray-500 mb-1">{t('fieldAddress')} *</label>
+                        <label className="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">{t('fieldAddress')} *</label>
                         <input type="text" value={form.address} onChange={e => updateField('address', e.target.value)}
                             placeholder={t('fieldAddressPlaceholder')}
                             className={inputClass('address')} />
                         {errorMsg('address')}
                     </div>
                     <div>
-                        <label className="block text-xs font-medium text-gray-500 mb-1">{t('fieldPhone')} *</label>
+                        <label className="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">{t('fieldPhone')} *</label>
                         <input type="tel" value={form.phone} onChange={e => updateField('phone', e.target.value)}
                             placeholder={t('fieldPhonePlaceholder')}
                             className={inputClass('phone')} />
@@ -387,14 +387,14 @@ function CreateUserModal({ open, onClose, onCreated }: { open: boolean; onClose:
             {step === 3 && (
                 <div className="space-y-3">
                     <div>
-                        <label className="block text-xs font-medium text-gray-500 mb-1">{t('fieldPassword')} *</label>
+                        <label className="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">{t('fieldPassword')} *</label>
                         <input type="password" value={form.password} onChange={e => updateField('password', e.target.value)}
                             placeholder={t('fieldPasswordPlaceholder')}
                             className={inputClass('password')} />
                         {errorMsg('password')}
                     </div>
                     <div>
-                        <label className="block text-xs font-medium text-gray-500 mb-1">{t('fieldConfirmPassword')} *</label>
+                        <label className="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">{t('fieldConfirmPassword')} *</label>
                         <input type="password" value={form.confirmPassword} onChange={e => updateField('confirmPassword', e.target.value)}
                             placeholder={t('fieldConfirmPasswordPlaceholder')}
                             className={inputClass('confirmPassword')} />
@@ -510,8 +510,8 @@ function EditModal({ user, roles, open, onClose, onUpdated }: { user: User | nul
     return (
         <Modal open={open} onClose={onClose}>
             <div className="flex items-center justify-between">
-                <h3 className="text-lg font-bold text-gray-800">{t('editUser')}</h3>
-                <button onClick={onClose} className="p-1 rounded-lg text-gray-400 hover:text-gray-600 hover:bg-gray-100 transition-colors cursor-pointer">
+                <h3 className="text-lg font-bold text-gray-800 dark:text-gray-100">{t('editUser')}</h3>
+                <button onClick={onClose} className="p-1 rounded-lg text-gray-400 hover:text-gray-600 hover:bg-gray-100 dark:hover:bg-gray-800 dark:hover:text-gray-300 transition-colors cursor-pointer">
                     <XMarkIcon />
                 </button>
             </div>
@@ -520,21 +520,21 @@ function EditModal({ user, roles, open, onClose, onUpdated }: { user: User | nul
             <div className="space-y-3">
                 <div className="grid grid-cols-2 gap-3">
                     <div>
-                        <label className="block text-xs font-medium text-gray-500 mb-1">{t('firstName')}</label>
+                        <label className="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">{t('firstName')}</label>
                         <input
                             type="text"
                             value={form.first_name}
                             onChange={e => updateField('first_name', e.target.value)}
-                            className={`w-full rounded-xl border border-gray-200 px-3 py-2 text-sm text-gray-700 focus:outline-none focus:ring-2 ${theme.focusRing} transition-colors`}
+                            className={`w-full rounded-xl border border-gray-200 dark:border-gray-700 px-3 py-2 text-sm text-gray-700 dark:text-gray-200 bg-white dark:bg-gray-800 focus:outline-none focus:ring-2 ${theme.focusRing} transition-colors`}
                         />
                     </div>
                     <div>
-                        <label className="block text-xs font-medium text-gray-500 mb-1">{t('lastName')}</label>
+                        <label className="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">{t('lastName')}</label>
                         <input
                             type="text"
                             value={form.last_name}
                             onChange={e => updateField('last_name', e.target.value)}
-                            className={`w-full rounded-xl border border-gray-200 px-3 py-2 text-sm text-gray-700 focus:outline-none focus:ring-2 ${theme.focusRing} transition-colors`}
+                            className={`w-full rounded-xl border border-gray-200 dark:border-gray-700 px-3 py-2 text-sm text-gray-700 dark:text-gray-200 bg-white dark:bg-gray-800 focus:outline-none focus:ring-2 ${theme.focusRing} transition-colors`}
                         />
                     </div>
                 </div>
@@ -544,26 +544,26 @@ function EditModal({ user, roles, open, onClose, onUpdated }: { user: User | nul
                         type="email"
                         value={form.email}
                         onChange={e => updateField('email', e.target.value)}
-                        className={`w-full rounded-xl border border-gray-200 px-3 py-2 text-sm text-gray-700 focus:outline-none focus:ring-2 ${theme.focusRing} transition-colors`}
+                        className={`w-full rounded-xl border border-gray-200 dark:border-gray-700 px-3 py-2 text-sm text-gray-700 dark:text-gray-200 bg-white dark:bg-gray-800 focus:outline-none focus:ring-2 ${theme.focusRing} transition-colors`}
                     />
                 </div>
                 <div className="grid grid-cols-2 gap-3">
                     <div>
-                        <label className="block text-xs font-medium text-gray-500 mb-1">{t('phone')}</label>
+                        <label className="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">{t('phone')}</label>
                         <input
                             type="tel"
                             value={form.phone}
                             onChange={e => updateField('phone', e.target.value)}
-                            className={`w-full rounded-xl border border-gray-200 px-3 py-2 text-sm text-gray-700 focus:outline-none focus:ring-2 ${theme.focusRing} transition-colors`}
+                            className={`w-full rounded-xl border border-gray-200 dark:border-gray-700 px-3 py-2 text-sm text-gray-700 dark:text-gray-200 bg-white dark:bg-gray-800 focus:outline-none focus:ring-2 ${theme.focusRing} transition-colors`}
                         />
                     </div>
                     <div>
-                        <label className="block text-xs font-medium text-gray-500 mb-1">{t('fieldRole')}</label>
+                        <label className="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">{t('fieldRole')}</label>
                         <div className="relative">
                             <select
                                 value={form.role_id}
                                 onChange={e => updateField('role_id', e.target.value)}
-                                className={`w-full appearance-none rounded-xl border border-gray-200 bg-white px-3 py-2 pr-8 text-sm text-gray-700 focus:outline-none focus:ring-2 ${theme.focusRing} transition-colors cursor-pointer`}
+                                className={`w-full appearance-none rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 px-3 py-2 pr-8 text-sm text-gray-700 dark:text-gray-200 focus:outline-none focus:ring-2 ${theme.focusRing} transition-colors cursor-pointer`}
                             >
                                 <option value="">{t('selectRolePlaceholder')}</option>
                                 {roles.map((role) => (
@@ -584,7 +584,7 @@ function EditModal({ user, roles, open, onClose, onUpdated }: { user: User | nul
                         type="text"
                         value={form.address}
                         onChange={e => updateField('address', e.target.value)}
-                        className={`w-full rounded-xl border border-gray-200 px-3 py-2 text-sm text-gray-700 focus:outline-none focus:ring-2 ${theme.focusRing} transition-colors`}
+                        className={`w-full rounded-xl border border-gray-200 dark:border-gray-700 px-3 py-2 text-sm text-gray-700 dark:text-gray-200 bg-white dark:bg-gray-800 focus:outline-none focus:ring-2 ${theme.focusRing} transition-colors`}
                     />
                 </div>
             </div>
@@ -651,13 +651,13 @@ function DeleteModal({ user, open, onClose, onDeleted }: { user: User | null; op
     return (
         <Modal open={open} onClose={onClose}>
             <div className="flex items-center justify-between">
-                <h3 className="text-lg font-bold text-gray-800">{t('deleteUser')}</h3>
-                <button onClick={onClose} className="p-1 rounded-lg text-gray-400 hover:text-gray-600 hover:bg-gray-100 transition-colors cursor-pointer">
+                <h3 className="text-lg font-bold text-gray-800 dark:text-gray-100">{t('deleteUser')}</h3>
+                <button onClick={onClose} className="p-1 rounded-lg text-gray-400 hover:text-gray-600 hover:bg-gray-100 dark:hover:bg-gray-800 dark:hover:text-gray-300 transition-colors cursor-pointer">
                     <XMarkIcon />
                 </button>
             </div>
 
-            <p className="text-sm text-gray-500">
+            <p className="text-sm text-gray-500 dark:text-gray-400">
                 {t('deleteUserDescription')}
             </p>
 
@@ -847,7 +847,7 @@ export default function UserTable({ users }: { users: User[] }) {
                     <div className="hidden lg:block overflow-x-auto">
                         <table className="w-full text-left">
                             <thead>
-                                <tr className="border-b border-gray-100 text-gray-400 text-sm">
+                                <tr className="border-b border-gray-100 dark:border-gray-800 text-gray-400 dark:text-gray-500 text-sm">
                                     {([
                                         ['user', t('user')],
                                         ['email', t('email')],
@@ -888,25 +888,25 @@ export default function UserTable({ users }: { users: User[] }) {
                                     </th>
                                 </tr>
                             </thead>
-                            <tbody className="divide-y divide-gray-50">
+                            <tbody className="divide-y divide-gray-50 dark:divide-gray-800">
                                 {paginatedUsers.map((user) => {
                                     const rawRole = user.role?.name ?? '';
                                     const displayRole = rawRole ? translateRole(rawRole, tRoles) : t('unknown');
                                     const pillClasses = getRolePillClasses(rawRole);
 
                                     return (
-                                        <tr key={user.id} className="group hover:bg-gray-50/80 transition-colors">
-                                            <td className="py-4 font-medium text-gray-700">
+                                        <tr key={user.id} className="group hover:bg-gray-50/80 dark:hover:bg-gray-800/50 transition-colors">
+                                            <td className="py-4 font-medium text-gray-700 dark:text-gray-200">
                                                 {user.first_name} {user.last_name}
                                             </td>
-                                            <td className="py-4 text-gray-500">{user.email}</td>
-                                            <td className="py-4 text-gray-500">{user.phone || '—'}</td>
+                                            <td className="py-4 text-gray-500 dark:text-gray-400">{user.email}</td>
+                                            <td className="py-4 text-gray-500 dark:text-gray-400">{user.phone || '—'}</td>
                                             <td className="py-4">
                                                 <span className={`px-2 py-1 rounded-lg text-xs font-semibold ${pillClasses}`}>
                                                     {displayRole}
                                                 </span>
                                             </td>
-                                            <td className="py-4 text-gray-500 text-sm">
+                                            <td className="py-4 text-gray-500 dark:text-gray-400 text-sm">
                                                 {user.birth_date ? new Date(user.birth_date).toLocaleDateString() : '—'}
                                             </td>
                                             <td className="py-4">
@@ -916,7 +916,7 @@ export default function UserTable({ users }: { users: User[] }) {
                                                     </span>
                                                 )}
                                             </td>
-                                            <td className="py-4 text-gray-500 text-sm">
+                                            <td className="py-4 text-gray-500 dark:text-gray-400 text-sm">
                                                 {new Date(user.created_at).toLocaleDateString()}
                                             </td>
                                             <td className="py-4">
@@ -966,9 +966,9 @@ export default function UserTable({ users }: { users: User[] }) {
                             const pillClasses = getRolePillClasses(rawRole);
 
                             return (
-                                <div key={user.id} className="rounded-2xl border border-gray-100 p-4 space-y-3">
+                                <div key={user.id} className="rounded-2xl border border-gray-100 dark:border-gray-800 p-4 space-y-3">
                                     <div className="flex items-center justify-between">
-                                        <p className="font-semibold text-gray-800">
+                                        <p className="font-semibold text-gray-800 dark:text-gray-100">
                                             {user.first_name} {user.last_name}
                                         </p>
                                         <div className="flex items-center gap-2">
@@ -985,26 +985,26 @@ export default function UserTable({ users }: { users: User[] }) {
                                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-1.5 text-sm">
                                         <div>
                                             <span className="text-gray-400">{t('email')}: </span>
-                                            <span className="text-gray-600 break-all">{user.email}</span>
+                                            <span className="text-gray-600 dark:text-gray-300 break-all">{user.email}</span>
                                         </div>
                                         <div>
                                             <span className="text-gray-400">{t('phone')}: </span>
-                                            <span className="text-gray-600">{user.phone || '—'}</span>
+                                            <span className="text-gray-600 dark:text-gray-300">{user.phone || '—'}</span>
                                         </div>
                                         <div>
                                             <span className="text-gray-400">{t('birthDate')}: </span>
-                                            <span className="text-gray-600">
+                                            <span className="text-gray-600 dark:text-gray-300">
                                                 {user.birth_date ? new Date(user.birth_date).toLocaleDateString() : '—'}
                                             </span>
                                         </div>
                                         <div>
                                             <span className="text-gray-400">{t('createdAt')}: </span>
-                                            <span className="text-gray-600">
+                                            <span className="text-gray-600 dark:text-gray-300">
                                                 {new Date(user.created_at).toLocaleDateString()}
                                             </span>
                                         </div>
                                     </div>
-                                    <div className="flex justify-end border-t border-gray-50 pt-2">
+                                    <div className="flex justify-end border-t border-gray-50 dark:border-gray-800 pt-2">
                                         <ActionButtons
                                             onEdit={() => setEditUser(user)}
                                             onDelete={() => setDeleteUser(user)}

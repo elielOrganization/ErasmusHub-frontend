@@ -48,7 +48,7 @@ export default function Pagination({ page, totalPages, totalItems, pageSize, onP
                 <button
                     onClick={() => onPageChange(1)}
                     disabled={page <= 1}
-                    className="p-1.5 rounded-lg text-gray-400 hover:text-gray-600 hover:bg-gray-100 transition-colors disabled:opacity-30 disabled:cursor-not-allowed cursor-pointer"
+                    className="p-1.5 rounded-lg text-gray-400 hover:text-gray-600 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors disabled:opacity-30 disabled:cursor-not-allowed cursor-pointer"
                     title={t('first')}
                 >
                     <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth="2">
@@ -59,7 +59,7 @@ export default function Pagination({ page, totalPages, totalItems, pageSize, onP
                 <button
                     onClick={() => onPageChange(page - 1)}
                     disabled={page <= 1}
-                    className="p-1.5 rounded-lg text-gray-400 hover:text-gray-600 hover:bg-gray-100 transition-colors disabled:opacity-30 disabled:cursor-not-allowed cursor-pointer"
+                    className="p-1.5 rounded-lg text-gray-400 hover:text-gray-600 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors disabled:opacity-30 disabled:cursor-not-allowed cursor-pointer"
                     title={t('previous')}
                 >
                     <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth="2">
@@ -78,7 +78,7 @@ export default function Pagination({ page, totalPages, totalItems, pageSize, onP
                             className={`w-8 h-8 text-sm rounded-lg font-medium transition-colors cursor-pointer ${
                                 page === item
                                     ? `${theme.btnPrimary} text-white`
-                                    : 'text-gray-500 hover:bg-gray-100'
+                                    : 'text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800'
                             }`}
                         >
                             {item}
@@ -90,7 +90,7 @@ export default function Pagination({ page, totalPages, totalItems, pageSize, onP
                 <button
                     onClick={() => onPageChange(page + 1)}
                     disabled={page >= totalPages}
-                    className="p-1.5 rounded-lg text-gray-400 hover:text-gray-600 hover:bg-gray-100 transition-colors disabled:opacity-30 disabled:cursor-not-allowed cursor-pointer"
+                    className="p-1.5 rounded-lg text-gray-400 hover:text-gray-600 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors disabled:opacity-30 disabled:cursor-not-allowed cursor-pointer"
                     title={t('next')}
                 >
                     <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth="2">
@@ -101,7 +101,7 @@ export default function Pagination({ page, totalPages, totalItems, pageSize, onP
                 <button
                     onClick={() => onPageChange(totalPages)}
                     disabled={page >= totalPages}
-                    className="p-1.5 rounded-lg text-gray-400 hover:text-gray-600 hover:bg-gray-100 transition-colors disabled:opacity-30 disabled:cursor-not-allowed cursor-pointer"
+                    className="p-1.5 rounded-lg text-gray-400 hover:text-gray-600 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors disabled:opacity-30 disabled:cursor-not-allowed cursor-pointer"
                     title={t('last')}
                 >
                     <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth="2">

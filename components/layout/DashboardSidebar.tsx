@@ -25,6 +25,7 @@ export default function DashboardSidebar() {
     const isStudent = roleName.includes('Student');
     const isAdmin = roleName.toLowerCase().includes('admin');
     const isTeacher = roleName.toLowerCase().includes('teacher') || roleName.toLowerCase().includes('profesor');
+    const isLector = !isStudent && !isAdmin && !isTeacher;
 
     // Fetch unread notifications count for badge
     const { data: unreadData } = useApi<{ count: number }>('/notifications/me/unread-count');
@@ -35,7 +36,7 @@ export default function DashboardSidebar() {
         ...(isAdmin ? [{ name: t('admin'), path: '/dashboard/admin', icon: <><path strokeLinecap="round" strokeLinejoin="round" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" /><path strokeLinecap="round" strokeLinejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /></> }] : []),
         ...((isAdmin || isTeacher) ? [{ name: t('students'), path: '/dashboard/students', icon: <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" /> }] : []),
         { name: t('opportunities'), path: '/dashboard/opportunities', icon: <path strokeLinecap="round" strokeLinejoin="round" d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9" /> },
-        { name: t('documents'), path: '/dashboard/documents', icon: <path strokeLinecap="round" strokeLinejoin="round" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z" /> },
+        ...(!isLector ? [{ name: t('documents'), path: '/dashboard/documents', icon: <path strokeLinecap="round" strokeLinejoin="round" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z" /> }] : []),
     ];
 
     const studentItems = [
@@ -45,6 +46,7 @@ export default function DashboardSidebar() {
         { name: tt('title'), path: '/dashboard/tareas', icon: <path strokeLinecap="round" strokeLinejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" /> },
         { name: ta('title'), path: '/dashboard/avisos', badge: unreadCount, icon: <path strokeLinecap="round" strokeLinejoin="round" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" /> },
         { name: t('opportunities'), path: '/dashboard/opportunities', icon: <path strokeLinecap="round" strokeLinejoin="round" d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9" /> },
+        { name: t('documents'), path: '/dashboard/documents', icon: <path strokeLinecap="round" strokeLinejoin="round" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z" /> },
     ];
 
     const menuItems = isStudent ? studentItems : defaultItems;
@@ -59,7 +61,7 @@ export default function DashboardSidebar() {
                 />
             )}
 
-            <aside className={`fixed left-0 top-12 h-[calc(100vh-3rem)] bg-white border-r border-gray-200 flex flex-col z-20 transition-all duration-300 ease-in-out
+            <aside className={`fixed left-0 top-12 h-[calc(100vh-3rem)] bg-white dark:bg-gray-900 border-r border-gray-200 dark:border-gray-800 flex flex-col z-20 transition-all duration-300 ease-in-out
                 ${isCollapsed ? 'w-16' : 'w-64'}
                 ${isCollapsed ? '-translate-x-full md:translate-x-0' : 'translate-x-0'}
             `}>
@@ -80,10 +82,10 @@ export default function DashboardSidebar() {
 
                 <button
                     onClick={toggleSidebar}
-                    className="absolute -right-3 top-20 w-6 h-6 bg-white border border-gray-200 rounded-full flex items-center justify-center shadow-sm hover:bg-gray-50 z-30 transition-transform duration-300 hidden md:flex"
+                    className="absolute -right-3 top-20 w-6 h-6 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-full flex items-center justify-center shadow-sm hover:bg-gray-50 dark:hover:bg-gray-700 z-30 transition-transform duration-300 hidden md:flex"
                     style={{ transform: isCollapsed ? 'rotate(180deg)' : 'rotate(0deg)' }}
                 >
-                    <svg className="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 19l-7-7 7-7" /></svg>
+                    <svg className="w-4 h-4 text-gray-400 dark:text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 19l-7-7 7-7" /></svg>
                 </button>
 
                 <nav className="flex-1 p-3 space-y-1 overflow-y-auto overflow-x-hidden">
@@ -91,11 +93,11 @@ export default function DashboardSidebar() {
                         <div className="space-y-2">
                             {[...Array(4)].map((_, i) => (
                                 <div key={i} className="flex items-center gap-3 px-3 py-2.5">
-                                    <div className="w-5 h-5 bg-gray-200 rounded animate-pulse shrink-0" />
-                                    <div className={`h-4 bg-gray-200 rounded animate-pulse transition-opacity duration-300 ${isCollapsed ? 'opacity-0' : 'opacity-100'}`} style={{ width: `${60 + i * 15}px` }} />
+                                    <div className="w-5 h-5 bg-gray-200 dark:bg-gray-700 rounded animate-pulse shrink-0" />
+                                    <div className={`h-4 bg-gray-200 dark:bg-gray-700 rounded animate-pulse transition-opacity duration-300 ${isCollapsed ? 'opacity-0' : 'opacity-100'}`} style={{ width: `${60 + i * 15}px` }} />
                                 </div>
                             ))}
-                            <p className={`text-xs text-gray-400 text-center mt-4 transition-opacity duration-300 ${isCollapsed ? 'opacity-0' : 'opacity-100'}`}>
+                            <p className={`text-xs text-gray-400 dark:text-gray-600 text-center mt-4 transition-opacity duration-300 ${isCollapsed ? 'opacity-0' : 'opacity-100'}`}>
                                 {t('loadingSidebar')}
                             </p>
                         </div>
@@ -106,10 +108,10 @@ export default function DashboardSidebar() {
                                 <Link
                                     key={item.path}
                                     href={item.path}
-                                    className={`flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all duration-200 ${isActive ? `${theme.activeBg} ${theme.activeText} font-medium` : "text-gray-600 hover:bg-gray-50"
+                                    className={`flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all duration-200 ${isActive ? `${theme.activeBg} ${theme.activeText} font-medium` : "text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800"
                                         }`}
                                 >
-                                    <svg className={`w-5 h-5 shrink-0 ${isActive ? theme.activeIcon : "text-gray-400"}`} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+                                    <svg className={`w-5 h-5 shrink-0 ${isActive ? theme.activeIcon : "text-gray-400 dark:text-gray-500"}`} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
                                         {item.icon}
                                     </svg>
                                     <span className={`text-sm whitespace-nowrap transition-opacity duration-300 ${isCollapsed ? 'opacity-0' : 'opacity-100'}`}>
@@ -127,12 +129,12 @@ export default function DashboardSidebar() {
                 </nav>
 
                 {/* Language selector on mobile */}
-                <div className={`md:hidden p-3 border-t border-gray-200 transition-opacity duration-300 ${isCollapsed ? 'opacity-0' : 'opacity-100'}`}>
+                <div className={`md:hidden p-3 border-t border-gray-200 dark:border-gray-800 transition-opacity duration-300 ${isCollapsed ? 'opacity-0' : 'opacity-100'}`}>
                     <LanguageSwitcher dropUp />
                 </div>
 
                 {isInstallable && (
-                    <div className="p-4 border-t border-gray-200">
+                    <div className="p-4 border-t border-gray-200 dark:border-gray-800">
                         <button
                             onClick={installApp}
                             className={`flex items-center gap-3 w-full px-3 py-2.5 ${theme.installBg} ${theme.installHover} text-white rounded-lg transition-all duration-200 justify-center`}

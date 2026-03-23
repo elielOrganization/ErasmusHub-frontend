@@ -23,14 +23,14 @@ export default function AccessDenied({
 }: AccessDeniedProps) {
     return (
         <div className="min-h-[60vh] flex items-center justify-center p-6">
-            <div className="max-w-sm w-full bg-white rounded-2xl border border-gray-100 shadow-sm p-8 text-center space-y-5">
-                <div className="mx-auto w-16 h-16 rounded-2xl bg-red-100 flex items-center justify-center text-red-500">
+            <div className="max-w-sm w-full bg-white dark:bg-gray-900 rounded-2xl border border-gray-100 dark:border-gray-800 shadow-sm p-8 text-center space-y-5">
+                <div className="mx-auto w-16 h-16 rounded-2xl bg-red-100 dark:bg-red-900/30 flex items-center justify-center text-red-500">
                     <ShieldIcon />
                 </div>
 
                 <div className="space-y-2">
-                    <h1 className="text-xl font-bold text-gray-800">{title}</h1>
-                    <p className="text-sm text-gray-500 leading-relaxed">{message}</p>
+                    <h1 className="text-xl font-bold text-gray-800 dark:text-gray-100">{title}</h1>
+                    <p className="text-sm text-gray-500 dark:text-gray-400 leading-relaxed">{message}</p>
                 </div>
 
                 <Link

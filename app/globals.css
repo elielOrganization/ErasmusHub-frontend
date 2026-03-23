@@ -1,8 +1,28 @@
 @import "tailwindcss";
 
+/* Enable class-based dark mode for Tailwind v4 */
+@variant dark (&:where(.dark, .dark *));
+
 :root {
   --background: #ffffff;
   --foreground: #171717;
+  --surface: #ffffff;
+  --surface-secondary: #f9fafb;
+  --border: #e5e7eb;
+  --text-primary: #111827;
+  --text-secondary: #6b7280;
+  --text-muted: #9ca3af;
+}
+
+.dark {
+  --background: #0f1117;
+  --foreground: #ededed;
+  --surface: #1a1d27;
+  --surface-secondary: #141720;
+  --border: #2d3148;
+  --text-primary: #f1f5f9;
+  --text-secondary: #94a3b8;
+  --text-muted: #64748b;
 }
 
 @theme inline {
@@ -13,9 +33,15 @@
 }
 
 @media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
+  :root:not(.dark):not(.light) {
+    --background: #0f1117;
     --foreground: #ededed;
+    --surface: #1a1d27;
+    --surface-secondary: #141720;
+    --border: #2d3148;
+    --text-primary: #f1f5f9;
+    --text-secondary: #94a3b8;
+    --text-muted: #64748b;
   }
 }
 

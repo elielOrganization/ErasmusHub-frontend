@@ -94,10 +94,10 @@ function CheckboxSection({ filter, theme }: { filter: FilterCheckboxConfig; them
                     <button
                         key={opt.value}
                         onClick={() => filter.onChange(selected ? '' : opt.value)}
-                        className="flex items-center gap-2 px-2 py-1.5 rounded-lg hover:bg-gray-50 cursor-pointer transition-colors w-full text-left"
+                        className="flex items-center gap-2 px-2 py-1.5 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800 cursor-pointer transition-colors w-full text-left"
                     >
                         <span className={`w-4 h-4 rounded border-2 flex items-center justify-center shrink-0 transition-colors ${
-                            selected ? theme.checkboxBg : 'border-gray-300'
+                            selected ? theme.checkboxBg : 'border-gray-300 dark:border-gray-600'
                         }`}>
                             {selected && (
                                 <svg className="w-3 h-3 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth="3">
@@ -105,7 +105,7 @@ function CheckboxSection({ filter, theme }: { filter: FilterCheckboxConfig; them
                                 </svg>
                             )}
                         </span>
-                        <span className="text-sm text-gray-700">{opt.label}</span>
+                        <span className="text-sm text-gray-700 dark:text-gray-300">{opt.label}</span>
                     </button>
                 );
             })}
@@ -135,7 +135,7 @@ function PillsSection({ filter, theme }: { filter: FilterPillsConfig; theme: Rol
                         className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-medium transition-colors cursor-pointer ${
                             selected
                                 ? `${theme.pillBg} ${theme.pillText} ring-1 ${theme.borderLight}`
-                                : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                                : 'bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700'
                         }`}
                     >
                         {opt.icon}
@@ -271,7 +271,7 @@ export default function FilterBar({
                         value={searchValue}
                         onChange={(e) => onSearchChange?.(e.target.value)}
                         placeholder={searchPlaceholder}
-                        className={`w-full rounded-xl border border-gray-200 bg-white pl-9 pr-3 py-2 text-sm text-gray-700 focus:outline-none focus:ring-2 ${theme.focusRing} transition-colors`}
+                        className={`w-full rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 pl-9 pr-3 py-2 text-sm text-gray-700 dark:text-gray-200 focus:outline-none focus:ring-2 ${theme.focusRing} transition-colors`}
                     />
                 </div>
             )}
@@ -284,7 +284,7 @@ export default function FilterBar({
                         className={`flex items-center gap-1.5 px-3 py-2 rounded-xl border text-sm font-medium transition-colors cursor-pointer ${
                             activeCount > 0
                                 ? `${theme.borderLight} ${theme.activeBg} ${theme.activeText}`
-                                : 'border-gray-200 bg-white text-gray-600 hover:bg-gray-50'
+                                : 'border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700'
                         }`}
                     >
                         <FilterIcon />
@@ -298,7 +298,7 @@ export default function FilterBar({
 
                     {/* Desktop dropdown (hidden on mobile) */}
                     {open && (
-                        <div className="hidden sm:block absolute left-0 top-full mt-2 z-40 w-80 bg-white rounded-2xl border border-gray-200 shadow-lg p-4 space-y-4">
+                        <div className="hidden sm:block absolute left-0 top-full mt-2 z-40 w-80 bg-white dark:bg-gray-900 rounded-2xl border border-gray-200 dark:border-gray-700 shadow-lg p-4 space-y-4">
                             <FilterPanelContent filters={filters} activeCount={activeCount} clearLabel={clearLabel} theme={theme} />
                         </div>
                     )}
@@ -315,13 +315,13 @@ export default function FilterBar({
                     />
 
                     {/* Floating modal panel */}
-                    <div className={`relative w-full max-w-sm max-h-[80vh] bg-white rounded-2xl shadow-2xl flex flex-col ${closing ? 'animate-modal-out' : 'animate-modal-in'}`}>
+                    <div className={`relative w-full max-w-sm max-h-[80vh] bg-white dark:bg-gray-900 rounded-2xl shadow-2xl flex flex-col ${closing ? 'animate-modal-out' : 'animate-modal-in'}`}>
                         {/* Header */}
-                        <div className="flex items-center justify-between px-5 pt-4 pb-2 border-b border-gray-100">
-                            <h3 className="text-base font-semibold text-gray-800">{filterLabel}</h3>
+                        <div className="flex items-center justify-between px-5 pt-4 pb-2 border-b border-gray-100 dark:border-gray-800">
+                            <h3 className="text-base font-semibold text-gray-800 dark:text-gray-100">{filterLabel}</h3>
                             <button
                                 onClick={closeModal}
-                                className="p-1 rounded-lg text-gray-400 hover:text-gray-600 hover:bg-gray-100 transition-colors cursor-pointer"
+                                className="p-1 rounded-lg text-gray-400 hover:text-gray-600 hover:bg-gray-100 dark:hover:bg-gray-800 dark:hover:text-gray-300 transition-colors cursor-pointer"
                             >
                                 <CloseIcon />
                             </button>
@@ -333,7 +333,7 @@ export default function FilterBar({
                         </div>
 
                         {/* Apply button */}
-                        <div className="px-5 pb-5 pt-3 border-t border-gray-100">
+                        <div className="px-5 pb-5 pt-3 border-t border-gray-100 dark:border-gray-800">
                             <button
                                 onClick={closeModal}
                                 className={`w-full py-2.5 rounded-xl text-sm font-semibold text-white ${theme.btnPrimary} ${theme.btnPrimaryHover} cursor-pointer transition-colors`}

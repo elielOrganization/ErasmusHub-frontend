@@ -47,7 +47,7 @@ export default function LanguageSwitcher({ dropUp = false }: { dropUp?: boolean 
                 type="button"
                 disabled={isPending}
                 onClick={() => setIsOpen(!isOpen)}
-                className={`flex items-center gap-2 bg-white/80 hover:bg-white backdrop-blur-sm px-3 py-2 rounded-full shadow-sm border ${theme.borderLight} transition-all duration-200 ${isPending ? 'opacity-50 cursor-wait' : ''}`}
+                className={`flex items-center gap-2 bg-white/80 dark:bg-gray-800/80 hover:bg-white dark:hover:bg-gray-800 backdrop-blur-sm px-3 py-2 rounded-full shadow-sm border ${theme.borderLight} transition-all duration-200 ${isPending ? 'opacity-50 cursor-wait' : ''}`}
             >
                 <div className="w-5 h-5 rounded-full overflow-hidden border border-gray-200 shrink-0">
                     <img src={selected.flag} alt={selected.fullName} className="w-full h-full object-cover" />
@@ -56,14 +56,14 @@ export default function LanguageSwitcher({ dropUp = false }: { dropUp?: boolean 
             </button>
 
             {isOpen && (
-                <div className={`absolute w-36 bg-white rounded-2xl shadow-lg border ${theme.borderLight} overflow-hidden z-50 ${dropUp ? 'bottom-full mb-2 left-0' : 'right-0 mt-2'}`}>
+                <div className={`absolute w-36 bg-white dark:bg-gray-900 rounded-2xl shadow-lg border ${theme.borderLight} overflow-hidden z-50 ${dropUp ? 'bottom-full mb-2 left-0' : 'right-0 mt-2'}`}>
                     <div className="py-1">
                         {languages.map((lang) => (
                             <button
                                 key={lang.code}
                                 onClick={() => changeLanguage(lang.code)}
                                 className={`w-full flex items-center gap-3 px-4 py-2.5 text-sm transition-colors
-                  ${selected.code === lang.code ? `${theme.selectedBg} ${theme.selectedText} font-semibold` : "text-gray-600 hover:bg-gray-50"}
+                  ${selected.code === lang.code ? `${theme.selectedBg} ${theme.selectedText} font-semibold` : "text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800"}
                 `}
                             >
                                 <div className="w-5 h-5 rounded-full overflow-hidden border border-gray-200 shrink-0">

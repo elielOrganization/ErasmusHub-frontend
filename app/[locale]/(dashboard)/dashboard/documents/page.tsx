@@ -99,10 +99,10 @@ function FileDropzone({
 
     if (fileState.file && !fileState.error) {
         return (
-            <div className="flex items-center gap-3 rounded-xl px-4 py-3 border-2 border-green-200 bg-green-50">
+            <div className="flex items-center gap-3 rounded-xl px-4 py-3 border-2 border-green-200 dark:border-green-800 bg-green-50 dark:bg-green-900/20">
                 {getFileIcon(fileState.file.type)}
                 <div className="flex-1 min-w-0">
-                    <p className="text-sm font-medium text-gray-800 truncate">{fileState.file.name}</p>
+                    <p className="text-sm font-medium text-gray-800 dark:text-gray-100 truncate">{fileState.file.name}</p>
                     <p className="text-xs text-gray-400">{formatSize(fileState.file.size)}</p>
                 </div>
                 <button
@@ -128,18 +128,18 @@ function FileDropzone({
                 className={`
                     rounded-xl border-2 border-dashed px-6 py-8 text-center cursor-pointer transition-all duration-200
                     ${fileState.error
-                        ? "border-red-300 bg-red-50 hover:border-red-400"
-                        : "border-gray-200 bg-gray-50 hover:border-blue-300 hover:bg-blue-50"
+                        ? "border-red-300 bg-red-50 dark:bg-red-900/20 hover:border-red-400"
+                        : "border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 hover:border-blue-300 hover:bg-blue-50 dark:hover:bg-blue-900/20"
                     }
                 `}
             >
                 <div className="flex flex-col items-center gap-2">
-                    <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${fileState.error ? "bg-red-100" : "bg-white shadow-sm"}`}>
+                    <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${fileState.error ? "bg-red-100 dark:bg-red-900/30" : "bg-white dark:bg-gray-700 shadow-sm"}`}>
                         <svg className={`w-5 h-5 ${fileState.error ? "text-red-400" : "text-gray-400"}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
                         </svg>
                     </div>
-                    <p className={`text-sm font-medium ${fileState.error ? "text-red-500" : "text-gray-600"}`}>
+                    <p className={`text-sm font-medium ${fileState.error ? "text-red-500" : "text-gray-600 dark:text-gray-300"}`}>
                         {t("dropzoneLabel")}
                     </p>
                     <p className="text-xs text-gray-400">{t("dropzoneFormats")}</p>
@@ -172,14 +172,14 @@ function SectionCard({
     children: React.ReactNode;
 }) {
     return (
-        <div className="bg-white rounded-3xl border border-gray-100 shadow-sm p-6 sm:p-8">
+        <div className="bg-white dark:bg-gray-900 rounded-3xl border border-gray-100 dark:border-gray-800 shadow-sm p-6 sm:p-8">
             <div className="flex items-center gap-3 mb-6">
                 <div className={`w-10 h-10 rounded-xl ${iconBg} flex items-center justify-center`}>
                     <svg className={`w-5 h-5 ${iconColor}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         {icon}
                     </svg>
                 </div>
-                <h2 className="text-lg font-bold text-gray-800">{title}</h2>
+                <h2 className="text-lg font-bold text-gray-800 dark:text-gray-100">{title}</h2>
             </div>
             {children}
         </div>
@@ -275,14 +275,14 @@ export default function DocumentsPage() {
     if (submitSuccess) {
         return (
             <div className="max-w-2xl mx-auto p-4 sm:p-6">
-                <div className="bg-white rounded-3xl border border-gray-100 shadow-sm p-10 flex flex-col items-center text-center gap-4">
-                    <div className="w-16 h-16 rounded-2xl bg-green-50 flex items-center justify-center">
+                <div className="bg-white dark:bg-gray-900 rounded-3xl border border-gray-100 dark:border-gray-800 shadow-sm p-10 flex flex-col items-center text-center gap-4">
+                    <div className="w-16 h-16 rounded-2xl bg-green-50 dark:bg-green-900/30 flex items-center justify-center">
                         <svg className="w-8 h-8 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
                         </svg>
                     </div>
-                    <h2 className="text-xl font-bold text-gray-800">{t("successTitle")}</h2>
-                    <p className="text-gray-500 text-sm max-w-sm">{t("successMsg")}</p>
+                    <h2 className="text-xl font-bold text-gray-800 dark:text-gray-100">{t("successTitle")}</h2>
+                    <p className="text-gray-500 dark:text-gray-400 text-sm max-w-sm">{t("successMsg")}</p>
                     <button
                         type="button"
                         onClick={() => {
@@ -307,7 +307,7 @@ export default function DocumentsPage() {
         <div className="max-w-3xl mx-auto space-y-6 p-4 sm:p-6">
 
             {/* ── Page Header ── */}
-            <div className="bg-white rounded-3xl border border-gray-100 shadow-sm overflow-hidden">
+            <div className="bg-white dark:bg-gray-900 rounded-3xl border border-gray-100 dark:border-gray-800 shadow-sm overflow-hidden">
                 <div className={`h-28 bg-gradient-to-r ${theme.gradientFrom} ${theme.gradientTo} flex items-center px-8 gap-4`}>
                     <div className="w-12 h-12 rounded-2xl bg-white/20 flex items-center justify-center">
                         <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -333,7 +333,7 @@ export default function DocumentsPage() {
                     <div className="space-y-5">
                         {/* Full Name (read-only) */}
                         <div>
-                            <label className="block text-gray-600 text-xs font-semibold mb-2 tracking-wide uppercase">
+                            <label className="block text-gray-600 dark:text-gray-400 text-xs font-semibold mb-2 tracking-wide uppercase">
                                 {t("fullName")}
                             </label>
                             <div
@@ -343,7 +343,7 @@ export default function DocumentsPage() {
                                 <svg width="16" height="16" fill="none" stroke="#93c5fd" strokeWidth="2" viewBox="0 0 24 24">
                                     <path strokeLinecap="round" strokeLinejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
                                 </svg>
-                                <span className="flex-1 text-sm text-gray-800">{fullName}</span>
+                                <span className="flex-1 text-sm text-gray-800 dark:text-gray-100">{fullName}</span>
                                 <svg className="w-4 h-4 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
                                 </svg>
@@ -352,7 +352,7 @@ export default function DocumentsPage() {
 
                         {/* ID Type selector */}
                         <div>
-                            <label className="block text-gray-600 text-xs font-semibold mb-2 tracking-wide uppercase">
+                            <label className="block text-gray-600 dark:text-gray-400 text-xs font-semibold mb-2 tracking-wide uppercase">
                                 {t("idType")}
                             </label>
                             <div
@@ -400,7 +400,7 @@ export default function DocumentsPage() {
                         {/* ID Document upload — appears once a type is selected */}
                         {idType && (
                             <div className="space-y-5">
-                                <div className="flex items-center gap-2 pb-1 border-b border-gray-100">
+                                <div className="flex items-center gap-2 pb-1 border-b border-gray-100 dark:border-gray-800">
                                     <svg className="w-4 h-4 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10 6H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V8a2 2 0 00-2-2h-5m-4 0V5a2 2 0 114 0v1m-4 0a2 2 0 104 0m-5 8a2 2 0 100-4 2 2 0 000 4zm0 0c1.306 0 2.417.835 2.83 2M9 14a3.001 3.001 0 00-2.83 2M15 11h3m-3 4h2" />
                                     </svg>
@@ -412,7 +412,7 @@ export default function DocumentsPage() {
                                 {/* Front side */}
                                 <div>
                                     <div className="flex items-center justify-between mb-2">
-                                        <label className="block text-gray-600 text-xs font-semibold tracking-wide uppercase">
+                                        <label className="block text-gray-600 dark:text-gray-400 text-xs font-semibold tracking-wide uppercase">
                                             {t("idDocFront")}
                                         </label>
                                         <span className="text-xs font-medium px-2 py-0.5 rounded-full bg-red-50 text-red-500">
@@ -440,7 +440,7 @@ export default function DocumentsPage() {
                                 {/* Back side */}
                                 <div>
                                     <div className="flex items-center justify-between mb-2">
-                                        <label className="block text-gray-600 text-xs font-semibold tracking-wide uppercase">
+                                        <label className="block text-gray-600 dark:text-gray-400 text-xs font-semibold tracking-wide uppercase">
                                             {t("idDocBack")}
                                         </label>
                                         <span className="text-xs font-medium px-2 py-0.5 rounded-full bg-red-50 text-red-500">
@@ -480,7 +480,7 @@ export default function DocumentsPage() {
                         {/* Grades Certificate */}
                         <div>
                             <div className="flex items-center justify-between mb-2">
-                                <label className="block text-gray-600 text-xs font-semibold tracking-wide uppercase">
+                                <label className="block text-gray-600 dark:text-gray-400 text-xs font-semibold tracking-wide uppercase">
                                     {t("gradesCertificate")}
                                 </label>
                                 <span className="text-xs font-medium px-2 py-0.5 rounded-full bg-red-50 text-red-500">
@@ -505,12 +505,12 @@ export default function DocumentsPage() {
                             )}
                         </div>
 
-                        <div className="border-t border-gray-100" />
+                        <div className="border-t border-gray-100 dark:border-gray-800" />
 
                         {/* Cover Letter */}
                         <div>
                             <div className="flex items-center justify-between mb-2">
-                                <label className="block text-gray-600 text-xs font-semibold tracking-wide uppercase">
+                                <label className="block text-gray-600 dark:text-gray-400 text-xs font-semibold tracking-wide uppercase">
                                     {t("coverLetter")}
                                 </label>
                                 <span className="text-xs font-medium px-2 py-0.5 rounded-full bg-red-50 text-red-500">
@@ -576,7 +576,7 @@ export default function DocumentsPage() {
                                     )}
                                 </div>
                             </div>
-                            <span className="text-sm font-medium text-gray-700 group-hover:text-gray-900 transition-colors">
+                            <span className="text-sm font-medium text-gray-700 dark:text-gray-300 group-hover:text-gray-900 dark:group-hover:text-gray-100 transition-colors">
                                 {t("hasDisabilityCert")}
                             </span>
                         </label>

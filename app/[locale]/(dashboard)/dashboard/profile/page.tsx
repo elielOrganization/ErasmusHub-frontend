@@ -34,12 +34,12 @@ export default function UserProfilePage() {
     return (
         <div className="max-w-4xl mx-auto space-y-6 p-4 sm:p-6">
             {/* Header card */}
-            <div className="bg-white rounded-3xl border border-gray-100 shadow-sm overflow-hidden">
+            <div className="bg-white dark:bg-gray-900 rounded-3xl border border-gray-100 dark:border-gray-800 shadow-sm overflow-hidden">
                 <div className={`h-32 bg-gradient-to-r ${theme.gradientFrom} ${theme.gradientTo}`} />
                 <div className="px-6 sm:px-8 pb-8">
                     <div className="flex flex-col sm:flex-row items-center sm:items-end gap-4 -mt-14">
                         <div
-                            className="w-28 h-28 rounded-full flex items-center justify-center text-white text-3xl font-bold shadow-lg border-4 border-white shrink-0"
+                            className="w-28 h-28 rounded-full flex items-center justify-center text-white text-3xl font-bold shadow-lg border-4 border-white dark:border-gray-900 shrink-0"
                             style={{
                                 background: `linear-gradient(135deg, ${theme.avatarFrom} 0%, ${theme.avatarTo} 100%)`,
                             }}
@@ -49,10 +49,10 @@ export default function UserProfilePage() {
                     </div>
                     <div className="flex flex-col sm:flex-row items-center sm:items-center justify-between mt-4 gap-3">
                         <div className="text-center sm:text-left">
-                            <h1 className="text-2xl font-bold text-gray-800">
+                            <h1 className="text-2xl font-bold text-gray-800 dark:text-gray-100">
                                 {user.first_name} {user.last_name}
                             </h1>
-                            <p className="text-gray-500 mt-0.5">{user.email}</p>
+                            <p className="text-gray-500 dark:text-gray-400 mt-0.5">{user.email}</p>
                         </div>
                         <span
                             className={`px-3 py-1.5 rounded-full text-sm font-semibold ${theme.pillBg} ${theme.pillText}`}
@@ -65,14 +65,14 @@ export default function UserProfilePage() {
 
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                 {/* Personal Information */}
-                <div className="bg-white rounded-3xl border border-gray-100 shadow-sm p-6 sm:p-8">
+                <div className="bg-white dark:bg-gray-900 rounded-3xl border border-gray-100 dark:border-gray-800 shadow-sm p-6 sm:p-8">
                     <div className="flex items-center gap-3 mb-6">
                         <div className="w-10 h-10 rounded-xl bg-blue-50 flex items-center justify-center">
                             <svg className="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
                             </svg>
                         </div>
-                        <h2 className="text-lg font-bold text-gray-800">{t("personalInfo")}</h2>
+                        <h2 className="text-lg font-bold text-gray-800 dark:text-gray-100">{t("personalInfo")}</h2>
                     </div>
                     <div className="space-y-4">
                         <InfoRow label={t("firstName")} value={user.first_name} />
@@ -88,14 +88,14 @@ export default function UserProfilePage() {
                 </div>
 
                 {/* Contact Information */}
-                <div className="bg-white rounded-3xl border border-gray-100 shadow-sm p-6 sm:p-8">
+                <div className="bg-white dark:bg-gray-900 rounded-3xl border border-gray-100 dark:border-gray-800 shadow-sm p-6 sm:p-8">
                     <div className="flex items-center gap-3 mb-6">
                         <div className="w-10 h-10 rounded-xl bg-emerald-50 flex items-center justify-center">
                             <svg className="w-5 h-5 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
                             </svg>
                         </div>
-                        <h2 className="text-lg font-bold text-gray-800">{t("contactInfo")}</h2>
+                        <h2 className="text-lg font-bold text-gray-800 dark:text-gray-100">{t("contactInfo")}</h2>
                     </div>
                     <div className="space-y-4">
                         <InfoRow label={t("email")} value={user.email} />
@@ -106,7 +106,7 @@ export default function UserProfilePage() {
             </div>
 
             {/* Account Information */}
-            <div className="bg-white rounded-3xl border border-gray-100 shadow-sm p-6 sm:p-8">
+            <div className="bg-white dark:bg-gray-900 rounded-3xl border border-gray-100 dark:border-gray-800 shadow-sm p-6 sm:p-8">
                 <div className="flex items-center gap-3 mb-6">
                     <div className="w-10 h-10 rounded-xl bg-purple-50 flex items-center justify-center">
                         <svg className="w-5 h-5 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -160,7 +160,7 @@ function InfoRow({
     return (
         <div>
             <p className="text-xs text-gray-400 font-medium mb-1">{label}</p>
-            <p className="text-sm font-medium text-gray-700">{maskedValue}</p>
+            <p className="text-sm font-medium text-gray-700 dark:text-gray-200">{maskedValue}</p>
         </div>
     );
 }

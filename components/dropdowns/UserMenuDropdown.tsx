@@ -48,23 +48,23 @@ export default function UserMenuDropdown() {
             </button>
 
             {isOpen && (
-                <div className="absolute right-0 mt-3 w-64 bg-white rounded-2xl shadow-2xl border border-gray-100 overflow-hidden z-50 animate-in fade-in zoom-in duration-200">
+                <div className="absolute right-0 mt-3 w-64 bg-white dark:bg-gray-900 rounded-2xl shadow-2xl border border-gray-100 dark:border-gray-800 overflow-hidden z-50 animate-in fade-in zoom-in duration-200">
 
                     {/* Menu header with REAL user data */}
-                    <div className="flex flex-col items-center px-4 py-6 bg-gray-50/50 border-b border-gray-100">
+                    <div className="flex flex-col items-center px-4 py-6 bg-gray-50/50 dark:bg-gray-800/50 border-b border-gray-100 dark:border-gray-800">
                         <div
-                            className="w-16 h-16 rounded-full flex items-center justify-center text-white text-xl font-bold mb-3 shadow-md border-4 border-white"
+                            className="w-16 h-16 rounded-full flex items-center justify-center text-white text-xl font-bold mb-3 shadow-md border-4 border-white dark:border-gray-700"
                             style={{
                                 background: `linear-gradient(135deg, ${theme.avatarFrom} 0%, ${theme.avatarTo} 100%)`,
                             }}
                         >
                             {initials}
                         </div>
-                        <p className="text-base font-bold text-gray-800 text-center">
+                        <p className="text-base font-bold text-gray-800 dark:text-gray-100 text-center">
                             {user?.first_name} {user?.last_name}
                         </p>
-                        <p className="text-xs text-gray-400 text-center">{user?.email}</p>
-                        <p className="text-xs text-gray-500 mt-1">
+                        <p className="text-xs text-gray-400 dark:text-gray-500 text-center">{user?.email}</p>
+                        <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
                             {translateRole(user?.role?.name, tRoles)}
                         </p>
                     </div>
@@ -72,9 +72,9 @@ export default function UserMenuDropdown() {
                     <div className="p-2 space-y-1">
                         <button
                             onClick={() => { router.push('/dashboard/profile'); setIsOpen(false) }}
-                            className={`w-full flex items-center gap-3 px-4 py-2.5 text-sm text-gray-600 ${theme.hoverBg} ${theme.hoverText} rounded-xl transition-colors group`}
+                            className={`w-full flex items-center gap-3 px-4 py-2.5 text-sm text-gray-600 dark:text-gray-300 ${theme.hoverBg} ${theme.hoverText} rounded-xl transition-colors group`}
                         >
-                            <svg className={`w-5 h-5 text-gray-400 ${theme.groupHoverIcon}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <svg className={`w-5 h-5 text-gray-400 dark:text-gray-500 ${theme.groupHoverIcon}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
                             </svg>
                             <span className="font-medium">{t('profile')}</span>
@@ -82,9 +82,9 @@ export default function UserMenuDropdown() {
 
                         <button
                             onClick={() => { router.push('/dashboard/settings'); setIsOpen(false) }}
-                            className={`w-full flex items-center gap-3 px-4 py-2.5 text-sm text-gray-600 ${theme.hoverBg} ${theme.hoverText} rounded-xl transition-colors group`}
+                            className={`w-full flex items-center gap-3 px-4 py-2.5 text-sm text-gray-600 dark:text-gray-300 ${theme.hoverBg} ${theme.hoverText} rounded-xl transition-colors group`}
                         >
-                            <svg className={`w-5 h-5 text-gray-400 ${theme.groupHoverIcon}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <svg className={`w-5 h-5 text-gray-400 dark:text-gray-500 ${theme.groupHoverIcon}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
                             </svg>
                             <span className="font-medium">{t('settings')}</span>
@@ -92,10 +92,10 @@ export default function UserMenuDropdown() {
                     </div>
 
                     {/* Footer: Logout (Using the context function) */}
-                    <div className="p-2 border-t border-gray-50 bg-gray-50/30">
+                    <div className="p-2 border-t border-gray-50 dark:border-gray-800 bg-gray-50/30 dark:bg-gray-800/30">
                         <button
                             onClick={() => logout()} // 4. Execute the real logout
-                            className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-red-600 bg-red-50/50 hover:bg-red-50 rounded-xl transition-colors group"
+                            className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-red-600 bg-red-50/50 dark:bg-red-900/20 hover:bg-red-50 dark:hover:bg-red-900/30 rounded-xl transition-colors group"
                         >
                             <svg className="w-5 h-5 text-red-400 group-hover:text-red-600 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />

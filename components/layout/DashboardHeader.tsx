@@ -12,7 +12,7 @@ export default function DashboardHeader() {
     const theme = useRoleTheme();
 
     return (
-        <header className="fixed top-0 left-0 w-full h-12 bg-white border-b border-gray-200 flex items-center justify-between px-4 sm:px-6 z-30 shadow-sm">
+        <header className="fixed top-0 left-0 w-full h-12 bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-800 flex items-center justify-between px-4 sm:px-6 z-30 shadow-sm">
             {/* Mobile: logo button | Desktop: spacer */}
             <div className="w-32 flex items-center">
                 <button
@@ -37,7 +37,7 @@ export default function DashboardHeader() {
             {/* Controls on the right */}
             <div className="flex items-center gap-2">
                 <NotificationDropdown />
-                <div className="h-6 w-px bg-gray-100 mx-1 hidden md:block"></div>
+                <div className="h-6 w-px bg-gray-100 dark:bg-gray-700 mx-1 hidden md:block"></div>
                 <div className="hidden md:block">
                     <LanguageSwitcher />
                 </div>

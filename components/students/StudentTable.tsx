@@ -76,10 +76,10 @@ function AssignModal({ student, open, onClose, opportunities }: {
     return (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
             <div className="fixed inset-0 bg-black/40 backdrop-blur-sm" onClick={onClose} />
-            <div className="relative bg-white rounded-2xl shadow-xl w-full max-w-md p-6 space-y-4">
+            <div className="relative bg-white dark:bg-gray-900 rounded-2xl shadow-xl w-full max-w-md p-6 space-y-4">
                 <div className="flex items-center justify-between">
-                    <h3 className="text-lg font-bold text-gray-800">{t('assignToOpportunity')}</h3>
-                    <button onClick={onClose} className="p-1 rounded-lg text-gray-400 hover:text-gray-600 hover:bg-gray-100 transition-colors cursor-pointer">
+                    <h3 className="text-lg font-bold text-gray-800 dark:text-gray-100">{t('assignToOpportunity')}</h3>
+                    <button onClick={onClose} className="p-1 rounded-lg text-gray-400 hover:text-gray-600 hover:bg-gray-100 dark:hover:bg-gray-800 dark:hover:text-gray-300 transition-colors cursor-pointer">
                         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="w-5 h-5">
                             <path d="M6.28 5.22a.75.75 0 00-1.06 1.06L8.94 10l-3.72 3.72a.75.75 0 101.06 1.06L10 11.06l3.72 3.72a.75.75 0 101.06-1.06L11.06 10l3.72-3.72a.75.75 0 00-1.06-1.06L10 8.94 6.28 5.22z" />
                         </svg>
@@ -94,9 +94,9 @@ function AssignModal({ student, open, onClose, opportunities }: {
                 </div>
 
                 <div>
-                    <label className="block text-xs font-medium text-gray-500 mb-1">{t('selectOpportunity')}</label>
+                    <label className="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">{t('selectOpportunity')}</label>
                     {openOpportunities.length === 0 ? (
-                        <div className="rounded-xl border border-gray-200 bg-gray-50 px-3 py-2 text-sm text-gray-400">
+                        <div className="rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 px-3 py-2 text-sm text-gray-400">
                             {t('noOpportunitiesYet')}
                         </div>
                     ) : (
@@ -104,7 +104,7 @@ function AssignModal({ student, open, onClose, opportunities }: {
                             <select
                                 value={selectedOpp}
                                 onChange={(e) => setSelectedOpp(e.target.value)}
-                                className={`w-full appearance-none rounded-xl border border-gray-200 bg-white px-3 py-2 pr-8 text-sm text-gray-700 focus:outline-none focus:ring-2 ${theme.focusRing} transition-colors cursor-pointer`}
+                                className={`w-full appearance-none rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 px-3 py-2 pr-8 text-sm text-gray-700 dark:text-gray-200 focus:outline-none focus:ring-2 ${theme.focusRing} transition-colors cursor-pointer`}
                             >
                                 <option value="">{t('selectOpportunityPlaceholder')}</option>
                                 {openOpportunities.map((opp) => (
@@ -135,7 +135,7 @@ function AssignModal({ student, open, onClose, opportunities }: {
                 <div className="flex justify-end gap-2 pt-2">
                     <button
                         onClick={onClose}
-                        className="px-4 py-2 rounded-xl text-sm font-medium text-gray-600 hover:bg-gray-100 transition-colors cursor-pointer"
+                        className="px-4 py-2 rounded-xl text-sm font-medium text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors cursor-pointer"
                     >
                         {t('cancel')}
                     </button>
@@ -207,7 +207,7 @@ export default function StudentTable({ users, opportunities }: { users: User[]; 
                     <div className="hidden lg:block overflow-x-auto">
                         <table className="w-full text-left">
                             <thead>
-                                <tr className="border-b border-gray-100 text-gray-400 text-sm">
+                                <tr className="border-b border-gray-100 dark:border-gray-800 text-gray-400 dark:text-gray-500 text-sm">
                                     <th className="pb-4 font-medium">{t('student')}</th>
                                     <th className="pb-4 font-medium">{t('email')}</th>
                                     <th className="pb-4 font-medium">{t('phone')}</th>
@@ -218,16 +218,16 @@ export default function StudentTable({ users, opportunities }: { users: User[]; 
                             </thead>
                             <tbody className="divide-y divide-gray-50">
                                 {paginatedStudents.map((student) => (
-                                    <tr key={student.id} className="group hover:bg-gray-50/80 transition-colors">
-                                        <td className="py-4 font-medium text-gray-700">
+                                    <tr key={student.id} className="group hover:bg-gray-50/80 dark:hover:bg-gray-800/50 transition-colors">
+                                        <td className="py-4 font-medium text-gray-700 dark:text-gray-200">
                                             {student.first_name} {student.last_name}
                                         </td>
-                                        <td className="py-4 text-gray-500">{student.email}</td>
-                                        <td className="py-4 text-gray-500">{student.phone || '—'}</td>
-                                        <td className="py-4 text-gray-500 text-sm">
+                                        <td className="py-4 text-gray-500 dark:text-gray-400">{student.email}</td>
+                                        <td className="py-4 text-gray-500 dark:text-gray-400">{student.phone || '—'}</td>
+                                        <td className="py-4 text-gray-500 dark:text-gray-400 text-sm">
                                             {student.birth_date ? new Date(student.birth_date).toLocaleDateString() : '—'}
                                         </td>
-                                        <td className="py-4 text-gray-500 text-sm">
+                                        <td className="py-4 text-gray-500 dark:text-gray-400 text-sm">
                                             {new Date(student.created_at).toLocaleDateString()}
                                         </td>
                                         <td className="py-4">
@@ -247,9 +247,9 @@ export default function StudentTable({ users, opportunities }: { users: User[]; 
                     {/* Mobile cards */}
                     <div className="lg:hidden space-y-3">
                         {paginatedStudents.map((student) => (
-                            <div key={student.id} className="rounded-2xl border border-gray-100 p-4 space-y-3">
+                            <div key={student.id} className="rounded-2xl border border-gray-100 dark:border-gray-800 p-4 space-y-3">
                                 <div className="flex items-center justify-between">
-                                    <p className="font-semibold text-gray-800">
+                                    <p className="font-semibold text-gray-800 dark:text-gray-100">
                                         {student.first_name} {student.last_name}
                                     </p>
                                     <span className="px-2 py-0.5 rounded-lg text-xs font-semibold bg-emerald-100 text-emerald-700">
@@ -259,7 +259,7 @@ export default function StudentTable({ users, opportunities }: { users: User[]; 
                                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-1.5 text-sm">
                                     <div>
                                         <span className="text-gray-400">{t('email')}: </span>
-                                        <span className="text-gray-600 break-all">{student.email}</span>
+                                        <span className="text-gray-600 dark:text-gray-300 break-all">{student.email}</span>
                                     </div>
                                     <div>
                                         <span className="text-gray-400">{t('phone')}: </span>
@@ -278,7 +278,7 @@ export default function StudentTable({ users, opportunities }: { users: User[]; 
                                         </span>
                                     </div>
                                 </div>
-                                <div className="flex justify-end border-t border-gray-50 pt-2">
+                                <div className="flex justify-end border-t border-gray-50 dark:border-gray-800 pt-2">
                                     <button
                                         onClick={() => setAssignStudent(student)}
                                         className={`px-3 py-1.5 rounded-lg text-xs font-semibold ${theme.accentText} ${theme.accentBg} ${theme.softHover} transition-colors cursor-pointer`}
