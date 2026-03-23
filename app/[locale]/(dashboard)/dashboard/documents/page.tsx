@@ -19,7 +19,7 @@ const ID_TYPES = [
     "other",
 ] as const;
 
-type DocKey = "grades" | "coverLetter" | "disability";
+type DocKey = "idDocFront" | "idDocBack" | "grades" | "coverLetter" | "disability";
 
 interface FileState {
     file: File | null;
@@ -31,6 +31,8 @@ const emptyFileState = (): FileState => ({ file: null, error: null, dragging: fa
 
 interface FormErrors {
     idType?: string;
+    idDocFront?: string;
+    idDocBack?: string;
     grades?: string;
     coverLetter?: string;
     disability?: string;
@@ -194,6 +196,8 @@ export default function DocumentsPage() {
     const [idType, setIdType] = useState("");
     const [hasDisability, setHasDisability] = useState(false);
     const [files, setFiles] = useState<Record<DocKey, FileState>>({
+        idDocFront: emptyFileState(),
+        idDocBack: emptyFileState(),
         grades: emptyFileState(),
         coverLetter: emptyFileState(),
         disability: emptyFileState(),
@@ -222,6 +226,8 @@ export default function DocumentsPage() {
     const validate = (): boolean => {
         const newErrors: FormErrors = {};
         if (!idType) newErrors.idType = t("errorIdType");
+        if (idType && (!files.idDocFront.file || files.idDocFront.error)) newErrors.idDocFront = t("errorRequired");
+        if (idType && (!files.idDocBack.file || files.idDocBack.error)) newErrors.idDocBack = t("errorRequired");
         if (!files.grades.file || files.grades.error) newErrors.grades = t("errorRequired");
         if (!files.coverLetter.file || files.coverLetter.error) newErrors.coverLetter = t("errorRequired");
         if (hasDisability && (!files.disability.file || files.disability.error)) {
@@ -241,6 +247,8 @@ export default function DocumentsPage() {
             const token = Cookies.get("auth_token");
             const formData = new FormData();
             formData.append("id_type", idType);
+            if (files.idDocFront.file) formData.append("id_document_front", files.idDocFront.file);
+            if (files.idDocBack.file) formData.append("id_document_back", files.idDocBack.file);
             if (files.grades.file) formData.append("grades_certificate", files.grades.file);
             if (files.coverLetter.file) formData.append("cover_letter", files.coverLetter.file);
             if (hasDisability && files.disability.file) {
@@ -281,7 +289,7 @@ export default function DocumentsPage() {
                             setSubmitSuccess(false);
                             setIdType("");
                             setHasDisability(false);
-                            setFiles({ grades: emptyFileState(), coverLetter: emptyFileState(), disability: emptyFileState() });
+                            setFiles({ idDocFront: emptyFileState(), idDocBack: emptyFileState(), grades: emptyFileState(), coverLetter: emptyFileState(), disability: emptyFileState() });
                         }}
                         className="mt-2 px-6 py-2.5 rounded-xl text-sm font-semibold text-white transition-all duration-200 active:scale-[0.97]"
                         style={{ background: "linear-gradient(135deg, #1d4ed8, #3b82f6)" }}
@@ -388,6 +396,76 @@ export default function DocumentsPage() {
                                 </p>
                             )}
                         </div>
+
+                        {/* ID Document upload — appears once a type is selected */}
+                        {idType && (
+                            <div className="space-y-5">
+                                <div className="flex items-center gap-2 pb-1 border-b border-gray-100">
+                                    <svg className="w-4 h-4 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10 6H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V8a2 2 0 00-2-2h-5m-4 0V5a2 2 0 114 0v1m-4 0a2 2 0 104 0m-5 8a2 2 0 100-4 2 2 0 000 4zm0 0c1.306 0 2.417.835 2.83 2M9 14a3.001 3.001 0 00-2.83 2M15 11h3m-3 4h2" />
+                                    </svg>
+                                    <p className="text-xs font-semibold text-blue-600 uppercase tracking-wide">
+                                        {t(`idType_${idType}` as Parameters<typeof t>[0])}
+                                    </p>
+                                </div>
+
+                                {/* Front side */}
+                                <div>
+                                    <div className="flex items-center justify-between mb-2">
+                                        <label className="block text-gray-600 text-xs font-semibold tracking-wide uppercase">
+                                            {t("idDocFront")}
+                                        </label>
+                                        <span className="text-xs font-medium px-2 py-0.5 rounded-full bg-red-50 text-red-500">
+                                            {t("required")}
+                                        </span>
+                                    </div>
+                                    <p className="text-xs text-gray-400 mb-3">{t("idDocFrontDesc")}</p>
+                                    <FileDropzone
+                                        id="idDocFront"
+                                        fileState={files.idDocFront}
+                                        onFileChange={handleFileChange}
+                                        onRemove={handleRemove}
+                                        t={t}
+                                    />
+                                    {errors.idDocFront && (
+                                        <p className="mt-1.5 text-xs text-red-600 flex items-center gap-1">
+                                            <svg className="w-3 h-3 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                            </svg>
+                                            {errors.idDocFront}
+                                        </p>
+                                    )}
+                                </div>
+
+                                {/* Back side */}
+                                <div>
+                                    <div className="flex items-center justify-between mb-2">
+                                        <label className="block text-gray-600 text-xs font-semibold tracking-wide uppercase">
+                                            {t("idDocBack")}
+                                        </label>
+                                        <span className="text-xs font-medium px-2 py-0.5 rounded-full bg-red-50 text-red-500">
+                                            {t("required")}
+                                        </span>
+                                    </div>
+                                    <p className="text-xs text-gray-400 mb-3">{t("idDocBackDesc")}</p>
+                                    <FileDropzone
+                                        id="idDocBack"
+                                        fileState={files.idDocBack}
+                                        onFileChange={handleFileChange}
+                                        onRemove={handleRemove}
+                                        t={t}
+                                    />
+                                    {errors.idDocBack && (
+                                        <p className="mt-1.5 text-xs text-red-600 flex items-center gap-1">
+                                            <svg className="w-3 h-3 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                            </svg>
+                                            {errors.idDocBack}
+                                        </p>
+                                    )}
+                                </div>
+                            </div>
+                        )}
                     </div>
                 </SectionCard>
 
