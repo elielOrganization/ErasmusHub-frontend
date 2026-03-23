@@ -47,10 +47,10 @@ export default function DataTable<T extends Record<string, any>>({
     };
 
     return (
-        <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
+        <div className="bg-white dark:bg-gray-900 rounded-2xl border border-gray-100 dark:border-gray-800 shadow-sm overflow-hidden">
             {/* Controls */}
             <div className="flex items-center justify-between px-6 py-4">
-                <div className="flex items-center gap-2 text-sm text-gray-600">
+                <div className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-300">
                     {t('show')}
                     <select
                         value={pageSize}
@@ -58,7 +58,7 @@ export default function DataTable<T extends Record<string, any>>({
                             onPageSizeChange(Number(e.target.value));
                             onPageChange(1);
                         }}
-                        className="border border-gray-200 rounded-lg px-2 py-1 text-sm bg-white"
+                        className="border border-gray-200 dark:border-gray-700 rounded-lg px-2 py-1 text-sm bg-white dark:bg-gray-800 dark:text-gray-200"
                     >
                         {[10, 25, 50].map((size) => (
                             <option key={size} value={size}>{size}</option>
@@ -67,12 +67,12 @@ export default function DataTable<T extends Record<string, any>>({
                     {t('records')}
                 </div>
                 <div className="flex items-center gap-2">
-                    <span className="text-sm text-gray-600">{t('search')}</span>
+                    <span className="text-sm text-gray-600 dark:text-gray-300">{t('search')}</span>
                     <input
                         type="text"
                         value={searchValue}
                         onChange={(e) => handleSearch(e.target.value)}
-                        className="border border-gray-200 rounded-lg px-3 py-1.5 text-sm w-48 focus:outline-none focus:border-blue-400"
+                        className="border border-gray-200 dark:border-gray-700 rounded-lg px-3 py-1.5 text-sm w-48 bg-white dark:bg-gray-800 dark:text-gray-200 focus:outline-none focus:border-blue-400"
                     />
                 </div>
             </div>
@@ -81,18 +81,18 @@ export default function DataTable<T extends Record<string, any>>({
             <div className="overflow-x-auto">
                 <table className="w-full">
                     <thead>
-                        <tr className="bg-gray-50 border-y border-gray-100">
+                        <tr className="bg-gray-50 dark:bg-gray-800/50 border-y border-gray-100 dark:border-gray-800">
                             {columns.map((col) => (
                                 <th
                                     key={col.key}
-                                    className="px-6 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider"
+                                    className="px-6 py-3 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider"
                                 >
                                     {col.label}
                                 </th>
                             ))}
                         </tr>
                     </thead>
-                    <tbody className="divide-y divide-gray-50">
+                    <tbody className="divide-y divide-gray-50 dark:divide-gray-800">
                         {loading ? (
                             <tr>
                                 <td colSpan={columns.length} className="px-6 py-8 text-center text-sm text-gray-400">
@@ -107,9 +107,9 @@ export default function DataTable<T extends Record<string, any>>({
                             </tr>
                         ) : (
                             data.map((item, idx) => (
-                                <tr key={idx} className="hover:bg-gray-50/50 transition-colors">
+                                <tr key={idx} className="hover:bg-gray-50/50 dark:hover:bg-gray-800/50 transition-colors">
                                     {columns.map((col) => (
-                                        <td key={col.key} className="px-6 py-3 text-sm text-gray-700">
+                                        <td key={col.key} className="px-6 py-3 text-sm text-gray-700 dark:text-gray-200">
                                             {col.render ? col.render(item) : String(item[col.key] ?? '')}
                                         </td>
                                     ))}
@@ -121,15 +121,15 @@ export default function DataTable<T extends Record<string, any>>({
             </div>
 
             {/* Pagination */}
-            <div className="flex items-center justify-between px-6 py-4 border-t border-gray-100">
-                <span className="text-sm text-gray-500">
+            <div className="flex items-center justify-between px-6 py-4 border-t border-gray-100 dark:border-gray-800">
+                <span className="text-sm text-gray-500 dark:text-gray-400">
                     {t('showing', { from, to, total })}
                 </span>
                 <div className="flex items-center gap-1">
                     <button
                         onClick={() => onPageChange(page - 1)}
                         disabled={page <= 1}
-                        className="px-3 py-1.5 text-sm rounded-lg border border-gray-200 text-gray-600 hover:bg-gray-50 disabled:opacity-40 disabled:cursor-not-allowed"
+                        className="px-3 py-1.5 text-sm rounded-lg border border-gray-200 dark:border-gray-700 text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800 disabled:opacity-40 disabled:cursor-not-allowed"
                     >
                         {t('previous')}
                     </button>
@@ -142,7 +142,7 @@ export default function DataTable<T extends Record<string, any>>({
                                 className={`w-8 h-8 text-sm rounded-lg ${
                                     page === pageNum
                                         ? 'bg-blue-600 text-white'
-                                        : 'border border-gray-200 text-gray-600 hover:bg-gray-50'
+                                        : 'border border-gray-200 dark:border-gray-700 text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800'
                                 }`}
                             >
                                 {pageNum}
@@ -152,7 +152,7 @@ export default function DataTable<T extends Record<string, any>>({
                     <button
                         onClick={() => onPageChange(page + 1)}
                         disabled={page >= totalPages}
-                        className="px-3 py-1.5 text-sm rounded-lg border border-gray-200 text-gray-600 hover:bg-gray-50 disabled:opacity-40 disabled:cursor-not-allowed"
+                        className="px-3 py-1.5 text-sm rounded-lg border border-gray-200 dark:border-gray-700 text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800 disabled:opacity-40 disabled:cursor-not-allowed"
                     >
                         {t('next')}
                     </button>

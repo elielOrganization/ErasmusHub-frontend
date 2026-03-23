@@ -84,11 +84,11 @@ export default function DashboardCalendar() {
     }
 
     return (
-        <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
+        <div className="bg-white dark:bg-gray-900 rounded-2xl border border-gray-100 dark:border-gray-800 shadow-sm overflow-hidden">
             {/* Header */}
-            <div className="flex items-center justify-between px-5 py-4 border-b border-gray-100">
+            <div className="flex items-center justify-between px-5 py-4 border-b border-gray-100 dark:border-gray-800">
                 <div className="flex items-center gap-2">
-                    <h2 className="text-lg font-semibold text-gray-800">{monthLabel}</h2>
+                    <h2 className="text-lg font-semibold text-gray-800 dark:text-gray-100">{monthLabel}</h2>
                     <button
                         onClick={goToday}
                         className={`text-xs ${theme.accent} ${theme.accentHover} font-medium px-2 py-0.5 rounded-md ${theme.accentBgHover} transition-colors cursor-pointer`}
@@ -97,7 +97,7 @@ export default function DashboardCalendar() {
                     </button>
                 </div>
                 <div className="flex items-center gap-1">
-                    <button onClick={prev} className="p-1.5 rounded-lg text-gray-400 hover:text-gray-600 hover:bg-gray-100 transition-colors cursor-pointer">
+                    <button onClick={prev} className="p-1.5 rounded-lg text-gray-400 hover:text-gray-600 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors cursor-pointer">
                         <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth="2">
                             <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
                         </svg>
@@ -117,8 +117,8 @@ export default function DashboardCalendar() {
                         {daysFull.map((day, i) => (
                             <th
                                 key={day}
-                                className={`py-2.5 text-xs font-medium uppercase tracking-wide border-b border-gray-100 ${
-                                    i >= 5 ? 'text-gray-300' : 'text-gray-400'
+                                className={`py-2.5 text-xs font-medium uppercase tracking-wide border-b border-gray-100 dark:border-gray-800 ${
+                                    i >= 5 ? 'text-gray-300 dark:text-gray-700' : 'text-gray-400 dark:text-gray-500'
                                 }`}
                             >
                                 <span className="hidden md:inline">{day}</span>
@@ -136,11 +136,11 @@ export default function DashboardCalendar() {
                                 return (
                                     <td
                                         key={di}
-                                        className={`border border-gray-50 h-16 md:h-20 align-top p-1.5 transition-colors ${
+                                        className={`border border-gray-50 dark:border-gray-800 h-16 md:h-20 align-top p-1.5 transition-colors ${
                                             day === null
-                                                ? 'bg-gray-50/50'
+                                                ? 'bg-gray-50/50 dark:bg-gray-800/30'
                                                 : isWeekend
-                                                  ? 'bg-gray-50/30'
+                                                  ? 'bg-gray-50/30 dark:bg-gray-800/20'
                                                   : theme.hoverSoftBgHalf
                                         }`}
                                     >
@@ -151,8 +151,8 @@ export default function DashboardCalendar() {
                                                         todayCell
                                                             ? `${theme.btnPrimary} text-white`
                                                             : isWeekend
-                                                              ? 'text-gray-300'
-                                                              : 'text-gray-600'
+                                                              ? 'text-gray-300 dark:text-gray-600'
+                                                              : 'text-gray-600 dark:text-gray-400'
                                                     }`}
                                                 >
                                                     {day}

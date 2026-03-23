@@ -19,7 +19,7 @@ export default function NotificationDropdown() {
         <div className="relative" ref={menuRef}>
             <button
                 onClick={() => setIsOpen(!isOpen)}
-                className="p-2 rounded-full text-gray-400 hover:bg-gray-50 hover:text-blue-600 transition-all relative"
+                className="p-2 rounded-full text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800 hover:text-blue-600 transition-all relative"
             >
                 {/* Outline bell icon */}
                 <svg
@@ -34,13 +34,13 @@ export default function NotificationDropdown() {
             </button>
 
             {isOpen && (
-                <div className="absolute right-0 mt-2 w-80 bg-white rounded-2xl shadow-xl border border-gray-100 overflow-hidden z-50 animate-in fade-in zoom-in duration-200">
-                    <div className="px-4 py-3 border-b border-gray-50 bg-gray-50/50">
-                        <h3 className="text-sm font-bold text-gray-800">{t('notifications')}</h3>
+                <div className="absolute right-0 mt-2 w-80 bg-white dark:bg-gray-900 rounded-2xl shadow-xl border border-gray-100 dark:border-gray-800 overflow-hidden z-50 animate-in fade-in zoom-in duration-200">
+                    <div className="px-4 py-3 border-b border-gray-50 dark:border-gray-800 bg-gray-50/50 dark:bg-gray-800/50">
+                        <h3 className="text-sm font-bold text-gray-800 dark:text-gray-100">{t('notifications')}</h3>
                     </div>
                     <div className="max-h-64 overflow-y-auto p-8 text-center">
                         {/* Decorative icon for empty state */}
-                        <div className="w-12 h-12 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-3">
+                        <div className="w-12 h-12 bg-gray-100 dark:bg-gray-800 rounded-full flex items-center justify-center mx-auto mb-3">
                             <svg className="w-6 h-6 text-gray-300" fill="currentColor" viewBox="0 0 24 24">
                                 <path d="M12 22c1.1 0 2-.9 2-2h-4c0 1.1.89 2 2 2zm6-6v-5c0-3.07-1.64-5.64-4.5-6.32V4c0-.83-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5v.68C7.63 5.36 6 7.92 6 11v5l-2 2v1h16v-1l-2-2z" />
                             </svg>

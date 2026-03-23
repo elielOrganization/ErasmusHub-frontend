@@ -44,7 +44,7 @@ export default async function DashboardLayout({ children }: { children: React.Re
     // 4. If everything is OK, render the layout normally
     return (
         <SidebarProvider initialCollapsed={initialCollapsed}>
-            <div className="min-h-screen bg-gray-50">
+            <div className="min-h-screen bg-gray-50 dark:bg-gray-950">
                 <DashboardHeader />
                 <DashboardSidebar />
                 <MainContentWrapper>

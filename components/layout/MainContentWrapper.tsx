@@ -6,7 +6,7 @@ export default function MainContentWrapper({ children }: { children: React.React
 
     return (
         <main className={`transition-all duration-300 pt-12 min-h-screen pl-0 ${isCollapsed ? 'md:pl-16' : 'md:pl-64'}`}>
-            <div className="p-8">
+            <div className="p-8 dark:text-gray-100">
                 {children}
             </div>
         </main>
