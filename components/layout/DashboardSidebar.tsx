@@ -7,6 +7,7 @@ import { usePWA } from '@/hooks/usePWA';
 import { useAuth } from '@/context/AuthContext';
 import { useApi } from '@/hooks/useApi';
 import { useRoleTheme } from '@/hooks/useRoleTheme';
+import { useNotificationPrefs, PREF_TYPE_MAP } from '@/hooks/useNotificationPrefs';
 import LanguageSwitcher from '../dropdowns/LanguageSwitcher';
 
 export default function DashboardSidebar() {
@@ -27,9 +28,22 @@ export default function DashboardSidebar() {
     const isTeacher = roleName.toLowerCase().includes('teacher') || roleName.toLowerCase().includes('profesor');
     const isLector = !isStudent && !isAdmin && !isTeacher;
 
-    // Fetch unread notifications count for badge
-    const { data: unreadData } = useApi<{ count: number }>('/notifications/me/unread-count');
-    const unreadCount = unreadData?.count || 0;
+    // Fetch notifications with polling and filter by user preferences
+    const { prefs } = useNotificationPrefs();
+    const { data: notifsData } = useApi<{ items: { type: string; is_read: boolean }[] }>(
+        '/notifications/me?page_size=100',
+        { refreshInterval: 30_000 }
+    );
+    const enabledTypes = [
+        ...(prefs.weeklyDigest ? PREF_TYPE_MAP.weeklyDigest : []),
+        ...(prefs.applicationUpdates ? PREF_TYPE_MAP.applicationUpdates : []),
+        ...(prefs.taskReminders ? PREF_TYPE_MAP.taskReminders : []),
+    ];
+    const unreadCount = (notifsData?.items ?? []).filter((n) => {
+        if (n.is_read) return false;
+        const isKnownType = Object.values(PREF_TYPE_MAP).flat().includes(n.type);
+        return !isKnownType || enabledTypes.includes(n.type);
+    }).length;
 
     const defaultItems = [
         { name: t('home'), path: '/dashboard', icon: <path strokeLinecap="round" strokeLinejoin="round" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" /> },

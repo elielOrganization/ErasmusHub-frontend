@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useRef, ChangeEvent } from "react";
+import { useNotificationPrefs } from "@/hooks/useNotificationPrefs";
 import { useTranslations } from "next-intl";
 import { useAuth } from "@/context/AuthContext";
 import { useRoleTheme } from "@/hooks/useRoleTheme";
@@ -368,14 +369,7 @@ function SecuritySection({ t }: { t: ReturnType<typeof useTranslations> }) {
 // ─── NOTIFICATIONS ────────────────────────────────────────────────────────────
 
 function NotificationsSection({ t }: { t: ReturnType<typeof useTranslations> }) {
-    const [prefs, setPrefs] = useState({
-        emailNotifs: true,
-        smsNotifs: false,
-        weeklyDigest: true,
-        applicationUpdates: true,
-        taskReminders: true,
-    });
-    const toggle = (key: keyof typeof prefs) => setPrefs((p) => ({ ...p, [key]: !p[key] }));
+    const { prefs, toggle } = useNotificationPrefs();
 
     return (
         <SectionCard

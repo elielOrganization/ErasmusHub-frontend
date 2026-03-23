@@ -195,7 +195,24 @@
     "title": "Mis Avisos",
     "notice": "Aviso",
     "type": "Tipo",
-    "view": "Ver"
+    "view": "Ver",
+    "markRead": "Marcar como leído",
+    "markAllRead": "Marcar todos como leídos",
+    "noNotifications": "No tienes avisos activos",
+    "noNotificationsDesc": "Cuando lleguen nuevos avisos aparecerán aquí",
+    "allDisabled": "Todos los tipos de notificación están desactivados",
+    "allDisabledDesc": "Ve a Ajustes para activar los tipos de avisos que quieres recibir",
+    "goToSettings": "Ir a Ajustes",
+    "unread": "No leído",
+    "read": "Leído",
+    "filterAll": "Todos",
+    "filterUnread": "No leídos",
+    "weekly_digest": "Resumen semanal",
+    "application_update": "Solicitud",
+    "application": "Solicitud",
+    "task_reminder": "Tarea",
+    "task": "Tarea",
+    "unknown": "General"
   },
 
   "table": {

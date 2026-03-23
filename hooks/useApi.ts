@@ -5,6 +5,7 @@ import { API_URL } from '@/lib/api';
 
 interface UseApiOptions {
     immediate?: boolean;
+    refreshInterval?: number; // ms, 0 = disabled
 }
 
 interface UseApiResult<T> {
@@ -43,10 +44,16 @@ export function useApi<T>(endpoint: string, options: UseApiOptions = { immediate
     }, [endpoint]);
 
     useEffect(() => {
-        if (options.immediate) {
+        if (options.immediate !== false) {
             fetchData();
         }
     }, [fetchData, options.immediate]);
+
+    useEffect(() => {
+        if (!options.refreshInterval) return;
+        const id = setInterval(fetchData, options.refreshInterval);
+        return () => clearInterval(id);
+    }, [fetchData, options.refreshInterval]);
 
     return { data, error, loading, refetch: fetchData };
 }

@@ -195,7 +195,24 @@
     "title": "My Notices",
     "notice": "Notice",
     "type": "Type",
-    "view": "View"
+    "view": "View",
+    "markRead": "Mark as read",
+    "markAllRead": "Mark all as read",
+    "noNotifications": "No active notices",
+    "noNotificationsDesc": "New notices will appear here when they arrive",
+    "allDisabled": "All notification types are disabled",
+    "allDisabledDesc": "Go to Settings to enable the notice types you want to receive",
+    "goToSettings": "Go to Settings",
+    "unread": "Unread",
+    "read": "Read",
+    "filterAll": "All",
+    "filterUnread": "Unread",
+    "weekly_digest": "Weekly digest",
+    "application_update": "Application",
+    "application": "Application",
+    "task_reminder": "Task",
+    "task": "Task",
+    "unknown": "General"
   },
 
   "table": {
