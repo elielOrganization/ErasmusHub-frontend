@@ -407,7 +407,11 @@
     "assignError": "Error assigning student",
     "cancel": "Cancel",
     "searchPlaceholder": "Search student...",
-    "noResults": "No students match the criteria."
+    "noResults": "No students match the criteria.",
+    "errorOpportunityNotFound": "Opportunity not found.",
+    "errorOpportunityNotOpen": "This opportunity is not open for applications.",
+    "errorNoAvailableSlots": "No available slots for this opportunity.",
+    "errorAlreadyApplied": "This student already has an application for this opportunity."
   },
 
   "documents": {

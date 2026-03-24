@@ -60,7 +60,12 @@ function AssignModal({ student, open, onClose, opportunities }: {
                 setTimeout(() => onClose(), 1500);
             } else {
                 const err = await res.json().catch(() => null);
-                setErrorMsg(err?.detail || t('assignError'));
+                const detail: string = err?.detail || '';
+                if (detail === 'Opportunity not found') setErrorMsg(t('errorOpportunityNotFound'));
+                else if (detail === 'This opportunity is not open for applications') setErrorMsg(t('errorOpportunityNotOpen'));
+                else if (detail === 'No available slots for this opportunity') setErrorMsg(t('errorNoAvailableSlots'));
+                else if (detail === 'You already have an application for this opportunity') setErrorMsg(t('errorAlreadyApplied'));
+                else setErrorMsg(t('assignError'));
             }
         } catch {
             setErrorMsg(t('assignError'));

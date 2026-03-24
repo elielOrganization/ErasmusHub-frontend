@@ -407,7 +407,11 @@
     "assignError": "Error al asignar al estudiante",
     "cancel": "Cancelar",
     "searchPlaceholder": "Buscar estudiante...",
-    "noResults": "No se encontraron estudiantes que coincidan con los criterios."
+    "noResults": "No se encontraron estudiantes que coincidan con los criterios.",
+    "errorOpportunityNotFound": "Oportunidad no encontrada.",
+    "errorOpportunityNotOpen": "Esta oportunidad no está abierta para solicitudes.",
+    "errorNoAvailableSlots": "No hay plazas disponibles para esta oportunidad.",
+    "errorAlreadyApplied": "Este alumno ya tiene una solicitud para esta oportunidad."
   },
 
   "documents": {

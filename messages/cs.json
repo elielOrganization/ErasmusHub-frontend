@@ -407,7 +407,11 @@
     "assignError": "Chyba při přiřazování studenta",
     "cancel": "Zrušit",
     "searchPlaceholder": "Hledat studenta...",
-    "noResults": "Žádní studenti neodpovídají kritériím."
+    "noResults": "Žádní studenti neodpovídají kritériím.",
+    "errorOpportunityNotFound": "Příležitost nenalezena.",
+    "errorOpportunityNotOpen": "Tato příležitost není otevřena pro přihlášky.",
+    "errorNoAvailableSlots": "Pro tuto příležitost nejsou dostupná žádná místa.",
+    "errorAlreadyApplied": "Tento student již má přihlášku na tuto příležitost."
   },
 
   "documents": {
