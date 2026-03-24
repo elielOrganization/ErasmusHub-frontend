@@ -61,20 +61,20 @@ export default function Register() {
     return (
         <AuthLayout>
             <div className="mb-6 text-center">
-                <h1 className="text-2xl font-bold text-gray-800 tracking-tight">
+                <h1 className="text-2xl font-bold text-gray-800 dark:text-gray-100 tracking-tight">
                     {t('createAccountTitle')}
                 </h1>
-                <p className="text-sm text-gray-500 mt-2">
+                <p className="text-sm text-gray-500 dark:text-gray-400 mt-2">
                     {t('stepText', { current: step, total: totalSteps })}
                 </p>
 
-                <div className="w-full bg-gray-200 rounded-full h-1.5 mt-4">
+                <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-1.5 mt-4">
                     <div className="bg-blue-600 h-1.5 rounded-full transition-all" style={{ width: `${(step / totalSteps) * 100}%` }}></div>
                 </div>
             </div>
 
             {errors._form && (
-                <div className="mb-6 p-4 text-sm text-red-600 bg-red-50 rounded-2xl border border-red-100 flex items-center gap-2">
+                <div className="mb-6 p-4 text-sm text-red-600 dark:text-red-400 bg-red-50 dark:bg-red-900/20 rounded-2xl border border-red-100 dark:border-red-800 flex items-center gap-2">
                     <svg className="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                     </svg>
@@ -114,14 +114,14 @@ export default function Register() {
 
                         {/* Gender select */}
                         <div>
-                            <label className="block text-gray-600 text-xs font-semibold mb-2 tracking-wide uppercase">
+                            <label className="block text-gray-600 dark:text-gray-400 text-xs font-semibold mb-2 tracking-wide uppercase">
                                 {t('genderLabel')}
                             </label>
                             <div
                                 className="flex items-center gap-3 rounded-xl px-4 py-3.5 border-2 transition-all duration-200"
                                 style={{
-                                    borderColor: errors.gender ? "#dc2626" : "#e8f0fe",
-                                    background: errors.gender ? "#fef2f2" : "#f8faff",
+                                    borderColor: errors.gender ? "#dc2626" : "var(--input-border)",
+                                    background: errors.gender ? "var(--input-error-bg)" : "var(--input-bg)",
                                 }}
                             >
                                 <svg width="16" height="16" fill="none" stroke={errors.gender ? "#dc2626" : "#93c5fd"} strokeWidth="2" viewBox="0 0 24 24">
@@ -131,7 +131,7 @@ export default function Register() {
                                     name="gender"
                                     value={formData.gender}
                                     onChange={handleChange}
-                                    className="flex-1 bg-transparent text-gray-800 text-sm outline-none min-w-0 appearance-none cursor-pointer"
+                                    className="flex-1 bg-transparent text-gray-800 dark:text-gray-100 text-sm outline-none min-w-0 appearance-none cursor-pointer"
                                 >
                                     <option value="">{t('genderPlaceholder')}</option>
                                     <option value="male">{t('genderMale')}</option>
@@ -172,7 +172,7 @@ export default function Register() {
                         />
 
                         {rcParsed?.isMinor && (
-                            <p className="text-xs text-amber-700 bg-amber-50 rounded-lg px-3 py-2 inline-block border border-amber-200">
+                            <p className="text-xs text-amber-700 dark:text-amber-300 bg-amber-50 dark:bg-amber-900/20 rounded-lg px-3 py-2 inline-block border border-amber-200 dark:border-amber-800">
                                 {t('isMinorInfo')}
                             </p>
                         )}
@@ -251,7 +251,7 @@ export default function Register() {
                         <button
                             type="button"
                             onClick={prevStep}
-                            className="w-full py-2.5 border border-gray-300 rounded-xl text-gray-700 font-medium hover:bg-gray-50 transition-colors"
+                            className="w-full py-2.5 border border-gray-300 dark:border-gray-600 rounded-xl text-gray-700 dark:text-gray-300 font-medium hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
                         >
                             {t('prevButton')}
                         </button>
@@ -273,11 +273,11 @@ export default function Register() {
                 </div>
             </form>
 
-            <p className="text-center text-gray-400 text-xs mt-8">
+            <p className="text-center text-gray-400 dark:text-gray-500 text-xs mt-8">
                 {t('alreadyHaveAccount')}{" "}
                 <span
                     onClick={() => router.push("/")}
-                    className="text-blue-600 font-bold hover:underline cursor-pointer transition-all"
+                    className="text-blue-600 dark:text-blue-400 font-bold hover:underline cursor-pointer transition-all"
                 >
                     {t('signIn')}
                 </span>

@@ -414,14 +414,14 @@ function CreateUserModal({ open, onClose, onCreated }: { open: boolean; onClose:
                 <div>
                     {step > 1 && (
                         <button onClick={prevStep} disabled={creating || msg?.type === 'success'}
-                            className={`px-4 py-2 rounded-xl text-sm font-medium transition-colors ${msg?.type === 'success' ? 'text-gray-300 cursor-not-allowed' : 'text-gray-600 hover:bg-gray-100 cursor-pointer'}`}>
+                            className={`px-4 py-2 rounded-xl text-sm font-medium transition-colors ${msg?.type === 'success' ? 'text-gray-300 cursor-not-allowed' : 'text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 cursor-pointer'}`}>
                             {t('previous')}
                         </button>
                     )}
                 </div>
                 <div className="flex gap-2">
                     <button onClick={handleClose} disabled={creating || msg?.type === 'success'}
-                        className={`px-4 py-2 rounded-xl text-sm font-medium transition-colors ${msg?.type === 'success' ? 'text-gray-300 cursor-not-allowed' : 'text-gray-600 hover:bg-gray-100 cursor-pointer'}`}>
+                        className={`px-4 py-2 rounded-xl text-sm font-medium transition-colors ${msg?.type === 'success' ? 'text-gray-300 cursor-not-allowed' : 'text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 cursor-pointer'}`}>
                         {t('cancel')}
                     </button>
                     {step < totalSteps ? (
@@ -599,7 +599,7 @@ function EditModal({ user, roles, open, onClose, onUpdated }: { user: User | nul
                 <button
                     onClick={onClose}
                     disabled={saving || msg?.type === 'success'}
-                    className={`px-4 py-2 rounded-xl text-sm font-medium transition-colors ${msg?.type === 'success' ? 'text-gray-300 cursor-not-allowed' : 'text-gray-600 hover:bg-gray-100 cursor-pointer'}`}
+                    className={`px-4 py-2 rounded-xl text-sm font-medium transition-colors ${msg?.type === 'success' ? 'text-gray-300 cursor-not-allowed' : 'text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 cursor-pointer'}`}
                 >
                     {t('cancel')}
                 </button>
@@ -678,7 +678,7 @@ function DeleteModal({ user, open, onClose, onDeleted }: { user: User | null; op
                 <button
                     onClick={onClose}
                     disabled={deleting || msg?.type === 'success'}
-                    className={`px-4 py-2 rounded-xl text-sm font-medium transition-colors ${msg?.type === 'success' ? 'text-gray-300 cursor-not-allowed' : 'text-gray-600 hover:bg-gray-100 cursor-pointer'}`}
+                    className={`px-4 py-2 rounded-xl text-sm font-medium transition-colors ${msg?.type === 'success' ? 'text-gray-300 cursor-not-allowed' : 'text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 cursor-pointer'}`}
                 >
                     {t('cancel')}
                 </button>
@@ -879,7 +879,7 @@ export default function UserTable({ users }: { users: User[] }) {
                                     <th className="pb-4 font-medium w-20">
                                         {sortKey && (
                                             <button onClick={clearSort}
-                                                className="p-1 rounded-lg text-gray-400 hover:text-gray-600 hover:bg-gray-100 transition-colors cursor-pointer">
+                                                className="p-1 rounded-lg text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors cursor-pointer">
                                                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="currentColor" className="w-3.5 h-3.5">
                                                     <path d="M5.28 4.22a.75.75 0 00-1.06 1.06L6.94 8l-2.72 2.72a.75.75 0 101.06 1.06L8 9.06l2.72 2.72a.75.75 0 101.06-1.06L9.06 8l2.72-2.72a.75.75 0 00-1.06-1.06L8 6.94 5.28 4.22z" />
                                                 </svg>
@@ -938,21 +938,21 @@ export default function UserTable({ users }: { users: User[] }) {
                     <div className="lg:hidden flex items-center justify-end gap-1 mb-2">
                         <button
                             onClick={() => { setSortKey('user'); setSortDir('asc'); }}
-                            className={`p-1.5 rounded-lg transition-colors ${sortKey === 'user' && sortDir === 'asc' ? 'text-gray-700 bg-gray-200' : 'text-gray-400 hover:text-gray-600 hover:bg-gray-100'}`}>
+                            className={`p-1.5 rounded-lg transition-colors ${sortKey === 'user' && sortDir === 'asc' ? 'text-gray-700 dark:text-gray-200 bg-gray-200 dark:bg-gray-700' : 'text-gray-400 hover:text-gray-600 hover:bg-gray-100'}`}>
                             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="w-4 h-4">
                                 <path fillRule="evenodd" d="M2 3.75A.75.75 0 012.75 3h11.5a.75.75 0 010 1.5H2.75A.75.75 0 012 3.75zM2 7.5a.75.75 0 01.75-.75h8.5a.75.75 0 010 1.5h-8.5A.75.75 0 012 7.5zM2 11.25a.75.75 0 01.75-.75h5.5a.75.75 0 010 1.5h-5.5a.75.75 0 01-.75-.75z" clipRule="evenodd" />
                             </svg>
                         </button>
                         <button
                             onClick={() => { setSortKey('user'); setSortDir('desc'); }}
-                            className={`p-1.5 rounded-lg transition-colors ${sortKey === 'user' && sortDir === 'desc' ? 'text-gray-700 bg-gray-200' : 'text-gray-400 hover:text-gray-600 hover:bg-gray-100'}`}>
+                            className={`p-1.5 rounded-lg transition-colors ${sortKey === 'user' && sortDir === 'desc' ? 'text-gray-700 dark:text-gray-200 bg-gray-200 dark:bg-gray-700' : 'text-gray-400 hover:text-gray-600 hover:bg-gray-100'}`}>
                             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="w-4 h-4">
                                 <path fillRule="evenodd" d="M2 3.75A.75.75 0 012.75 3h5.5a.75.75 0 010 1.5h-5.5A.75.75 0 012 3.75zM2 7.5a.75.75 0 01.75-.75h8.5a.75.75 0 010 1.5h-8.5A.75.75 0 012 7.5zM2 11.25a.75.75 0 01.75-.75h11.5a.75.75 0 010 1.5H2.75a.75.75 0 01-.75-.75z" clipRule="evenodd" />
                             </svg>
                         </button>
                         {sortKey && (
                             <button onClick={clearSort}
-                                className="p-1.5 rounded-lg text-gray-400 hover:text-gray-600 hover:bg-gray-100 transition-colors">
+                                className="p-1.5 rounded-lg text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors">
                                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="currentColor" className="w-3.5 h-3.5">
                                     <path d="M5.28 4.22a.75.75 0 00-1.06 1.06L6.94 8l-2.72 2.72a.75.75 0 101.06 1.06L8 9.06l2.72 2.72a.75.75 0 101.06-1.06L9.06 8l2.72-2.72a.75.75 0 00-1.06-1.06L8 6.94 5.28 4.22z" />
                                 </svg>

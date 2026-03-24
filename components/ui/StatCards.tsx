@@ -39,7 +39,7 @@ export default function StatCards({ items }: { items: StatCardItem[] }) {
                             </span>
                         )}
                         <div className="min-w-0">
-                            <p className={`text-xl font-bold leading-none ${item.color || 'text-gray-800'}`}>
+                            <p className={`text-xl font-bold leading-none ${item.color || 'text-gray-800 dark:text-gray-100'}`}>
                                 {item.value}
                             </p>
                             <p className="text-[11px] text-gray-400 font-medium mt-0.5 truncate">

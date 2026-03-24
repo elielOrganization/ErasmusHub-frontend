@@ -5,6 +5,7 @@ import { useRouter } from "@/i18n/routing";
 import { useAuth } from "@/context/AuthContext";
 import { useRoleTheme } from "@/hooks/useRoleTheme";
 import { translateRole } from "@/lib/translateRole";
+import { useTheme } from "@/context/ThemeContext";
 
 export default function UserMenuDropdown() {
     const [isOpen, setIsOpen] = useState(false);
@@ -15,6 +16,7 @@ export default function UserMenuDropdown() {
 
     const { user, loading, logout } = useAuth();
     const theme = useRoleTheme();
+    const { isDark, toggleTheme } = useTheme();
 
     // 3. Generate initials dynamically based on the real user
     const initials = user
@@ -31,7 +33,7 @@ export default function UserMenuDropdown() {
 
     // Show skeleton placeholder while loading
     if (loading || !user) return (
-        <div className="w-9 h-9 rounded-full bg-gray-200 animate-pulse border-2 border-white ring-1 ring-gray-100" />
+        <div className="w-9 h-9 rounded-full bg-gray-200 dark:bg-gray-700 animate-pulse border-2 border-white dark:border-gray-800 ring-1 ring-gray-100 dark:ring-gray-700" />
     );
 
     return (
@@ -88,6 +90,29 @@ export default function UserMenuDropdown() {
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
                             </svg>
                             <span className="font-medium">{t('settings')}</span>
+                        </button>
+                        {/* Dark mode toggle */}
+                        <button
+                            onClick={toggleTheme}
+                            className={`w-full flex items-center gap-3 px-4 py-2.5 text-sm text-gray-600 dark:text-gray-300 ${theme.hoverBg} ${theme.hoverText} rounded-xl transition-colors group`}
+                        >
+                            <svg className={`w-5 h-5 text-gray-400 dark:text-gray-500 ${theme.groupHoverIcon}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                {isDark ? (
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
+                                ) : (
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
+                                )}
+                            </svg>
+                            <span className="font-medium flex-1 text-left">{isDark ? t('darkMode') : t('lightMode')}</span>
+                            <div
+                                className="relative w-9 h-5 rounded-full transition-colors duration-200"
+                                style={{ background: isDark ? theme.avatarFrom : '#d1d5db' }}
+                            >
+                                <div
+                                    className="absolute top-0.5 w-4 h-4 bg-white rounded-full shadow-sm transition-transform duration-200"
+                                    style={{ transform: isDark ? 'translateX(18px)' : 'translateX(2px)' }}
+                                />
+                            </div>
                         </button>
                     </div>
 

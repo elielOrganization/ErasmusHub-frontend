@@ -74,30 +74,30 @@ export default function EventCalendar({ events, onMonthChange }: CalendarViewPro
     while (cells.length % 7 !== 0) cells.push(null);
 
     return (
-        <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
+        <div className="bg-white dark:bg-gray-900 rounded-2xl border border-gray-100 dark:border-gray-800 shadow-sm overflow-hidden">
             {/* Header */}
-            <div className="flex items-center justify-between px-6 py-4 border-b border-gray-100">
+            <div className="flex items-center justify-between px-6 py-4 border-b border-gray-100 dark:border-gray-800">
                 <div className="flex items-center gap-3">
-                    <button onClick={() => navigate(-1)} className="p-1 hover:bg-gray-100 rounded">
-                        <svg className="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 19l-7-7 7-7" /></svg>
+                    <button onClick={() => navigate(-1)} className="p-1 hover:bg-gray-100 dark:hover:bg-gray-800 rounded">
+                        <svg className="w-5 h-5 text-gray-600 dark:text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 19l-7-7 7-7" /></svg>
                     </button>
-                    <button onClick={() => navigate(1)} className="p-1 hover:bg-gray-100 rounded">
-                        <svg className="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5l7 7-7 7" /></svg>
+                    <button onClick={() => navigate(1)} className="p-1 hover:bg-gray-100 dark:hover:bg-gray-800 rounded">
+                        <svg className="w-5 h-5 text-gray-600 dark:text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5l7 7-7 7" /></svg>
                     </button>
-                    <button onClick={goToday} className="px-3 py-1 text-sm border border-gray-200 rounded-lg hover:bg-gray-50">
+                    <button onClick={goToday} className="px-3 py-1 text-sm border border-gray-200 dark:border-gray-700 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800 dark:text-gray-300">
                         {t('today')}
                     </button>
                 </div>
-                <h2 className="text-lg font-semibold text-gray-900 capitalize">
+                <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100 capitalize">
                     {monthNames[month]} {year}
                 </h2>
                 <div className="w-24" />
             </div>
 
             {/* Day headers */}
-            <div className="grid grid-cols-7 border-b border-gray-100">
+            <div className="grid grid-cols-7 border-b border-gray-100 dark:border-gray-800">
                 {DAYS.map((day) => (
-                    <div key={day} className="px-2 py-2 text-center text-xs font-semibold text-gray-500 uppercase">
+                    <div key={day} className="px-2 py-2 text-center text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase">
                         {day}
                     </div>
                 ))}
@@ -115,13 +115,13 @@ export default function EventCalendar({ events, onMonthChange }: CalendarViewPro
                     return (
                         <div
                             key={idx}
-                            className={`min-h-24 border-b border-r border-gray-100 p-1 ${
-                                !day ? 'bg-gray-50/50' : ''
+                            className={`min-h-24 border-b border-r border-gray-100 dark:border-gray-800 p-1 ${
+                                !day ? 'bg-gray-50/50 dark:bg-gray-800/30' : ''
                             }`}
                         >
                             {day && (
                                 <>
-                                    <div className={`text-xs font-medium mb-1 ${isToday ? 'text-blue-600 font-bold' : 'text-gray-500'}`}>
+                                    <div className={`text-xs font-medium mb-1 ${isToday ? 'text-blue-600 font-bold' : 'text-gray-500 dark:text-gray-400'}`}>
                                         {day}
                                     </div>
                                     <div className="space-y-1">
@@ -129,7 +129,7 @@ export default function EventCalendar({ events, onMonthChange }: CalendarViewPro
                                             <div
                                                 key={i}
                                                 className={`text-[10px] px-1.5 py-0.5 rounded truncate ${
-                                                    eventColors[ev.type] || eventColors[ev.status] || 'bg-gray-200 text-gray-700'
+                                                    eventColors[ev.type] || eventColors[ev.status] || 'bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300'
                                                 }`}
                                             >
                                                 {ev.type === 'asistencia' && ev.start_time && ev.end_time

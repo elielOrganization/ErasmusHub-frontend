@@ -1,5 +1,6 @@
 import { ReactNode } from "react";
 import LanguageSwitcher from "../dropdowns/LanguageSwitcher";
+import AuthThemeToggle from "../buttons/AuthThemeToggle";
 
 interface AuthLayoutProps {
     children: ReactNode;
@@ -10,12 +11,13 @@ export default function AuthLayout({ children }: AuthLayoutProps) {
         <div
             className="min-h-screen flex items-center justify-center p-4 relative"
             style={{
-                background: "linear-gradient(135deg, #e8f4fd 0%, #f0f7ff 40%, #dbeeff 100%)",
+                background: "var(--auth-bg)",
                 fontFamily: "'Segoe UI', system-ui, sans-serif",
             }}
         >
-            {/* --- NUEVO: Selector de idioma posicionado arriba a la derecha --- */}
-            <div className="absolute top-6 right-6 z-50">
+            {/* --- Theme toggle & Language selector positioned top right --- */}
+            <div className="absolute top-6 right-6 z-50 flex items-center gap-2">
+                <AuthThemeToggle />
                 <LanguageSwitcher />
             </div>
 
@@ -23,23 +25,23 @@ export default function AuthLayout({ children }: AuthLayoutProps) {
             <div className="absolute inset-0 overflow-hidden pointer-events-none">
                 <div
                     className="absolute top-[-80px] right-[-80px] w-[400px] h-[400px] rounded-full opacity-20"
-                    style={{ background: "radial-gradient(circle, #2563eb, transparent)" }}
+                    style={{ background: "var(--auth-circle-1)" }}
                 />
                 <div
                     className="absolute bottom-[-100px] left-[-100px] w-[500px] h-[500px] rounded-full opacity-15"
-                    style={{ background: "radial-gradient(circle, #1d4ed8, transparent)" }}
+                    style={{ background: "var(--auth-circle-2)" }}
                 />
                 <div
                     className="absolute top-[30%] left-[10%] w-[200px] h-[200px] rounded-full opacity-10"
-                    style={{ background: "radial-gradient(circle, #3b82f6, transparent)" }}
+                    style={{ background: "var(--auth-circle-3)" }}
                 />
             </div>
 
             {/* Card */}
             <div
-                className="relative z-10 w-full max-w-md bg-white rounded-3xl p-10"
+                className="relative z-10 w-full max-w-md bg-white dark:bg-gray-900 rounded-3xl p-10"
                 style={{
-                    boxShadow: "0 20px 60px rgba(37, 99, 235, 0.12), 0 4px 20px rgba(0,0,0,0.06)",
+                    boxShadow: "var(--auth-card-shadow)",
                 }}
             >
                 {children}

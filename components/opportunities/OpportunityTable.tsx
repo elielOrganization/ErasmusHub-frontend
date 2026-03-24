@@ -59,7 +59,7 @@ function PlusIcon() {
 function StatusPill({ status, t }: { status: string; t: (key: string) => string }) {
     const isOpen = status === 'open';
     return (
-        <span className={`px-2 py-1 rounded-lg text-xs font-semibold ${isOpen ? 'bg-emerald-100 text-emerald-700' : 'bg-gray-100 text-gray-600'}`}>
+        <span className={`px-2 py-1 rounded-lg text-xs font-semibold ${isOpen ? 'bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-300' : 'bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400'}`}>
             {isOpen ? t('open') : t('closed')}
         </span>
     );
@@ -72,7 +72,7 @@ function SlotsBar({ filled, max }: { filled: number; max: number }) {
     const color = pct >= 100 ? 'bg-red-500' : pct >= 70 ? 'bg-amber-500' : 'bg-emerald-500';
     return (
         <div className="flex items-center gap-2">
-            <div className="w-20 h-2 bg-gray-100 rounded-full overflow-hidden">
+            <div className="w-20 h-2 bg-gray-100 dark:bg-gray-800 rounded-full overflow-hidden">
                 <div className={`h-full rounded-full ${color} transition-all`} style={{ width: `${pct}%` }} />
             </div>
             <span className="text-xs text-gray-500 font-medium">{filled}/{max}</span>

@@ -325,7 +325,7 @@ export default function DocumentsPage() {
 
                 {/* ── Applicant Info ── */}
                 <SectionCard
-                    iconBg="bg-blue-50"
+                    iconBg="bg-blue-50 dark:bg-blue-900/30"
                     iconColor="text-blue-600"
                     title={t("applicantInfo")}
                     icon={<path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />}
@@ -338,7 +338,7 @@ export default function DocumentsPage() {
                             </label>
                             <div
                                 className="flex items-center gap-3 rounded-xl px-4 py-3.5 border-2"
-                                style={{ borderColor: "#e8f0fe", background: "#f8faff" }}
+                                style={{ borderColor: "var(--input-border)", background: "var(--input-bg)" }}
                             >
                                 <svg width="16" height="16" fill="none" stroke="#93c5fd" strokeWidth="2" viewBox="0 0 24 24">
                                     <path strokeLinecap="round" strokeLinejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
@@ -358,11 +358,11 @@ export default function DocumentsPage() {
                             <div
                                 className="flex items-center gap-3 rounded-xl px-4 py-3.5 border-2 transition-all duration-200"
                                 style={{
-                                    borderColor: errors.idType ? "#dc2626" : idType ? "#2563eb" : "#e8f0fe",
-                                    background: errors.idType ? "#fef2f2" : idType ? "#f0f7ff" : "#f8faff",
+                                    borderColor: errors.idType ? "#dc2626" : idType ? "#2563eb" : "var(--input-border)",
+                                    background: errors.idType ? "var(--input-error-bg)" : idType ? "var(--input-focus-bg)" : "var(--input-bg)",
                                     boxShadow: errors.idType
-                                        ? "0 0 0 4px rgba(220,38,38,0.08)"
-                                        : idType ? "0 0 0 4px rgba(37,99,235,0.08)" : "none",
+                                        ? "var(--input-shadow-error)"
+                                        : idType ? "var(--input-shadow-focus)" : "none",
                                 }}
                             >
                                 <svg width="16" height="16" fill="none" stroke={errors.idType ? "#dc2626" : idType ? "#2563eb" : "#93c5fd"} strokeWidth="2" viewBox="0 0 24 24">
@@ -374,8 +374,8 @@ export default function DocumentsPage() {
                                         setIdType(e.target.value);
                                         setErrors((prev) => ({ ...prev, idType: undefined }));
                                     }}
-                                    className="flex-1 bg-transparent text-sm text-gray-800 outline-none cursor-pointer"
-                                    style={{ color: idType ? "#1e293b" : "#93c5fd" }}
+                                    className="flex-1 bg-transparent text-sm text-gray-800 dark:text-gray-100 outline-none cursor-pointer"
+                                    style={{ color: idType ? undefined : "#93c5fd" }}
                                 >
                                     <option value="" disabled style={{ color: "#94a3b8" }}>
                                         {t("idTypePlaceholder")}
@@ -388,7 +388,7 @@ export default function DocumentsPage() {
                                 </select>
                             </div>
                             {errors.idType && (
-                                <p className="mt-1.5 text-xs text-red-600 flex items-center gap-1">
+                                <p className="mt-1.5 text-xs text-red-600 dark:text-red-400 flex items-center gap-1">
                                     <svg className="w-3 h-3 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                                     </svg>
@@ -415,7 +415,7 @@ export default function DocumentsPage() {
                                         <label className="block text-gray-600 dark:text-gray-400 text-xs font-semibold tracking-wide uppercase">
                                             {t("idDocFront")}
                                         </label>
-                                        <span className="text-xs font-medium px-2 py-0.5 rounded-full bg-red-50 text-red-500">
+                                        <span className="text-xs font-medium px-2 py-0.5 rounded-full bg-red-50 dark:bg-red-900/30 text-red-500 dark:text-red-400">
                                             {t("required")}
                                         </span>
                                     </div>
@@ -428,7 +428,7 @@ export default function DocumentsPage() {
                                         t={t}
                                     />
                                     {errors.idDocFront && (
-                                        <p className="mt-1.5 text-xs text-red-600 flex items-center gap-1">
+                                        <p className="mt-1.5 text-xs text-red-600 dark:text-red-400 flex items-center gap-1">
                                             <svg className="w-3 h-3 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                                             </svg>
@@ -443,7 +443,7 @@ export default function DocumentsPage() {
                                         <label className="block text-gray-600 dark:text-gray-400 text-xs font-semibold tracking-wide uppercase">
                                             {t("idDocBack")}
                                         </label>
-                                        <span className="text-xs font-medium px-2 py-0.5 rounded-full bg-red-50 text-red-500">
+                                        <span className="text-xs font-medium px-2 py-0.5 rounded-full bg-red-50 dark:bg-red-900/30 text-red-500 dark:text-red-400">
                                             {t("required")}
                                         </span>
                                     </div>
@@ -456,7 +456,7 @@ export default function DocumentsPage() {
                                         t={t}
                                     />
                                     {errors.idDocBack && (
-                                        <p className="mt-1.5 text-xs text-red-600 flex items-center gap-1">
+                                        <p className="mt-1.5 text-xs text-red-600 dark:text-red-400 flex items-center gap-1">
                                             <svg className="w-3 h-3 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                                             </svg>
@@ -471,7 +471,7 @@ export default function DocumentsPage() {
 
                 {/* ── Required Documents ── */}
                 <SectionCard
-                    iconBg="bg-emerald-50"
+                    iconBg="bg-emerald-50 dark:bg-emerald-900/30"
                     iconColor="text-emerald-600"
                     title={t("requiredDocuments")}
                     icon={<path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />}
@@ -483,7 +483,7 @@ export default function DocumentsPage() {
                                 <label className="block text-gray-600 dark:text-gray-400 text-xs font-semibold tracking-wide uppercase">
                                     {t("gradesCertificate")}
                                 </label>
-                                <span className="text-xs font-medium px-2 py-0.5 rounded-full bg-red-50 text-red-500">
+                                <span className="text-xs font-medium px-2 py-0.5 rounded-full bg-red-50 dark:bg-red-900/30 text-red-500 dark:text-red-400">
                                     {t("required")}
                                 </span>
                             </div>
@@ -496,7 +496,7 @@ export default function DocumentsPage() {
                                 t={t}
                             />
                             {errors.grades && (
-                                <p className="mt-1.5 text-xs text-red-600 flex items-center gap-1">
+                                <p className="mt-1.5 text-xs text-red-600 dark:text-red-400 flex items-center gap-1">
                                     <svg className="w-3 h-3 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                                     </svg>
@@ -513,7 +513,7 @@ export default function DocumentsPage() {
                                 <label className="block text-gray-600 dark:text-gray-400 text-xs font-semibold tracking-wide uppercase">
                                     {t("coverLetter")}
                                 </label>
-                                <span className="text-xs font-medium px-2 py-0.5 rounded-full bg-red-50 text-red-500">
+                                <span className="text-xs font-medium px-2 py-0.5 rounded-full bg-red-50 dark:bg-red-900/30 text-red-500 dark:text-red-400">
                                     {t("required")}
                                 </span>
                             </div>
@@ -526,7 +526,7 @@ export default function DocumentsPage() {
                                 t={t}
                             />
                             {errors.coverLetter && (
-                                <p className="mt-1.5 text-xs text-red-600 flex items-center gap-1">
+                                <p className="mt-1.5 text-xs text-red-600 dark:text-red-400 flex items-center gap-1">
                                     <svg className="w-3 h-3 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                                     </svg>
@@ -539,7 +539,7 @@ export default function DocumentsPage() {
 
                 {/* ── Disability Certificate (Optional) ── */}
                 <SectionCard
-                    iconBg="bg-purple-50"
+                    iconBg="bg-purple-50 dark:bg-purple-900/30"
                     iconColor="text-purple-600"
                     title={t("disabilityCertificate")}
                     icon={<path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />}
@@ -565,8 +565,8 @@ export default function DocumentsPage() {
                                 <div
                                     className="w-5 h-5 rounded-md border-2 flex items-center justify-center transition-all duration-200"
                                     style={{
-                                        borderColor: hasDisability ? "#9333ea" : "#d1d5db",
-                                        background: hasDisability ? "#9333ea" : "white",
+                                        borderColor: hasDisability ? "#9333ea" : "var(--input-border)",
+                                        background: hasDisability ? "#9333ea" : "var(--input-bg)",
                                     }}
                                 >
                                     {hasDisability && (
@@ -591,7 +591,7 @@ export default function DocumentsPage() {
                                     t={t}
                                 />
                                 {errors.disability && (
-                                    <p className="mt-1.5 text-xs text-red-600 flex items-center gap-1">
+                                    <p className="mt-1.5 text-xs text-red-600 dark:text-red-400 flex items-center gap-1">
                                         <svg className="w-3 h-3 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                                         </svg>
@@ -605,7 +605,7 @@ export default function DocumentsPage() {
 
                 {/* ── Submit Error ── */}
                 {submitError && (
-                    <div className="flex items-center gap-3 px-4 py-3 rounded-xl bg-red-50 border border-red-100">
+                    <div className="flex items-center gap-3 px-4 py-3 rounded-xl bg-red-50 dark:bg-red-900/20 border border-red-100 dark:border-red-800">
                         <svg className="w-5 h-5 text-red-500 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                         </svg>

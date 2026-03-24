@@ -34,10 +34,10 @@ export default function Login() {
 
   return (
     <AuthLayout>
-      <div className="h-px bg-blue-50 mb-8" />
+      <div className="h-px bg-blue-50 dark:bg-gray-700 mb-8" />
 
       {error && (
-        <div className="mb-6 p-4 text-sm text-red-600 bg-red-50 rounded-2xl border border-red-100 flex items-center gap-2 animate-shake">
+        <div className="mb-6 p-4 text-sm text-red-600 dark:text-red-400 bg-red-50 dark:bg-red-900/20 rounded-2xl border border-red-100 dark:border-red-800 flex items-center gap-2 animate-shake">
           <svg className="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
           </svg>
@@ -73,22 +73,22 @@ export default function Login() {
         </div>
       </form>
 
-      <p className="text-center text-gray-400 text-xs mt-8">
+      <p className="text-center text-gray-400 dark:text-gray-500 text-xs mt-8">
         {t('dontHaveAccount')}{" "}
         <span
           onClick={() => router.push("/register")}
-          className="text-blue-600 font-bold hover:underline cursor-pointer transition-all"
+          className="text-blue-600 dark:text-blue-400 font-bold hover:underline cursor-pointer transition-all"
         >
           {t('register')}
         </span>
       </p>
 
       {isInstallable && (
-        <div className="mt-8 flex justify-center border-t border-gray-100 pt-6">
+        <div className="mt-8 flex justify-center border-t border-gray-100 dark:border-gray-700 pt-6">
           <button
             type="button"
             onClick={installApp}
-            className="flex items-center gap-2 px-5 py-2.5 text-sm font-semibold text-blue-700 bg-blue-50 hover:bg-blue-100 rounded-xl transition-all shadow-sm"
+            className="flex items-center gap-2 px-5 py-2.5 text-sm font-semibold text-blue-700 dark:text-blue-300 bg-blue-50 dark:bg-blue-900/30 hover:bg-blue-100 dark:hover:bg-blue-900/50 rounded-xl transition-all shadow-sm"
           >
             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
