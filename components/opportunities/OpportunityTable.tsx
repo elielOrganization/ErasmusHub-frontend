@@ -2,6 +2,8 @@
 
 import { useEffect, useMemo, useState } from 'react';
 import { useTranslations } from 'next-intl';
+import { useParams } from 'next/navigation';
+import Link from 'next/link';
 import { useAuth } from '@/context/AuthContext';
 import { API_URL } from '@/lib/api';
 import { getCountryFlagUrl } from '@/lib/countryFlags';
@@ -9,20 +11,13 @@ import FilterBar from '@/components/ui/FilterBar';
 import Pagination from '@/components/ui/Pagination';
 import { useRoleTheme } from '@/hooks/useRoleTheme';
 import Cookies from 'js-cookie';
-import type { Opportunity } from '@/services/opportunityService';
+import type { Opportunity, AssignedStudent } from '@/services/opportunityService';
 
 const PAGE_SIZE = 10;
 
 /* ── Types ─────────────────────────────────────────────────── */
 
-export interface AssignedStudent {
-    application_id: number;
-    user_id: number;
-    first_name: string;
-    last_name: string;
-    email: string;
-    status: string;
-}
+export type { AssignedStudent };
 
 export interface OpportunityWithStudents extends Opportunity {
     students: AssignedStudent[];
@@ -82,21 +77,22 @@ function SlotsBar({ filled, max }: { filled: number; max: number }) {
 
 /* ── Student pills for assigned students ───────────────────── */
 
-function StudentPills({ students, t, theme }: { students: AssignedStudent[]; t: (key: string) => string; theme: ReturnType<typeof useRoleTheme> }) {
+function StudentPills({ students, t, theme, locale }: { students: AssignedStudent[]; t: (key: string) => string; theme: ReturnType<typeof useRoleTheme>; locale: string }) {
     if (students.length === 0) {
         return <span className="text-xs text-gray-400 italic">{t('noStudentsAssigned')}</span>;
     }
     return (
         <div className="flex flex-wrap gap-1">
             {students.map((s) => (
-                <span
+                <Link
                     key={s.application_id}
-                    className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium ${theme.accentBg} ${theme.accentText}`}
+                    href={`/${locale}/dashboard/students`}
+                    className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium ${theme.accentBg} ${theme.accentText} hover:opacity-75 transition-opacity`}
                     title={s.email}
                 >
                     {s.first_name} {s.last_name}
                     <span className={`w-1.5 h-1.5 rounded-full ${s.status === 'approved' ? 'bg-emerald-500' : s.status === 'pending' ? 'bg-amber-500' : 'bg-gray-400'}`} />
-                </span>
+                </Link>
             ))}
         </div>
     );
@@ -402,6 +398,8 @@ export default function OpportunityTable({ opportunities }: { opportunities: Opp
     const t = useTranslations('opportunitiesDashboard');
     const { user } = useAuth();
     const theme = useRoleTheme();
+    const params = useParams();
+    const locale = (params?.locale as string) || 'en';
     const [searchQuery, setSearchQuery] = useState('');
     const [statusFilter, setStatusFilter] = useState('');
     const [countryFilter, setCountryFilter] = useState<string[]>([]);
@@ -539,7 +537,7 @@ export default function OpportunityTable({ opportunities }: { opportunities: Opp
                                         <td className="py-4 pr-6 text-gray-500 dark:text-gray-400 text-sm">
                                             {opp.start_date ? new Date(opp.start_date).toLocaleDateString() : '—'}
                                         </td>
-                                        <td className="py-4"><StudentPills students={opp.students} t={t} theme={theme} /></td>
+                                        <td className="py-4"><StudentPills students={opp.students} t={t} theme={theme} locale={locale} /></td>
                                         {canManage && (
                                             <td className="py-4">
                                                 <div className="opacity-0 group-hover:opacity-100 transition-opacity">
@@ -592,7 +590,7 @@ export default function OpportunityTable({ opportunities }: { opportunities: Opp
                                 </div>
                                 <div>
                                     <p className="text-xs text-gray-400 mb-1">{t('assignedStudents')}:</p>
-                                    <StudentPills students={opp.students} t={t} theme={theme} />
+                                    <StudentPills students={opp.students} t={t} theme={theme} locale={locale} />
                                 </div>
                                 {canManage && (
                                     <div className="flex justify-end border-t border-gray-50 dark:border-gray-800 pt-2">

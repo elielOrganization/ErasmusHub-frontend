@@ -1,7 +1,7 @@
 import { cookies } from 'next/headers';
 import { redirect } from 'next/navigation';
 import { getTranslations } from 'next-intl/server';
-import { fetchOpportunitiesServer } from '@/services/opportunityService';
+import { fetchOpportunitiesServer, fetchOpportunityStudentsServer } from '@/services/opportunityService';
 import OpportunityTable from '@/components/opportunities/OpportunityTable';
 import type { OpportunityWithStudents } from '@/components/opportunities/OpportunityTable';
 import StatCards from '@/components/ui/StatCards';
@@ -18,11 +18,12 @@ export default async function OpportunitiesPage({ params }: { params: Promise<{ 
     const t = await getTranslations('opportunitiesDashboard');
     const opportunities = await fetchOpportunitiesServer(token);
 
-    // Map to OpportunityWithStudents (students empty until backend supports it)
-    const oppsWithStudents: OpportunityWithStudents[] = opportunities.map(opp => ({
-        ...opp,
-        students: [],
-    }));
+    const oppsWithStudents: OpportunityWithStudents[] = await Promise.all(
+        opportunities.map(async (opp) => ({
+            ...opp,
+            students: await fetchOpportunityStudentsServer(token, opp.id),
+        }))
+    );
 
     const openCount = opportunities.filter(o => o.status === 'open').length;
 
