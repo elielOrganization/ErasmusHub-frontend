@@ -212,7 +212,18 @@
     "application": "Application",
     "task_reminder": "Task",
     "task": "Task",
-    "unknown": "General"
+    "unknown": "General",
+    "messages": {
+      "app_accepted": "Your application to {university} has been accepted",
+      "app_rejected": "Your application to {university} was not accepted",
+      "app_submitted": "Your application to {university} has been submitted",
+      "app_updated": "Your application to {university} has been updated",
+      "task_assigned": "You have been assigned a new task: {task_name}",
+      "task_due_soon": "Task '{task_name}' is due soon",
+      "task_overdue": "Task '{task_name}' is overdue",
+      "task_completed": "You completed the task: {task_name}",
+      "weekly_summary": "This week: {completed} tasks completed, {pending} pending"
+    }
   },
 
   "table": {

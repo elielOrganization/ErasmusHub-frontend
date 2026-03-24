@@ -195,7 +195,35 @@
     "title": "Mé upozornění",
     "notice": "Upozornění",
     "type": "Typ",
-    "view": "Zobrazit"
+    "view": "Zobrazit",
+    "markRead": "Označit jako přečtené",
+    "markAllRead": "Označit vše jako přečtené",
+    "noNotifications": "Nemáte žádná aktivní upozornění",
+    "noNotificationsDesc": "Nová upozornění se zobrazí zde, jakmile dorazí",
+    "allDisabled": "Všechny typy upozornění jsou vypnuty",
+    "allDisabledDesc": "Přejděte do Nastavení a aktivujte typy upozornění, která chcete dostávat",
+    "goToSettings": "Přejít do Nastavení",
+    "unread": "Nepřečtené",
+    "read": "Přečtené",
+    "filterAll": "Vše",
+    "filterUnread": "Nepřečtené",
+    "weekly_digest": "Týdenní přehled",
+    "application_update": "Přihláška",
+    "application": "Přihláška",
+    "task_reminder": "Úkol",
+    "task": "Úkol",
+    "unknown": "Obecné",
+    "messages": {
+      "app_accepted": "Vaše přihláška na {university} byla přijata",
+      "app_rejected": "Vaše přihláška na {university} nebyla přijata",
+      "app_submitted": "Vaše přihláška na {university} byla odeslána",
+      "app_updated": "Vaše přihláška na {university} byla aktualizována",
+      "task_assigned": "Byl vám přiřazen nový úkol: {task_name}",
+      "task_due_soon": "Úkol '{task_name}' brzy vyprší",
+      "task_overdue": "Úkol '{task_name}' je po termínu",
+      "task_completed": "Dokončili jste úkol: {task_name}",
+      "weekly_summary": "Tento týden: {completed} úkolů dokončeno, {pending} čeká"
+    }
   },
 
   "table": {
