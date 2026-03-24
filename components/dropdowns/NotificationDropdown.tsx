@@ -7,8 +7,8 @@ import { useNotificationPrefs, PREF_TYPE_MAP } from "@/hooks/useNotificationPref
 
 interface Notification {
     id: number;
-    title: string;
-    body: string;
+    message_key: string;
+    params: string | null;
     type: string;
     is_read: boolean;
     created_at: string;
@@ -92,12 +92,14 @@ export default function NotificationDropdown() {
                                 <p className="text-xs text-gray-400">{t('noNotifications')}</p>
                             </div>
                         ) : (
-                            notifications.map((n) => (
+                            notifications.map((n) => {
+                                const p = n.params ? JSON.parse(n.params) : {};
+                                const msg = ta.rich(`messages.${n.message_key}`, p) as string ?? n.message_key;
+                                return (
                                 <div key={n.id} className={`flex items-start gap-3 px-4 py-3 ${!n.is_read ? "bg-blue-50/50 dark:bg-blue-950/20" : ""}`}>
                                     <div className={`mt-0.5 shrink-0 w-2 h-2 rounded-full ${!n.is_read ? "bg-blue-500" : "bg-transparent"}`} />
                                     <div className="flex-1 min-w-0">
-                                        <p className="text-sm font-medium text-gray-800 dark:text-gray-100 truncate">{n.title}</p>
-                                        <p className="text-xs text-gray-500 dark:text-gray-400 line-clamp-1 mt-0.5">{n.body}</p>
+                                        <p className="text-sm font-medium text-gray-800 dark:text-gray-100 truncate">{msg}</p>
                                     </div>
                                     {!n.is_read && (
                                         <button
@@ -108,7 +110,8 @@ export default function NotificationDropdown() {
                                         </button>
                                     )}
                                 </div>
-                            ))
+                                );
+                            })
                         )}
                     </div>
 

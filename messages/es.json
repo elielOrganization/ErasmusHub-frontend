@@ -212,7 +212,18 @@
     "application": "Solicitud",
     "task_reminder": "Tarea",
     "task": "Tarea",
-    "unknown": "General"
+    "unknown": "General",
+    "messages": {
+      "app_accepted": "Tu solicitud a {university} ha sido aceptada",
+      "app_rejected": "Tu solicitud a {university} no fue aceptada",
+      "app_submitted": "Tu solicitud a {university} ha sido enviada",
+      "app_updated": "Tu solicitud a {university} ha sido actualizada",
+      "task_assigned": "Se te ha asignado una nueva tarea: {task_name}",
+      "task_due_soon": "La tarea '{task_name}' vence pronto",
+      "task_overdue": "La tarea '{task_name}' está vencida",
+      "task_completed": "Completaste la tarea: {task_name}",
+      "weekly_summary": "Esta semana: {completed} tareas completadas, {pending} pendientes"
+    }
   },
 
   "table": {
