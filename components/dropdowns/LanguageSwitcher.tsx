@@ -49,10 +49,10 @@ export default function LanguageSwitcher({ dropUp = false }: { dropUp?: boolean 
                 onClick={() => setIsOpen(!isOpen)}
                 className={`flex items-center gap-2 bg-white/80 dark:bg-gray-800/80 hover:bg-white dark:hover:bg-gray-800 backdrop-blur-sm px-3 py-2 rounded-full shadow-sm border ${theme.borderLight} transition-all duration-200 ${isPending ? 'opacity-50 cursor-wait' : ''}`}
             >
-                <div className="w-5 h-5 rounded-full overflow-hidden border border-gray-200 shrink-0">
+                <div className="w-5 h-5 rounded-full overflow-hidden border border-gray-200 dark:border-gray-600 shrink-0">
                     <img src={selected.flag} alt={selected.fullName} className="w-full h-full object-cover" />
                 </div>
-                <span className="text-sm font-semibold text-gray-700">{selected.name}</span>
+                <span className="text-sm font-semibold text-gray-700 dark:text-gray-200">{selected.name}</span>
             </button>
 
             {isOpen && (
@@ -66,7 +66,7 @@ export default function LanguageSwitcher({ dropUp = false }: { dropUp?: boolean 
                   ${selected.code === lang.code ? `${theme.selectedBg} ${theme.selectedText} font-semibold` : "text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800"}
                 `}
                             >
-                                <div className="w-5 h-5 rounded-full overflow-hidden border border-gray-200 shrink-0">
+                                <div className="w-5 h-5 rounded-full overflow-hidden border border-gray-200 dark:border-gray-600 shrink-0">
                                     <img src={lang.flag} alt={lang.fullName} className="w-full h-full object-cover" />
                                 </div>
                                 {lang.fullName}

@@ -32,9 +32,15 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
       <head>
         <script dangerouslySetInnerHTML={{ __html: `
+          (function(){
+            var m=document.cookie.match(/(?:^|; )theme=([^;]*)/);
+            var t=m?m[1]:null;
+            var d=t?t==='dark':window.matchMedia('(prefers-color-scheme:dark)').matches;
+            if(d)document.documentElement.classList.add('dark');
+          })();
           window.__pwaInstallPrompt = null;
           window.addEventListener('beforeinstallprompt', function(e) {
             e.preventDefault();

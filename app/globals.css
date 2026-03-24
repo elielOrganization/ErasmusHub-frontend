@@ -12,6 +12,21 @@
   --text-primary: #111827;
   --text-secondary: #6b7280;
   --text-muted: #9ca3af;
+
+  /* Auth pages */
+  --auth-bg: linear-gradient(135deg, #e8f4fd 0%, #f0f7ff 40%, #dbeeff 100%);
+  --auth-card-shadow: 0 20px 60px rgba(37, 99, 235, 0.12), 0 4px 20px rgba(0,0,0,0.06);
+  --auth-circle-1: radial-gradient(circle, #2563eb, transparent);
+  --auth-circle-2: radial-gradient(circle, #1d4ed8, transparent);
+  --auth-circle-3: radial-gradient(circle, #3b82f6, transparent);
+
+  /* Form inputs */
+  --input-border: #e8f0fe;
+  --input-bg: #f8faff;
+  --input-focus-bg: #f0f7ff;
+  --input-error-bg: #fef2f2;
+  --input-shadow-error: 0 0 0 4px rgba(220,38,38,0.08);
+  --input-shadow-focus: 0 0 0 4px rgba(37,99,235,0.08);
 }
 
 .dark {
@@ -23,6 +38,21 @@
   --text-primary: #f1f5f9;
   --text-secondary: #94a3b8;
   --text-muted: #64748b;
+
+  /* Auth pages */
+  --auth-bg: linear-gradient(135deg, #0f172a 0%, #1e293b 40%, #0f172a 100%);
+  --auth-card-shadow: 0 20px 60px rgba(0,0,0,0.4), 0 4px 20px rgba(0,0,0,0.2);
+  --auth-circle-1: radial-gradient(circle, #1e40af, transparent);
+  --auth-circle-2: radial-gradient(circle, #1e3a8a, transparent);
+  --auth-circle-3: radial-gradient(circle, #2563eb, transparent);
+
+  /* Form inputs */
+  --input-border: #374151;
+  --input-bg: #111827;
+  --input-focus-bg: #1e293b;
+  --input-error-bg: #1c1917;
+  --input-shadow-error: 0 0 0 4px rgba(220,38,38,0.15);
+  --input-shadow-focus: 0 0 0 4px rgba(37,99,235,0.15);
 }
 
 @theme inline {
