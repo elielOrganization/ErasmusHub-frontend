@@ -4,6 +4,7 @@ import DashboardSidebar from "@/components/layout/DashboardSidebar";
 import DashboardHeader from "@/components/layout/DashboardHeader";
 import { SidebarProvider } from "@/context/SidebarContext";
 import MainContentWrapper from "@/components/layout/MainContentWrapper";
+import NavigationProgress from "@/components/layout/NavigationProgress";
 import { SERVER_API_URL } from '@/lib/api';
 
 export default async function DashboardLayout({ children }: { children: React.ReactNode }) {
@@ -45,6 +46,7 @@ export default async function DashboardLayout({ children }: { children: React.Re
     return (
         <SidebarProvider initialCollapsed={initialCollapsed}>
             <div className="min-h-screen bg-gray-50 dark:bg-gray-950">
+                <NavigationProgress />
                 <DashboardHeader />
                 <DashboardSidebar />
                 <MainContentWrapper>

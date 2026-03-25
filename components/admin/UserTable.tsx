@@ -93,10 +93,10 @@ function ChevronDownIcon() {
 
 function getRolePillClasses(roleName: string): string {
     const name = roleName.toLowerCase();
-    if (name.includes('admin')) return 'bg-purple-100 text-purple-700';
-    if (name.includes('student')) return 'bg-emerald-100 text-emerald-700';
-    if (name.includes('profesor') || name.includes('coordinador')) return 'bg-blue-100 text-blue-700';
-    return 'bg-gray-50 text-gray-600';
+    if (name.includes('admin')) return 'bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-300';
+    if (name.includes('student')) return 'bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-300';
+    if (name.includes('teacher') || name.includes('professor') || name.includes('profesor') || name.includes('coordinator') || name.includes('coordinador')) return 'bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300';
+    return 'bg-gray-50 dark:bg-gray-800 text-gray-600 dark:text-gray-300';
 }
 
 /* ── Modal wrapper ──────────────────────────────────────────── */
