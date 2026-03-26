@@ -1,7 +1,7 @@
 import { cookies } from 'next/headers';
 import { redirect } from 'next/navigation';
 import { getTranslations } from 'next-intl/server';
-import { fetchUsersServer } from '@/services/userService';
+import { fetchUsersServer, fetchRolesServer } from '@/services/userService';
 import UserTable from '@/components/admin/UserTable';
 import StatCards from '@/components/ui/StatCards';
 
@@ -15,7 +15,10 @@ export default async function AdminDashboardPage({ params }: { params: Promise<{
     }
 
     const t = await getTranslations('adminDashboard');
-    const users = await fetchUsersServer(token);
+    const [users, roles] = await Promise.all([
+        fetchUsersServer(token),
+        fetchRolesServer(),
+    ]);
 
     const totalUsers = users.length;
     const adminCount = users.filter(u => u.role?.name?.toLowerCase().includes('admin')).length;
@@ -52,7 +55,7 @@ export default async function AdminDashboardPage({ params }: { params: Promise<{
                     </span>
                 </div>
 
-                <UserTable users={users} />
+                <UserTable users={users} roles={roles} />
             </div>
         </div>
     );

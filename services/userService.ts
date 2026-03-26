@@ -30,3 +30,13 @@ export async function fetchUsersServer(token: string): Promise<User[]> {
     if (!response.ok) return [];
     return response.json();
 }
+
+/** Server-side fetch of all roles from the DB */
+export async function fetchRolesServer(): Promise<Role[]> {
+    const response = await fetch(`${SERVER_API_URL}/role/`, {
+        cache: 'no-store',
+    });
+
+    if (!response.ok) return [];
+    return response.json();
+}

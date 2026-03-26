@@ -10,6 +10,7 @@ import { useRoleTheme } from '@/hooks/useRoleTheme';
 import { useApi } from '@/hooks/useApi';
 import { translateRole } from '@/lib/translateRole';
 import type { User, Role } from '@/services/userService';
+import { useAuth } from '@/context/AuthContext';
 
 /* ── Parse Rodné číslo ─────────────────────────────────────── */
 
@@ -117,8 +118,14 @@ function Modal({ open, onClose, children }: { open: boolean; onClose: () => void
 
 /* ── Action buttons ─────────────────────────────────────────── */
 
-function ActionButtons({ onEdit, onDelete }: { onEdit: () => void; onDelete: () => void }) {
+function ActionButtons({ onEdit, onDelete, isSelf, isSuperAdmin }: {
+    onEdit: () => void;
+    onDelete: () => void;
+    isSelf?: boolean;
+    isSuperAdmin?: boolean;
+}) {
     const theme = useRoleTheme();
+    const canDelete = !isSelf && !isSuperAdmin;
     return (
         <div className="flex items-center gap-1">
             <button
@@ -128,8 +135,10 @@ function ActionButtons({ onEdit, onDelete }: { onEdit: () => void; onDelete: () 
                 <PencilIcon />
             </button>
             <button
-                onClick={onDelete}
-                className="p-1.5 rounded-lg text-gray-400 hover:text-red-600 hover:bg-red-50 transition-colors cursor-pointer"
+                onClick={canDelete ? onDelete : undefined}
+                disabled={!canDelete}
+                title={isSuperAdmin ? '🔒 Super Admin' : isSelf ? '🔒 No puedes eliminarte' : undefined}
+                className={`p-1.5 rounded-lg transition-colors ${!canDelete ? 'text-gray-200 dark:text-gray-700 cursor-not-allowed' : 'text-gray-400 hover:text-red-600 hover:bg-red-50 cursor-pointer'}`}
             >
                 <TrashIcon />
             </button>
@@ -444,7 +453,7 @@ function CreateUserModal({ open, onClose, onCreated }: { open: boolean; onClose:
 
 /* ── Edit modal ─────────────────────────────────────────────── */
 
-function EditModal({ user, roles, open, onClose, onUpdated }: { user: User | null; roles: Role[]; open: boolean; onClose: () => void; onUpdated: () => void }) {
+function EditModal({ user, roles, open, onClose, onUpdated, currentUserId }: { user: User | null; roles: Role[]; open: boolean; onClose: () => void; onUpdated: () => void; currentUserId?: number }) {
     const t = useTranslations('adminDashboard');
     const tRoles = useTranslations('roles');
     const theme = useRoleTheme();
@@ -560,23 +569,33 @@ function EditModal({ user, roles, open, onClose, onUpdated }: { user: User | nul
                     </div>
                     <div>
                         <label className="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">{t('fieldRole')}</label>
-                        <div className="relative">
-                            <select
-                                value={form.role_id}
-                                onChange={e => updateField('role_id', e.target.value)}
-                                className={`w-full appearance-none rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 px-3 py-2 pr-8 text-sm text-gray-700 dark:text-gray-200 focus:outline-none focus:ring-2 ${theme.focusRing} transition-colors cursor-pointer`}
-                            >
-                                <option value="">{t('selectRolePlaceholder')}</option>
-                                {roles.map((role) => (
-                                    <option key={role.id} value={role.id.toString()}>
-                                        {translateRole(role.name, tRoles)}
-                                    </option>
-                                ))}
-                            </select>
-                            <div className="absolute inset-y-0 right-2 flex items-center text-gray-400 pointer-events-none">
-                                <ChevronDownIcon />
-                            </div>
-                        </div>
+                        {(() => {
+                            const isRoleLocked = !!user && (user.id === 1 || user.id === currentUserId);
+                            return (
+                                <div className="relative">
+                                    <select
+                                        value={form.role_id}
+                                        onChange={e => !isRoleLocked && updateField('role_id', e.target.value)}
+                                        disabled={isRoleLocked}
+                                        title={isRoleLocked ? t('roleLocked') : undefined}
+                                        className={`w-full appearance-none rounded-xl border px-3 py-2 pr-8 text-sm focus:outline-none focus:ring-2 ${theme.focusRing} transition-colors ${isRoleLocked ? 'border-gray-100 dark:border-gray-800 bg-gray-50 dark:bg-gray-800/50 text-gray-400 dark:text-gray-500 cursor-not-allowed' : 'border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-200 cursor-pointer'}`}
+                                    >
+                                        <option value="">{t('selectRolePlaceholder')}</option>
+                                        {roles.map((role) => (
+                                            <option key={role.id} value={role.id.toString()}>
+                                                {translateRole(role.name, tRoles)}
+                                            </option>
+                                        ))}
+                                    </select>
+                                    <div className="absolute inset-y-0 right-2 flex items-center text-gray-400 pointer-events-none">
+                                        {isRoleLocked
+                                            ? <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="currentColor" className="w-3.5 h-3.5 text-gray-300 dark:text-gray-600"><path fillRule="evenodd" d="M8 1a3.5 3.5 0 0 0-3.5 3.5V7A1.5 1.5 0 0 0 3 8.5v4A1.5 1.5 0 0 0 4.5 14h7a1.5 1.5 0 0 0 1.5-1.5v-4A1.5 1.5 0 0 0 11 7V4.5A3.5 3.5 0 0 0 8 1Zm2 6V4.5a2 2 0 1 0-4 0V7h4Z" clipRule="evenodd" /></svg>
+                                            : <ChevronDownIcon />
+                                        }
+                                    </div>
+                                </div>
+                            );
+                        })()}
                     </div>
                 </div>
                 <div>
@@ -697,9 +716,10 @@ function DeleteModal({ user, open, onClose, onDeleted }: { user: User | null; op
 
 /* ── Main component ─────────────────────────────────────────── */
 
-export default function UserTable({ users }: { users: User[] }) {
+export default function UserTable({ users, roles }: { users: User[]; roles: Role[] }) {
     const t = useTranslations('adminDashboard');
     const tRoles = useTranslations('roles');
+    const { user: currentUser } = useAuth();
     const [searchQuery, setSearchQuery] = useState('');
     const [editUser, setEditUser] = useState<User | null>(null);
     const [deleteUser, setDeleteUser] = useState<User | null>(null);
@@ -726,18 +746,6 @@ export default function UserTable({ users }: { users: User[] }) {
 
     const clearSort = () => { setSortKey(null); setSortDir('asc'); };
 
-    // Fetch all roles from API — uses the shared hook so auth/error handling is consistent
-    const { data: fetchedRolesData } = useApi<Role[]>('/role/');
-
-    const roles = useMemo(() => {
-        if (fetchedRolesData && fetchedRolesData.length > 0) return fetchedRolesData;
-        // Fallback: extract roles from the currently loaded users
-        const map = new Map<number, Role>();
-        for (const u of users) {
-            if (u.role) map.set(u.role.id, u.role);
-        }
-        return Array.from(map.values());
-    }, [users, fetchedRolesData]);
 
     // Filtered users
     const filteredUsers = useMemo(() => {
@@ -885,11 +893,33 @@ export default function UserTable({ users }: { users: User[] }) {
                                     const rawRole = user.role?.name ?? '';
                                     const displayRole = rawRole ? translateRole(rawRole, tRoles) : t('unknown');
                                     const pillClasses = getRolePillClasses(rawRole);
+                                    const isSelf = user.id === currentUser?.id;
+                                    const isSuperAdmin = user.id === 1;
 
                                     return (
-                                        <tr key={user.id} className="group hover:bg-gray-50/80 dark:hover:bg-gray-800/50 transition-colors">
+                                        <tr key={user.id} className={`group transition-colors ${
+                                            isSuperAdmin
+                                                ? 'bg-amber-50/40 dark:bg-amber-950/10'
+                                                : isSelf
+                                                    ? 'bg-violet-50/40 dark:bg-violet-950/10'
+                                                    : 'hover:bg-gray-50/80 dark:hover:bg-gray-800/50'
+                                        }`}>
                                             <td className="py-4 font-medium text-gray-700 dark:text-gray-200">
-                                                {user.first_name} {user.last_name}
+                                                <div className="flex items-center gap-2">
+                                                    {user.first_name} {user.last_name}
+                                                    {isSuperAdmin && (
+                                                        <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-[10px] font-medium tracking-widest uppercase border border-amber-300/60 dark:border-amber-600/50 text-amber-600 dark:text-amber-400">
+                                                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="currentColor" className="w-3 h-3"><path fillRule="evenodd" d="M8 1a3.5 3.5 0 0 0-3.5 3.5V7A1.5 1.5 0 0 0 3 8.5v4A1.5 1.5 0 0 0 4.5 14h7a1.5 1.5 0 0 0 1.5-1.5v-4A1.5 1.5 0 0 0 11 7V4.5A3.5 3.5 0 0 0 8 1Zm2 6V4.5a2 2 0 1 0-4 0V7h4Z" clipRule="evenodd" /></svg>
+                                                            {t('superAdminBadge')}
+                                                        </span>
+                                                    )}
+                                                    {isSelf && !isSuperAdmin && (
+                                                        <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-[10px] font-medium tracking-widest uppercase border border-violet-300/60 dark:border-violet-600/50 text-violet-500 dark:text-violet-400">
+                                                            <span className="w-1.5 h-1.5 rounded-full bg-violet-400 dark:bg-violet-500" />
+                                                            {t('youBadge')}
+                                                        </span>
+                                                    )}
+                                                </div>
                                             </td>
                                             <td className="py-4 text-gray-500 dark:text-gray-400">{user.email}</td>
                                             <td className="py-4 text-gray-500 dark:text-gray-400">{user.phone || '—'}</td>
@@ -912,10 +942,12 @@ export default function UserTable({ users }: { users: User[] }) {
                                                 {new Date(user.created_at).toLocaleDateString()}
                                             </td>
                                             <td className="py-4">
-                                                <div className="opacity-0 group-hover:opacity-100 transition-opacity">
+                                                <div className={isSelf || isSuperAdmin ? '' : 'opacity-0 group-hover:opacity-100 transition-opacity'}>
                                                     <ActionButtons
                                                         onEdit={() => setEditUser(user)}
                                                         onDelete={() => setDeleteUser(user)}
+                                                        isSelf={isSelf}
+                                                        isSuperAdmin={isSuperAdmin}
                                                     />
                                                 </div>
                                             </td>
@@ -956,13 +988,35 @@ export default function UserTable({ users }: { users: User[] }) {
                             const rawRole = user.role?.name ?? '';
                             const displayRole = rawRole ? translateRole(rawRole, tRoles) : t('unknown');
                             const pillClasses = getRolePillClasses(rawRole);
+                            const isSelf = user.id === currentUser?.id;
+                            const isSuperAdmin = user.id === 1;
 
                             return (
-                                <div key={user.id} className="rounded-2xl border border-gray-100 dark:border-gray-800 p-4 space-y-3">
+                                <div key={user.id} className={`rounded-2xl p-4 space-y-3 ${
+                                    isSuperAdmin
+                                        ? 'border border-amber-100 dark:border-amber-900/40 bg-amber-50/40 dark:bg-amber-950/10'
+                                        : isSelf
+                                            ? 'border border-violet-100 dark:border-violet-900/40 bg-violet-50/40 dark:bg-violet-950/10'
+                                            : 'border border-gray-100 dark:border-gray-800'
+                                }`}>
                                     <div className="flex items-center justify-between">
-                                        <p className="font-semibold text-gray-800 dark:text-gray-100">
-                                            {user.first_name} {user.last_name}
-                                        </p>
+                                        <div className="flex items-center gap-2 flex-wrap">
+                                            <p className="font-semibold text-gray-800 dark:text-gray-100">
+                                                {user.first_name} {user.last_name}
+                                            </p>
+                                            {isSuperAdmin && (
+                                                <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-[10px] font-medium tracking-widest uppercase border border-amber-300/60 dark:border-amber-600/50 text-amber-600 dark:text-amber-400">
+                                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="currentColor" className="w-3 h-3"><path fillRule="evenodd" d="M8 1a3.5 3.5 0 0 0-3.5 3.5V7A1.5 1.5 0 0 0 3 8.5v4A1.5 1.5 0 0 0 4.5 14h7a1.5 1.5 0 0 0 1.5-1.5v-4A1.5 1.5 0 0 0 11 7V4.5A3.5 3.5 0 0 0 8 1Zm2 6V4.5a2 2 0 1 0-4 0V7h4Z" clipRule="evenodd" /></svg>
+                                                    {t('superAdminBadge')}
+                                                </span>
+                                            )}
+                                            {isSelf && !isSuperAdmin && (
+                                                <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-[10px] font-medium tracking-widest uppercase border border-violet-300/60 dark:border-violet-600/50 text-violet-500 dark:text-violet-400">
+                                                    <span className="w-1.5 h-1.5 rounded-full bg-violet-400 dark:bg-violet-500" />
+                                                    {t('youBadge')}
+                                                </span>
+                                            )}
+                                        </div>
                                         <div className="flex items-center gap-2">
                                             {user.is_minor && (
                                                 <span className="px-2 py-0.5 rounded-lg text-xs font-semibold bg-amber-100 text-amber-700">
@@ -1000,6 +1054,8 @@ export default function UserTable({ users }: { users: User[] }) {
                                         <ActionButtons
                                             onEdit={() => setEditUser(user)}
                                             onDelete={() => setDeleteUser(user)}
+                                            isSelf={isSelf}
+                                            isSuperAdmin={isSuperAdmin}
                                         />
                                     </div>
                                 </div>
@@ -1019,7 +1075,7 @@ export default function UserTable({ users }: { users: User[] }) {
 
             {/* Modals */}
             <CreateUserModal open={showCreate} onClose={() => setShowCreate(false)} onCreated={() => window.location.reload()} />
-            <EditModal user={editUser} roles={roles} open={!!editUser} onClose={() => setEditUser(null)} onUpdated={() => window.location.reload()} />
+            <EditModal user={editUser} roles={roles} open={!!editUser} onClose={() => setEditUser(null)} onUpdated={() => window.location.reload()} currentUserId={currentUser?.id} />
             <DeleteModal user={deleteUser} open={!!deleteUser} onClose={() => setDeleteUser(null)} onDeleted={() => window.location.reload()} />
         </>
     );
