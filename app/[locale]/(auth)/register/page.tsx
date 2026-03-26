@@ -112,13 +112,25 @@ export default function Register() {
                             />
                         </div>
 
-                        {/* Gender select */}
+                        <FormInput
+                            label={t('dniLabel')}
+                            type="text"
+                            name="rodne_cislo"
+                            value={formData.rodne_cislo}
+                            onChange={handleChange}
+                            placeholder={t('dniPlaceholder')}
+                            icon={idIcon}
+                            error={errors.rodne_cislo}
+                            required
+                        />
+
+                        {/* Gender select — auto-filled from Rodné číslo */}
                         <div>
                             <label className="block text-gray-600 dark:text-gray-400 text-xs font-semibold mb-2 tracking-wide uppercase">
                                 {t('genderLabel')}
                             </label>
                             <div
-                                className="flex items-center gap-3 rounded-xl px-4 py-3.5 border-2 transition-all duration-200"
+                                className="flex items-center gap-3 rounded-xl px-4 py-3.5 border-2 transition-all duration-200 opacity-60 cursor-not-allowed"
                                 style={{
                                     borderColor: errors.gender ? "#dc2626" : "var(--input-border)",
                                     background: errors.gender ? "var(--input-error-bg)" : "var(--input-bg)",
@@ -131,7 +143,8 @@ export default function Register() {
                                     name="gender"
                                     value={formData.gender}
                                     onChange={handleChange}
-                                    className="flex-1 bg-transparent dark:bg-gray-900 text-gray-800 dark:text-gray-100 text-sm outline-none min-w-0 appearance-none cursor-pointer"
+                                    disabled
+                                    className="flex-1 bg-transparent dark:bg-gray-900 text-gray-800 dark:text-gray-100 text-sm outline-none min-w-0 appearance-none cursor-not-allowed"
                                 >
                                     <option value="" className="bg-white dark:bg-gray-900 text-gray-400 dark:text-gray-500">{t('genderPlaceholder')}</option>
                                     <option value="male" className="bg-white dark:bg-gray-900 text-gray-800 dark:text-gray-100">{t('genderMale')}</option>
@@ -147,18 +160,6 @@ export default function Register() {
                                 </p>
                             )}
                         </div>
-
-                        <FormInput
-                            label={t('dniLabel')}
-                            type="text"
-                            name="rodne_cislo"
-                            value={formData.rodne_cislo}
-                            onChange={handleChange}
-                            placeholder={t('dniPlaceholder')}
-                            icon={idIcon}
-                            error={errors.rodne_cislo}
-                            required
-                        />
 
                         {/* Birth date - read-only, auto-filled from Rodné číslo */}
                         <FormInput
