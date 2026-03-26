@@ -4,16 +4,15 @@ import { API_URL } from '@/lib/api';
 
 /**
  * Parses a Czech/Slovak Rodné číslo and extracts birth date + minor status.
- * Format: YYMMDD/XXXX (slash optional)
+ * Format: YYMMDD/XXXX  (slash required in UI, always 10 digits after stripping)
  * - Women: month + 50 (or +70 since 2004)
  * - Men: month as-is (or +20 since 2004)
- * - 9 digits = born before 1954, 10 digits = born 1954+
- * - 10-digit numbers must be divisible by 11
+ * - Must be exactly 10 digits (cleaned) and divisible by 11
  */
 function parseRodneCislo(rc: string, gender: 'male' | 'female' | '') {
     const cleaned = rc.replace(/\//g, '').replace(/\s/g, '');
 
-    if (!/^\d{9,10}$/.test(cleaned)) {
+    if (!/^\d{10}$/.test(cleaned)) {
         return { error: 'invalidRcFormat' };
     }
 
@@ -21,12 +20,10 @@ function parseRodneCislo(rc: string, gender: 'male' | 'female' | '') {
     let mm = parseInt(cleaned.substring(2, 4), 10);
     const dd = parseInt(cleaned.substring(4, 6), 10);
 
-    // Modulo 11 check for 10-digit numbers
-    if (cleaned.length === 10) {
-        const num = parseInt(cleaned, 10);
-        if (num % 11 !== 0) {
-            return { error: 'invalidRcChecksum' };
-        }
+    // Modulo 11 check (always required now that 4-digit suffix is mandatory)
+    const num = parseInt(cleaned, 10);
+    if (num % 11 !== 0) {
+        return { error: 'invalidRcChecksum' };
     }
 
     // Determine gender from month encoding
@@ -55,15 +52,10 @@ function parseRodneCislo(rc: string, gender: 'male' | 'female' | '') {
     }
 
     // Determine full year
-    const isOldFormat = cleaned.length === 9;
-    let year: number;
-    if (isOldFormat) {
-        year = 1900 + yy;
-    } else if (yy >= 54) {
-        year = 1900 + yy;
-    } else {
-        year = 2000 + yy;
-    }
+    // yy >= 54 → 1954–1999 | yy < 54 → 2000–2053
+    // Same rule applies for both 9-digit (old) and 10-digit formats so that
+    // e.g. yy=06 always resolves to 2006 instead of 1906.
+    const year = yy >= 54 ? 1900 + yy : 2000 + yy;
 
     // Validate day
     const maxDay = new Date(year, mm, 0).getDate();

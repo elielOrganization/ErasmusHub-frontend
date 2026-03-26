@@ -131,11 +131,11 @@ export default function Register() {
                                     name="gender"
                                     value={formData.gender}
                                     onChange={handleChange}
-                                    className="flex-1 bg-transparent text-gray-800 dark:text-gray-100 text-sm outline-none min-w-0 appearance-none cursor-pointer"
+                                    className="flex-1 bg-transparent dark:bg-gray-900 text-gray-800 dark:text-gray-100 text-sm outline-none min-w-0 appearance-none cursor-pointer"
                                 >
-                                    <option value="">{t('genderPlaceholder')}</option>
-                                    <option value="male">{t('genderMale')}</option>
-                                    <option value="female">{t('genderFemale')}</option>
+                                    <option value="" className="bg-white dark:bg-gray-900 text-gray-400 dark:text-gray-500">{t('genderPlaceholder')}</option>
+                                    <option value="male" className="bg-white dark:bg-gray-900 text-gray-800 dark:text-gray-100">{t('genderMale')}</option>
+                                    <option value="female" className="bg-white dark:bg-gray-900 text-gray-800 dark:text-gray-100">{t('genderFemale')}</option>
                                 </select>
                             </div>
                             {errors.gender && (
