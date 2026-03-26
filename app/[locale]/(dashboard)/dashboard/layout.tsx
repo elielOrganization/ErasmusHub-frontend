@@ -3,6 +3,7 @@ import { redirect } from 'next/navigation';
 import DashboardSidebar from "@/components/layout/DashboardSidebar";
 import DashboardHeader from "@/components/layout/DashboardHeader";
 import { SidebarProvider } from "@/context/SidebarContext";
+import { RolePreviewProvider } from "@/context/RolePreviewContext";
 import MainContentWrapper from "@/components/layout/MainContentWrapper";
 import NavigationProgress from "@/components/layout/NavigationProgress";
 import { SERVER_API_URL } from '@/lib/api';
@@ -45,14 +46,16 @@ export default async function DashboardLayout({ children }: { children: React.Re
     // 4. If everything is OK, render the layout normally
     return (
         <SidebarProvider initialCollapsed={initialCollapsed}>
-            <div className="min-h-screen bg-gray-50 dark:bg-gray-950">
-                <NavigationProgress />
-                <DashboardHeader />
-                <DashboardSidebar />
-                <MainContentWrapper>
-                    {children}
-                </MainContentWrapper>
-            </div>
+            <RolePreviewProvider>
+                <div className="min-h-screen bg-gray-50 dark:bg-gray-950">
+                    <NavigationProgress />
+                    <DashboardHeader />
+                    <DashboardSidebar />
+                    <MainContentWrapper>
+                        {children}
+                    </MainContentWrapper>
+                </div>
+            </RolePreviewProvider>
         </SidebarProvider>
     );
 }

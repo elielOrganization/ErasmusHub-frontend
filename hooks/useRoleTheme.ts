@@ -1,4 +1,5 @@
 import { useAuth } from '@/context/AuthContext';
+import { useRolePreview } from '@/context/RolePreviewContext';
 
 const adminTheme = {
     // Sidebar
@@ -179,7 +180,8 @@ export type RoleTheme = typeof adminTheme;
 
 export function useRoleTheme(): RoleTheme {
     const { user } = useAuth();
-    const roleName = (user?.role?.name || '').toLowerCase();
+    const { effectiveRoleName } = useRolePreview();
+    const roleName = (effectiveRoleName || user?.role?.name || '').toLowerCase();
 
     if (roleName.includes('admin')) return adminTheme;
     if (roleName.includes('student')) return studentTheme;

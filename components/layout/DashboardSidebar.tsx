@@ -7,6 +7,7 @@ import { usePWA } from '@/hooks/usePWA';
 import { useAuth } from '@/context/AuthContext';
 import { useApi } from '@/hooks/useApi';
 import { useRoleTheme } from '@/hooks/useRoleTheme';
+import { useRolePreview } from '@/context/RolePreviewContext';
 import { useNotificationPrefs, PREF_TYPE_MAP } from '@/hooks/useNotificationPrefs';
 import LanguageSwitcher from '../dropdowns/LanguageSwitcher';
 
@@ -22,11 +23,12 @@ export default function DashboardSidebar() {
     const { isInstallable, installApp } = usePWA();
     const { user, loading } = useAuth();
     const theme = useRoleTheme();
+    const { effectiveRoleName } = useRolePreview();
 
-    const roleName = user?.role?.name || '';
+    const roleName = effectiveRoleName || user?.role?.name || '';
     const isStudent = roleName.includes('Student');
     const isAdmin = roleName.toLowerCase().includes('admin');
-    const isTeacher = roleName.toLowerCase().includes('teacher') || roleName.toLowerCase().includes('profesor');
+    const isTeacher = roleName.toLowerCase().includes('teacher') || roleName.toLowerCase().includes('profesor') || roleName.toLowerCase().includes('professor') || roleName.toLowerCase().includes('coordinator') || roleName.toLowerCase().includes('coordinador');
     const isLector = !isStudent && !isAdmin && !isTeacher;
 
     // Fetch notifications with polling and filter by user preferences
