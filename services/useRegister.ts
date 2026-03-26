@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { useRouter } from '@/i18n/routing';
 import { API_URL } from '@/lib/api';
 
@@ -97,6 +97,14 @@ export const useRegister = (t: (key: string) => string) => {
 
     const [loading, setLoading] = useState(false);
     const [errors, setErrors] = useState<Record<string, string>>({});
+
+    // Auto-select gender from Rodné číslo when it parses successfully
+    useEffect(() => {
+        const result = parseRodneCislo(formData.rodne_cislo, '');
+        if (!('error' in result) && result.gender) {
+            setFormData(prev => ({ ...prev, gender: result.gender as 'male' | 'female' }));
+        }
+    }, [formData.rodne_cislo]);
 
     // Auto-compute birth date and is_minor from Rodné číslo (gender optional for display)
     const rcParsed = useMemo(() => {
