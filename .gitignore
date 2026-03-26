@@ -20,3 +20,4 @@ public/swe-worker-*.js
 # Otros
 .env*
 *.db
+next-env.d.ts
