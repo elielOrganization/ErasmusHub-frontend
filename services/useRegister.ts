@@ -98,9 +98,9 @@ export const useRegister = (t: (key: string) => string) => {
     const [loading, setLoading] = useState(false);
     const [errors, setErrors] = useState<Record<string, string>>({});
 
-    // Auto-compute birth date and is_minor from Rodné číslo + gender
+    // Auto-compute birth date and is_minor from Rodné číslo (gender optional for display)
     const rcParsed = useMemo(() => {
-        if (!formData.rodne_cislo || !formData.gender) return null;
+        if (!formData.rodne_cislo) return null;
         const result = parseRodneCislo(formData.rodne_cislo, formData.gender);
         if ('error' in result) return null;
         return result;
