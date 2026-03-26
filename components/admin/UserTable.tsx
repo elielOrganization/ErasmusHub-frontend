@@ -6,6 +6,7 @@ import Cookies from 'js-cookie';
 import { API_URL } from '@/lib/api';
 import FilterBar from '@/components/ui/FilterBar';
 import Pagination from '@/components/ui/Pagination';
+import Modal from '@/components/ui/Modal';
 import { useRoleTheme } from '@/hooks/useRoleTheme';
 import { translateRole } from '@/lib/translateRole';
 import type { User, Role } from '@/services/userService';
@@ -97,21 +98,6 @@ function getRolePillClasses(roleName: string): string {
     if (name.includes('student')) return 'bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-300';
     if (name.includes('teacher') || name.includes('professor') || name.includes('profesor') || name.includes('coordinator') || name.includes('coordinador')) return 'bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300';
     return 'bg-gray-50 dark:bg-gray-800 text-gray-600 dark:text-gray-300';
-}
-
-/* ── Modal wrapper ──────────────────────────────────────────── */
-
-function Modal({ open, onClose, children }: { open: boolean; onClose: () => void; children: React.ReactNode }) {
-    if (!open) return null;
-
-    return (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-            <div className="fixed inset-0 bg-black/40 backdrop-blur-sm" onClick={onClose} />
-            <div className="relative bg-white dark:bg-gray-900 rounded-2xl shadow-xl w-full max-w-md p-6 space-y-4">
-                {children}
-            </div>
-        </div>
-    );
 }
 
 /* ── Action buttons ─────────────────────────────────────────── */
