@@ -451,7 +451,11 @@
     "errorFileType": "Solo se aceptan archivos PNG, JPG y PDF.",
     "errorFileSize": "El archivo no puede superar los 10MB.",
     "submitError": "Ha ocurrido un error. Por favor, inténtalo de nuevo.",
-    "required": "Obligatorio"
+    "required": "Obligatorio",
+    "state": "Estado",
+    "state_pending": "Pendiente",
+    "state_approved": "Aprobado",
+    "state_rejected": "Rechazado"
   },
 
   "settings": {

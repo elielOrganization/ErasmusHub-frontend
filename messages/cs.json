@@ -451,7 +451,11 @@
     "errorFileType": "Jsou akceptovány pouze soubory PNG, JPG a PDF.",
     "errorFileSize": "Soubor nesmí přesahovat 10MB.",
     "submitError": "Došlo k chybě. Zkuste to prosím znovu.",
-    "required": "Povinné"
+    "required": "Povinné",
+    "state": "Stav",
+    "state_pending": "Čeká na schválení",
+    "state_approved": "Schváleno",
+    "state_rejected": "Zamítnuto"
   },
 
   "settings": {
