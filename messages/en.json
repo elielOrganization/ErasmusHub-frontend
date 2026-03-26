@@ -546,6 +546,30 @@
     "noRole": "No role"
   },
 
+  "calificacion": {
+    "title": "Grading Table",
+    "subtitle": "Selection criteria weights for Erasmus applications",
+    "colCriteria": "Criterion",
+    "colWeight": "Percentage",
+    "total": "Total",
+    "optional": "Optional",
+    "requiredNote": "All fields are required. The total must be exactly 100%.",
+    "save": "Save changes",
+    "saving": "Saving...",
+    "savedSuccess": "Weighting saved successfully.",
+    "errorRequired": "Required fields must have a value greater than 0.",
+    "errorTotal": "The total must be exactly 100%.",
+    "errorGeneric": "An error occurred while saving. Please try again.",
+    "lastUpdated": "Last updated: {date}",
+    "fields": {
+      "interview": "Interview",
+      "grade_certificate": "Grade certificate",
+      "motivation_letter": "Motivation letter",
+      "language_certificate": "Language certificate",
+      "disability_certificate": "Disability certificate"
+    }
+  },
+
   "accessDenied": {
     "title": "Access Denied",
     "message": "You don't have permission to view this page. If you believe this is an error, please contact your administrator.",

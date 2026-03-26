@@ -546,6 +546,30 @@
     "noRole": "Bez role"
   },
 
+  "calificacion": {
+    "title": "Hodnotící tabulka",
+    "subtitle": "Váhy výběrových kritérií pro přihlášky Erasmus",
+    "colCriteria": "Kritérium",
+    "colWeight": "Procento",
+    "total": "Celkem",
+    "optional": "Volitelné",
+    "requiredNote": "Všechna pole jsou povinná. Celkový součet musí být přesně 100 %.",
+    "save": "Uložit změny",
+    "saving": "Ukládání...",
+    "savedSuccess": "Váhové hodnocení bylo úspěšně uloženo.",
+    "errorRequired": "Povinná pole musí mít hodnotu větší než 0.",
+    "errorTotal": "Celkový součet musí být přesně 100 %.",
+    "errorGeneric": "Při ukládání došlo k chybě. Zkuste to znovu.",
+    "lastUpdated": "Poslední aktualizace: {date}",
+    "fields": {
+      "interview": "Pohovor",
+      "grade_certificate": "Výpis výsledků",
+      "motivation_letter": "Motivační dopis",
+      "language_certificate": "Jazykový certifikát",
+      "disability_certificate": "Certifikát zdravotního postižení"
+    }
+  },
+
   "accessDenied": {
     "title": "Přístup odepřen",
     "message": "Nemáte oprávnění k zobrazení této stránky. Pokud si myslíte, že jde o chybu, kontaktujte svého administrátora.",
