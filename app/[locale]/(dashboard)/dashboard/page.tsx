@@ -1,6 +1,7 @@
 "use client"
 import { useTranslations } from "next-intl";
 import { useAuth } from "@/context/AuthContext";
+import { useRolePreview } from "@/context/RolePreviewContext";
 import { useApi } from "@/hooks/useApi";
 import { Link } from "@/i18n/routing";
 import { useRoleTheme } from "@/hooks/useRoleTheme";
@@ -18,14 +19,15 @@ function useGreeting() {
 export default function DashboardHome() {
     const t = useTranslations("dashboard");
     const { user, loading } = useAuth();
+    const { effectiveRoleName } = useRolePreview();
     const greeting = useGreeting();
     const theme = useRoleTheme();
 
-    const roleName = user?.role?.name || "";
+    // Use effective role name so admin previews work transparently
+    const roleName = effectiveRoleName || user?.role?.name || "";
     const isStudent = roleName.includes("Student");
     const isAdmin = roleName.toLowerCase().includes("admin");
 
-    // Fetch stats
     const { data: unreadData } = useApi<{ count: number }>("/notifications/me/unread-count");
     const unreadCount = unreadData?.count || 0;
 
@@ -103,10 +105,8 @@ export default function DashboardHome() {
         <div className="space-y-6">
             {/* Welcome header */}
             <div className="relative bg-white dark:bg-gray-900 rounded-3xl border border-gray-100 dark:border-gray-800 shadow-sm overflow-hidden">
-                {/* Accent bar */}
                 <div className={`absolute inset-y-0 left-0 w-1.5 bg-gradient-to-b ${theme.gradientFrom} ${theme.gradientTo}`} />
                 <div className="flex items-center gap-5 px-8 py-7">
-                    {/* Avatar */}
                     <div
                         className="hidden sm:flex w-14 h-14 rounded-2xl items-center justify-center text-white text-lg font-bold shrink-0 shadow-sm"
                         style={{ background: `linear-gradient(135deg, var(--tw-gradient-from, #7c3aed), var(--tw-gradient-to, #6d28d9))` }}

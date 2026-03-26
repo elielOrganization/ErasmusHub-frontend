@@ -8,6 +8,7 @@ import FilterBar from '@/components/ui/FilterBar';
 import Pagination from '@/components/ui/Pagination';
 import Modal from '@/components/ui/Modal';
 import { useRoleTheme } from '@/hooks/useRoleTheme';
+import { useApi } from '@/hooks/useApi';
 import { translateRole } from '@/lib/translateRole';
 import type { User, Role } from '@/services/userService';
 
@@ -711,27 +712,18 @@ export default function UserTable({ users }: { users: User[] }) {
 
     const clearSort = () => { setSortKey(null); setSortDir('asc'); };
 
-    // Fetch all roles from API client-side, fallback to extracting from users
-    const [fetchedRoles, setFetchedRoles] = useState<Role[]>([]);
-    useEffect(() => {
-        const token = Cookies.get('auth_token');
-        if (!token) return;
-        fetch(`${API_URL}/role/`, {
-            headers: { Authorization: `Bearer ${token}` },
-        })
-            .then(res => res.ok ? res.json() : [])
-            .then((data: Role[]) => setFetchedRoles(data))
-            .catch(() => {});
-    }, []);
+    // Fetch all roles from API — uses the shared hook so auth/error handling is consistent
+    const { data: fetchedRolesData } = useApi<Role[]>('/role/');
 
     const roles = useMemo(() => {
-        if (fetchedRoles.length > 0) return fetchedRoles;
+        if (fetchedRolesData && fetchedRolesData.length > 0) return fetchedRolesData;
+        // Fallback: extract roles from the currently loaded users
         const map = new Map<number, Role>();
         for (const u of users) {
             if (u.role) map.set(u.role.id, u.role);
         }
         return Array.from(map.values());
-    }, [users, fetchedRoles]);
+    }, [users, fetchedRolesData]);
 
     // Filtered users
     const filteredUsers = useMemo(() => {
