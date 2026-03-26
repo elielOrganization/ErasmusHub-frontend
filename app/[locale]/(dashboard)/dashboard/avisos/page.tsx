@@ -56,12 +56,18 @@ function NotificationCard({
     t: ReturnType<typeof useTranslations>;
     onMarkRead: (id: number) => void;
 }) {
-    const typeLabel = (t as (k: string) => string)(notif.type) !== notif.type
-        ? (t as (k: string) => string)(notif.type)
-        : (t as (k: string) => string)("unknown");
+    const KNOWN_TYPES = ['weekly_digest', 'application_update', 'application', 'task_reminder', 'task'];
+    const KNOWN_MESSAGES = ['app_accepted', 'app_rejected', 'app_submitted', 'app_updated', 'task_assigned', 'task_due_soon', 'task_overdue', 'task_completed', 'weekly_summary'];
+
+    const typeKey = KNOWN_TYPES.includes(notif.type) ? notif.type : 'unknown';
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const typeLabel = (t as any)(typeKey) as string;
 
     const params = notif.params ? JSON.parse(notif.params) : {};
-    const messageText = (t.rich(`messages.${notif.message_key}`, params) as string) ?? notif.message_key;
+    const messageText = KNOWN_MESSAGES.includes(notif.message_key)
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        ? (t.rich(`messages.${notif.message_key}` as any, params) as string)
+        : notif.message_key;
 
     return (
         <div className={`flex gap-4 p-4 rounded-xl border transition-all ${notif.is_read

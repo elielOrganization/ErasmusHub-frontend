@@ -332,7 +332,10 @@
     "applyFilters": "Apply filters",
     "clearSort": "Clear sort",
     "roleLabel": "Role",
-    "ageLabel": "Age"
+    "ageLabel": "Age",
+    "youBadge": "You",
+    "superAdminBadge": "Super Admin",
+    "roleLocked": "This user's role cannot be changed"
   },
 
   "opportunitiesDashboard": {

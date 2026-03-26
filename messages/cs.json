@@ -332,7 +332,10 @@
     "applyFilters": "Použít filtry",
     "clearSort": "Zrušit řazení",
     "roleLabel": "Role",
-    "ageLabel": "Věk"
+    "ageLabel": "Věk",
+    "youBadge": "Ty",
+    "superAdminBadge": "Super Admin",
+    "roleLocked": "Roli tohoto uživatele nelze změnit"
   },
 
   "opportunitiesDashboard": {
