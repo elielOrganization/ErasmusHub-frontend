@@ -19,6 +19,18 @@ interface PaginatedResponse<T> {
     total: number;
 }
 
+function timeAgo(iso: string): string {
+    const diff = Date.now() - new Date(iso).getTime();
+    const mins = Math.floor(diff / 60000);
+    if (mins < 1) return "now";
+    if (mins < 60) return `${mins}m`;
+    const hrs = Math.floor(mins / 60);
+    if (hrs < 24) return `${hrs}h`;
+    const days = Math.floor(hrs / 24);
+    if (days < 7) return `${days}d`;
+    return `${Math.floor(days / 7)}w`;
+}
+
 export default function NotificationDropdown() {
     const [isOpen, setIsOpen] = useState(false);
     const t = useTranslations("dashboard");
@@ -52,8 +64,29 @@ export default function NotificationDropdown() {
 
     const handleMarkRead = async (e: React.MouseEvent, id: number) => {
         e.preventDefault();
+        e.stopPropagation();
         await apiPatch(`/notifications/${id}/read`);
         refetch();
+    };
+
+    const handleMarkAllRead = async () => {
+        for (const n of notifications.filter((n) => !n.is_read)) {
+            await apiPatch(`/notifications/${n.id}/read`);
+        }
+        refetch();
+    };
+
+    const getMessage = (n: Notification): string => {
+        const key = `messages.${n.message_key}`;
+        if (ta.has(key)) {
+            const params = n.params ? JSON.parse(n.params) : {};
+            return ta(key, params);
+        }
+        return n.message_key;
+    };
+
+    const getTypeLabel = (type: string): string => {
+        return ta.has(type) ? ta(type) : ta("unknown");
     };
 
     return (
@@ -71,51 +104,97 @@ export default function NotificationDropdown() {
             </button>
 
             {isOpen && (
-                <div className="absolute right-0 mt-2 w-80 bg-white dark:bg-gray-900 rounded-2xl shadow-xl border border-gray-100 dark:border-gray-800 overflow-hidden z-50 animate-in fade-in zoom-in duration-200">
-                    <div className="px-4 py-3 border-b border-gray-50 dark:border-gray-800 bg-gray-50/50 dark:bg-gray-800/50 flex items-center justify-between">
-                        <h3 className="text-sm font-bold text-gray-800 dark:text-gray-100">{t('notifications')}</h3>
+                <div className="absolute right-0 mt-2 w-96 bg-white dark:bg-gray-900 rounded-2xl shadow-2xl border border-gray-200 dark:border-gray-700 overflow-hidden z-50 animate-in fade-in zoom-in duration-200">
+                    {/* Header */}
+                    <div className="px-4 py-3 border-b border-gray-100 dark:border-gray-800 bg-gray-50/80 dark:bg-gray-800/60 flex items-center justify-between">
+                        <div className="flex items-center gap-2">
+                            <h3 className="text-sm font-bold text-gray-800 dark:text-gray-100">{t('notifications')}</h3>
+                            {unreadCount > 0 && (
+                                <span className="text-[10px] font-bold bg-red-500 text-white px-1.5 py-0.5 rounded-full leading-none">
+                                    {unreadCount}
+                                </span>
+                            )}
+                        </div>
                         {unreadCount > 0 && (
-                            <span className="text-xs font-semibold bg-red-100 dark:bg-red-900/40 text-red-600 dark:text-red-400 px-2 py-0.5 rounded-full">
-                                {unreadCount}
-                            </span>
+                            <button
+                                onClick={handleMarkAllRead}
+                                className="text-[11px] font-medium text-blue-600 dark:text-blue-400 hover:underline"
+                            >
+                                {ta('markAllRead')}
+                            </button>
                         )}
                     </div>
 
-                    <div className="max-h-72 overflow-y-auto divide-y divide-gray-50 dark:divide-gray-800">
+                    {/* Notification list */}
+                    <div className="max-h-80 overflow-y-auto">
                         {notifications.length === 0 ? (
                             <div className="p-8 text-center">
                                 <div className="w-12 h-12 bg-gray-100 dark:bg-gray-800 rounded-full flex items-center justify-center mx-auto mb-3">
-                                    <svg className="w-6 h-6 text-gray-300" fill="currentColor" viewBox="0 0 24 24">
-                                        <path d="M12 22c1.1 0 2-.9 2-2h-4c0 1.1.89 2 2 2zm6-6v-5c0-3.07-1.64-5.64-4.5-6.32V4c0-.83-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5v.68C7.63 5.36 6 7.92 6 11v5l-2 2v1h16v-1l-2-2z" />
+                                    <svg className="w-6 h-6 text-gray-300 dark:text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth="1.5">
+                                        <path strokeLinecap="round" strokeLinejoin="round" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
                                     </svg>
                                 </div>
-                                <p className="text-xs text-gray-400">{t('noNotifications')}</p>
+                                <p className="text-xs text-gray-400 dark:text-gray-500">{t('noNotifications')}</p>
                             </div>
                         ) : (
-                            notifications.map((n) => {
-                                const p = n.params ? JSON.parse(n.params) : {};
-                                const msg = ta.rich(`messages.${n.message_key}`, p) as string ?? n.message_key;
-                                return (
-                                <div key={n.id} className={`flex items-start gap-3 px-4 py-3 ${!n.is_read ? "bg-blue-50/50 dark:bg-blue-950/20" : ""}`}>
-                                    <div className={`mt-0.5 shrink-0 w-2 h-2 rounded-full ${!n.is_read ? "bg-blue-500" : "bg-transparent"}`} />
-                                    <div className="flex-1 min-w-0">
-                                        <p className="text-sm font-medium text-gray-800 dark:text-gray-100 truncate">{msg}</p>
+                            notifications.map((n) => (
+                                <div
+                                    key={n.id}
+                                    className={`flex items-start gap-3 px-4 py-3 border-b border-gray-50 dark:border-gray-800/50 transition-colors hover:bg-gray-50 dark:hover:bg-gray-800/30 ${
+                                        !n.is_read ? "bg-blue-50/60 dark:bg-blue-950/20" : ""
+                                    }`}
+                                >
+                                    {/* Icon */}
+                                    <div className={`mt-0.5 shrink-0 w-8 h-8 rounded-full flex items-center justify-center ${
+                                        !n.is_read
+                                            ? "bg-blue-100 dark:bg-blue-900/40"
+                                            : "bg-gray-100 dark:bg-gray-800"
+                                    }`}>
+                                        <svg className={`w-4 h-4 ${!n.is_read ? "text-blue-500 dark:text-blue-400" : "text-gray-400 dark:text-gray-500"}`}
+                                            fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth="2">
+                                            <path strokeLinecap="round" strokeLinejoin="round"
+                                                d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
+                                        </svg>
                                     </div>
+
+                                    {/* Content */}
+                                    <div className="flex-1 min-w-0">
+                                        <p className={`text-[13px] leading-snug ${
+                                            !n.is_read
+                                                ? "font-semibold text-gray-900 dark:text-white"
+                                                : "font-medium text-gray-600 dark:text-gray-300"
+                                        }`}>
+                                            {getMessage(n)}
+                                        </p>
+                                        <div className="flex items-center gap-2 mt-1">
+                                            <span className="text-[10px] font-medium px-1.5 py-0.5 rounded-full bg-gray-100 dark:bg-gray-800 text-gray-500 dark:text-gray-400">
+                                                {getTypeLabel(n.type)}
+                                            </span>
+                                            <span className="text-[10px] text-gray-400 dark:text-gray-500">
+                                                {timeAgo(n.created_at)}
+                                            </span>
+                                        </div>
+                                    </div>
+
+                                    {/* Mark read button */}
                                     {!n.is_read && (
                                         <button
                                             onClick={(e) => handleMarkRead(e, n.id)}
-                                            className="shrink-0 text-[10px] text-blue-500 hover:underline"
+                                            title={ta('markRead')}
+                                            className="shrink-0 mt-1 w-6 h-6 rounded-full flex items-center justify-center text-blue-500 hover:bg-blue-100 dark:hover:bg-blue-900/40 transition-colors"
                                         >
-                                            {ta('markRead')}
+                                            <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth="2.5">
+                                                <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+                                            </svg>
                                         </button>
                                     )}
                                 </div>
-                                );
-                            })
+                            ))
                         )}
                     </div>
 
-                    <div className="px-4 py-2.5 border-t border-gray-50 dark:border-gray-800 bg-gray-50/50 dark:bg-gray-800/50">
+                    {/* Footer */}
+                    <div className="px-4 py-2.5 border-t border-gray-100 dark:border-gray-800 bg-gray-50/80 dark:bg-gray-800/60 text-center">
                         <Link
                             href="/dashboard/avisos"
                             onClick={() => setIsOpen(false)}
