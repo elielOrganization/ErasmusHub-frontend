@@ -29,9 +29,9 @@ export const DOC_STATE_CONFIG: Record<
 export const MAX_SIZE_BYTES = 10 * 1024 * 1024;
 
 export const DOC_TYPE_MAP: Record<string, string> = {
-    id_document_front: "idDoc",
-    id_document_back: "idDoc",
-    grades_certificate: "grades",
+    id_front: "idDoc",
+    id_back: "idDoc",
+    grade_certificate: "grades",
     cover_letter: "coverLetter",
     disability_certificate: "disability",
 };
