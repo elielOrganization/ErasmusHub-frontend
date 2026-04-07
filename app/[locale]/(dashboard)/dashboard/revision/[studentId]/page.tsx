@@ -238,11 +238,6 @@ export default function StudentRevisionPage() {
                                             {(t as (k: string, p: Record<string, string>) => string)("uploadedAt", {
                                                 date: new Date(doc.uploaded_at).toLocaleDateString(),
                                             })}
-                                            {doc.reviewed_at && (
-                                                <> · {(t as (k: string, p: Record<string, string>) => string)("reviewedAt", {
-                                                    date: new Date(doc.reviewed_at).toLocaleDateString(),
-                                                })}</>
-                                            )}
                                         </p>
                                     </div>
 
