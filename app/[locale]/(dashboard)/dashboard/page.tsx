@@ -1,4 +1,5 @@
 "use client"
+import { useState } from "react"; // <-- Añadido useState
 import { useTranslations } from "next-intl";
 import { useAuth } from "@/context/AuthContext";
 import { useRolePreview } from "@/context/RolePreviewContext";
@@ -22,6 +23,9 @@ export default function DashboardHome() {
     const { effectiveRoleName } = useRolePreview();
     const greeting = useGreeting();
     const theme = useRoleTheme();
+
+    // <-- Estado para el Pop-up
+    const [showPopup, setShowPopup] = useState(false);
 
     // Use effective role name so admin previews work transparently
     const roleName = effectiveRoleName || user?.role?.name || "";
@@ -95,6 +99,15 @@ export default function DashboardHome() {
             ),
             color: "bg-amber-50 dark:bg-amber-900/30 text-amber-600 dark:text-amber-400",
         },
+        // <-- NUEVO BOTÓN
+        {
+            title: "Empezar proceso de selección", 
+            onClick: () => setShowPopup(true), // Abre el pop-up en lugar de navegar
+            icon: (
+                <path strokeLinecap="round" strokeLinejoin="round" d="M5.25 5.653c0-.856.917-1.398 1.667-.986l11.54 6.348a1.125 1.125 0 010 1.971l-11.54 6.347a1.125 1.125 0 01-1.667-.985V5.653z" />
+            ),
+            color: "bg-emerald-50 dark:bg-emerald-900/30 text-emerald-600 dark:text-emerald-400",
+        },
     ];
 
     const actions = isStudent ? studentActions : defaultActions;
@@ -163,22 +176,47 @@ export default function DashboardHome() {
             <div>
                 <h2 className="text-lg font-semibold text-gray-800 dark:text-gray-100 mb-4">{t("quickActions")}</h2>
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                    {actions.map((action) => (
-                        <Link
-                            key={action.href}
-                            href={action.href}
-                            className="group bg-white dark:bg-gray-900 rounded-2xl p-6 border border-gray-100 dark:border-gray-800 shadow-sm hover:shadow-md hover:border-gray-200 dark:hover:border-gray-700 transition-all duration-200 flex flex-col items-center text-center"
-                        >
-                            <div className={`w-12 h-12 rounded-xl flex items-center justify-center mb-3 ${action.color} group-hover:scale-110 transition-transform duration-200`}>
-                                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth="2">
-                                    {action.icon}
-                                </svg>
-                            </div>
-                            <h3 className={`text-sm font-semibold text-gray-700 dark:text-gray-300 ${theme.actionHover} transition-colors`}>
-                                {action.title}
-                            </h3>
-                        </Link>
-                    ))}
+                    {actions.map((action, index) => {
+                        // Contenido interno compartido entre enlace y botón
+                        const actionContent = (
+                            <>
+                                <div className={`w-12 h-12 rounded-xl flex items-center justify-center mb-3 ${action.color} group-hover:scale-110 transition-transform duration-200`}>
+                                    <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth="2">
+                                        {action.icon}
+                                    </svg>
+                                </div>
+                                <h3 className={`text-sm font-semibold text-gray-700 dark:text-gray-300 ${theme.actionHover} transition-colors`}>
+                                    {action.title}
+                                </h3>
+                            </>
+                        );
+
+                        const commonClasses = "group w-full bg-white dark:bg-gray-900 rounded-2xl p-6 border border-gray-100 dark:border-gray-800 shadow-sm hover:shadow-md hover:border-gray-200 dark:hover:border-gray-700 transition-all duration-200 flex flex-col items-center text-center";
+
+                        // Si la acción tiene onClick, renderizamos un botón
+                        if (action.onClick) {
+                            return (
+                                <button
+                                    key={index} // Usamos index como fallback seguro
+                                    onClick={action.onClick}
+                                    className={commonClasses}
+                                >
+                                    {actionContent}
+                                </button>
+                            );
+                        }
+
+                        // Si no, renderizamos el enlace
+                        return (
+                            <Link
+                                key={action.href || index}
+                                href={action.href}
+                                className={commonClasses}
+                            >
+                                {actionContent}
+                            </Link>
+                        );
+                    })}
                 </div>
             </div>
 
@@ -187,6 +225,38 @@ export default function DashboardHome() {
                 <h2 className="text-lg font-semibold text-gray-800 dark:text-gray-100 mb-4">{t("calendar")}</h2>
                 <DashboardCalendar />
             </div>
+
+            {/* Modal / Pop-up de Confirmación */}
+            {showPopup && (
+                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4">
+                    <div className="bg-white dark:bg-gray-900 rounded-2xl p-6 max-w-md w-full border border-gray-100 dark:border-gray-800 shadow-xl">
+                        <h3 className="text-xl font-bold text-gray-800 dark:text-gray-100 mb-2">
+                            Iniciar proceso
+                        </h3>
+                        <p className="text-gray-600 dark:text-gray-400 mb-6">
+                            ¿Estás seguro de que deseas empezar el proceso de selección ahora mismo?
+                        </p>
+                        <div className="flex justify-end gap-3">
+                            <button
+                                onClick={() => setShowPopup(false)}
+                                className="px-4 py-2 rounded-xl text-sm font-medium text-gray-700 dark:text-gray-300 bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors"
+                            >
+                                Cancelar
+                            </button>
+                            <button
+                                onClick={() => {
+                                    // Aquí va tu lógica para empezar el proceso
+                                    console.log("Proceso iniciado");
+                                    setShowPopup(false);
+                                }}
+                                className="px-4 py-2 rounded-xl text-sm font-medium text-white bg-emerald-600 hover:bg-emerald-700 transition-colors"
+                            >
+                                Confirmar
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
         </div>
     );
 }
