@@ -227,7 +227,8 @@
       "weekly_summary": "Tento týden: {completed} úkolů dokončeno, {pending} čeká",
       "doc_approved": "Váš dokument {doc_type} byl schválen",
       "doc_rejected": "Váš dokument {doc_type} byl zamítnut: {reason}",
-      "docs_ready_for_review": "Student {student_name} odevzdal všechny povinné dokumenty"
+      "docs_ready_for_review": "Student {student_name} odevzdal všechny povinné dokumenty",
+      "selection_process_started": "Proces výběru Erasmus začal"
     }
   },
 

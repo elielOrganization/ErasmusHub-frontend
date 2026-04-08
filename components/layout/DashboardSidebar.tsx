@@ -1,17 +1,21 @@
 "use client"
+import { useState, useEffect } from 'react';
 import Image from 'next/image';
 import { useTranslations } from 'next-intl';
 import { Link, usePathname } from '@/i18n/routing';
 import { useSidebar } from '@/context/SidebarContext';
 import { usePWA } from '@/hooks/usePWA';
 import { useAuth } from '@/context/AuthContext';
-import { useApi } from '@/hooks/useApi';
 import { useRoleTheme } from '@/hooks/useRoleTheme';
 import { useRolePreview } from '@/context/RolePreviewContext';
 import { useNotificationPrefs, PREF_TYPE_MAP } from '@/hooks/useNotificationPrefs';
+import { useApi, apiPost } from '@/hooks/useApi';
 import LanguageSwitcher from '../dropdowns/LanguageSwitcher';
 
 export default function DashboardSidebar() {
+    // Estado para el proceso de selección
+    const [isProcessStarted, setIsProcessStarted] = useState(false);
+
     const t = useTranslations('dashboard');
     const tp = useTranslations('practicas');
     const te = useTranslations('exenciones');
@@ -32,12 +36,21 @@ export default function DashboardSidebar() {
     const isTeacher = roleName.toLowerCase().includes('teacher') || roleName.toLowerCase().includes('profesor') || roleName.toLowerCase().includes('professor') || roleName.toLowerCase().includes('coordinator') || roleName.toLowerCase().includes('coordinador');
     const isLector = !isStudent && !isAdmin && !isTeacher;
 
-    // Fetch notifications with polling and filter by user preferences
     const { prefs } = useNotificationPrefs();
     const { data: notifsData } = useApi<{ items: { type: string; is_read: boolean }[] }>(
         '/notifications/me?page_size=100',
         { refreshInterval: 30_000 }
     );
+    const { data: selectionProcessData } = useApi<{ active: boolean }>(
+        '/selection-process',
+        { refreshInterval: 60_000 }
+    );
+
+    useEffect(() => {
+        if (selectionProcessData) {
+            setIsProcessStarted(selectionProcessData.active);
+        }
+    }, [selectionProcessData]);
     const enabledTypes = [
         ...(prefs.weeklyDigest ? PREF_TYPE_MAP.weeklyDigest : []),
         ...(prefs.applicationUpdates ? PREF_TYPE_MAP.applicationUpdates : []),
@@ -123,29 +136,65 @@ export default function DashboardSidebar() {
                             </p>
                         </div>
                     ) : (
-                        menuItems.map((item) => {
-                            const isActive = pathname === item.path || (item.path !== '/dashboard' && pathname.startsWith(item.path));
-                            return (
-                                <Link
-                                    key={item.path}
-                                    href={item.path}
-                                    className={`flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all duration-200 ${isActive ? `${theme.activeBg} ${theme.activeText} font-medium` : "text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800"
-                                        }`}
-                                >
-                                    <svg className={`w-5 h-5 shrink-0 ${isActive ? theme.activeIcon : "text-gray-400 dark:text-gray-500"}`} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
-                                        {item.icon}
-                                    </svg>
-                                    <span className={`text-sm whitespace-nowrap transition-opacity duration-300 ${isCollapsed ? 'opacity-0' : 'opacity-100'}`}>
-                                        {item.name}
-                                    </span>
-                                    {'badge' in item && (item as { badge?: number }).badge ? (
-                                        <span className={`ml-auto bg-red-500 text-white text-[10px] font-bold rounded-full min-w-5 h-5 flex items-center justify-center px-1.5 transition-opacity duration-300 ${isCollapsed ? 'opacity-0' : 'opacity-100'}`}>
-                                            {(item as { badge?: number }).badge}
+                        <>
+                            {menuItems.map((item) => {
+                                const isActive = pathname === item.path || (item.path !== '/dashboard' && pathname.startsWith(item.path));
+                                return (
+                                    <Link
+                                        key={item.path}
+                                        href={item.path}
+                                        className={`flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all duration-200 ${isActive ? `${theme.activeBg} ${theme.activeText} font-medium` : "text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800"
+                                            }`}
+                                    >
+                                        <svg className={`w-5 h-5 shrink-0 ${isActive ? theme.activeIcon : "text-gray-400 dark:text-gray-500"}`} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+                                            {item.icon}
+                                        </svg>
+                                        <span className={`text-sm whitespace-nowrap transition-opacity duration-300 ${isCollapsed ? 'opacity-0' : 'opacity-100'}`}>
+                                            {item.name}
                                         </span>
-                                    ) : null}
-                                </Link>
-                            );
-                        })
+                                        {'badge' in item && (item as { badge?: number }).badge ? (
+                                            <span className={`ml-auto bg-red-500 text-white text-[10px] font-bold rounded-full min-w-5 h-5 flex items-center justify-center px-1.5 transition-opacity duration-300 ${isCollapsed ? 'opacity-0' : 'opacity-100'}`}>
+                                                {(item as { badge?: number }).badge}
+                                            </span>
+                                        ) : null}
+                                    </Link>
+                                );
+                            })}
+
+                            {isAdmin && (
+                                <button
+                                    onClick={async () => {
+                                        const wasActive = isProcessStarted;
+                                        try {
+                                            const data = await apiPost<{ active: boolean }>('/selection-process/toggle', {});
+                                            setIsProcessStarted(data.active);
+
+                                            if (!wasActive && data.active) {
+                                                await apiPost('/notifications/broadcast', {
+                                                    message_key: 'selection_process_started',
+                                                    type: 'application_update',
+                                                });
+                                            }
+                                        } catch (error) {
+                                            console.error('Error toggling process:', error);
+                                        }
+                                    }}
+                                    className={`flex items-center gap-3 px-3 py-2.5 mt-6 w-full rounded-lg transition-all duration-200 ${isProcessStarted ? 'text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-500/10' : 'text-emerald-600 dark:text-emerald-400 hover:bg-emerald-50 dark:hover:bg-emerald-500/10'}`}
+                                >
+                                    <svg className="w-5 h-5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth="2">
+                                        {isProcessStarted ? (
+                                            <path strokeLinecap="round" strokeLinejoin="round" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z M9 10h6m-6 4h6" />
+                                        ) : (
+                                            <path strokeLinecap="round" strokeLinejoin="round" d="M5.25 5.653c0-.856.917-1.398 1.667-.986l11.54 6.348a1.125 1.125 0 010 1.971l-11.54 6.347a1.125 1.125 0 01-1.667-.985V5.653z" />
+                                        )}
+                                    </svg>
+                                    <span className={`text-sm font-semibold whitespace-nowrap transition-opacity duration-300 ${isCollapsed ? 'opacity-0' : 'opacity-100'}`}>
+                                        {isProcessStarted ? 'Detener proceso' : 'Empezar proceso'}
+                                    </span>
+                                </button>
+                            )}
+
+                        </>
                     )}
                 </nav>
 
@@ -171,6 +220,7 @@ export default function DashboardSidebar() {
                     </div>
                 )}
             </aside>
+
         </>
     );
 }
