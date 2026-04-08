@@ -184,7 +184,7 @@ export default function DashboardHome() {
                         const commonClasses = "group w-full bg-white dark:bg-gray-900 rounded-2xl p-6 border border-gray-100 dark:border-gray-800 shadow-sm hover:shadow-md hover:border-gray-200 dark:hover:border-gray-700 transition-all duration-200 flex flex-col items-center text-center";
 
                         // Si la acción tiene onClick, renderizamos un botón
-                        if (action.onClick) {
+                        if ('onClick' in action && typeof action.onClick === 'function') {
                             return (
                                 <button
                                     key={index} // Usamos index como fallback seguro
