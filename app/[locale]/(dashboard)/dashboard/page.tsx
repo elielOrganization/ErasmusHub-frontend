@@ -1,4 +1,5 @@
 "use client"
+import { useState } from "react"; // <-- Añadido useState
 import { useTranslations } from "next-intl";
 import { useAuth } from "@/context/AuthContext";
 import { useRolePreview } from "@/context/RolePreviewContext";
@@ -22,6 +23,8 @@ export default function DashboardHome() {
     const { effectiveRoleName } = useRolePreview();
     const greeting = useGreeting();
     const theme = useRoleTheme();
+
+
 
     // Use effective role name so admin previews work transparently
     const roleName = effectiveRoleName || user?.role?.name || "";
@@ -163,22 +166,47 @@ export default function DashboardHome() {
             <div>
                 <h2 className="text-lg font-semibold text-gray-800 dark:text-gray-100 mb-4">{t("quickActions")}</h2>
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                    {actions.map((action) => (
-                        <Link
-                            key={action.href}
-                            href={action.href}
-                            className="group bg-white dark:bg-gray-900 rounded-2xl p-6 border border-gray-100 dark:border-gray-800 shadow-sm hover:shadow-md hover:border-gray-200 dark:hover:border-gray-700 transition-all duration-200 flex flex-col items-center text-center"
-                        >
-                            <div className={`w-12 h-12 rounded-xl flex items-center justify-center mb-3 ${action.color} group-hover:scale-110 transition-transform duration-200`}>
-                                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth="2">
-                                    {action.icon}
-                                </svg>
-                            </div>
-                            <h3 className={`text-sm font-semibold text-gray-700 dark:text-gray-300 ${theme.actionHover} transition-colors`}>
-                                {action.title}
-                            </h3>
-                        </Link>
-                    ))}
+                    {actions.map((action, index) => {
+                        // Contenido interno compartido entre enlace y botón
+                        const actionContent = (
+                            <>
+                                <div className={`w-12 h-12 rounded-xl flex items-center justify-center mb-3 ${action.color} group-hover:scale-110 transition-transform duration-200`}>
+                                    <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth="2">
+                                        {action.icon}
+                                    </svg>
+                                </div>
+                                <h3 className={`text-sm font-semibold text-gray-700 dark:text-gray-300 ${theme.actionHover} transition-colors`}>
+                                    {action.title}
+                                </h3>
+                            </>
+                        );
+
+                        const commonClasses = "group w-full bg-white dark:bg-gray-900 rounded-2xl p-6 border border-gray-100 dark:border-gray-800 shadow-sm hover:shadow-md hover:border-gray-200 dark:hover:border-gray-700 transition-all duration-200 flex flex-col items-center text-center";
+
+                        // Si la acción tiene onClick, renderizamos un botón
+                        if ('onClick' in action && typeof action.onClick === 'function') {
+                            return (
+                                <button
+                                    key={index} // Usamos index como fallback seguro
+                                    onClick={action.onClick}
+                                    className={commonClasses}
+                                >
+                                    {actionContent}
+                                </button>
+                            );
+                        }
+
+                        // Si no, renderizamos el enlace
+                        return (
+                            <Link
+                                key={action.href || index}
+                                href={action.href}
+                                className={commonClasses}
+                            >
+                                {actionContent}
+                            </Link>
+                        );
+                    })}
                 </div>
             </div>
 
@@ -187,6 +215,7 @@ export default function DashboardHome() {
                 <h2 className="text-lg font-semibold text-gray-800 dark:text-gray-100 mb-4">{t("calendar")}</h2>
                 <DashboardCalendar />
             </div>
+
         </div>
     );
 }

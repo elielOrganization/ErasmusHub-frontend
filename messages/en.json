@@ -227,7 +227,8 @@
       "weekly_summary": "This week: {completed} tasks completed, {pending} pending",
       "doc_approved": "Your document {doc_type} has been approved",
       "doc_rejected": "Your document {doc_type} has been rejected: {reason}",
-      "docs_ready_for_review": "Student {student_name} has submitted all mandatory documents"
+      "docs_ready_for_review": "Student {student_name} has submitted all mandatory documents",
+      "selection_process_started": "The Erasmus selection process has begun"
     }
   },
 
