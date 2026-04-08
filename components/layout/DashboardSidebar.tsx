@@ -11,10 +11,13 @@ import { useRolePreview } from '@/context/RolePreviewContext';
 import { useNotificationPrefs, PREF_TYPE_MAP } from '@/hooks/useNotificationPrefs';
 import { useApi, apiPost } from '@/hooks/useApi';
 import LanguageSwitcher from '../dropdowns/LanguageSwitcher';
+import ConfirmModal from '@/components/ui/ConfirmModal';
 
 export default function DashboardSidebar() {
     // Estado para el proceso de selección
     const [isProcessStarted, setIsProcessStarted] = useState(false);
+    // Estado para el modal de confirmación
+    const [showConfirmModal, setShowConfirmModal] = useState(false);
 
     const t = useTranslations('dashboard');
     const tp = useTranslations('practicas');
@@ -163,22 +166,7 @@ export default function DashboardSidebar() {
 
                             {isAdmin && (
                                 <button
-                                    onClick={async () => {
-                                        const wasActive = isProcessStarted;
-                                        try {
-                                            const data = await apiPost<{ active: boolean }>('/selection-process/toggle', {});
-                                            setIsProcessStarted(data.active);
-
-                                            if (!wasActive && data.active) {
-                                                await apiPost('/notifications/broadcast', {
-                                                    message_key: 'selection_process_started',
-                                                    type: 'application_update',
-                                                });
-                                            }
-                                        } catch (error) {
-                                            console.error('Error toggling process:', error);
-                                        }
-                                    }}
+                                    onClick={() => setShowConfirmModal(true)}
                                     className={`flex items-center gap-3 px-3 py-2.5 mt-6 w-full rounded-lg transition-all duration-200 ${isProcessStarted ? 'text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-500/10' : 'text-emerald-600 dark:text-emerald-400 hover:bg-emerald-50 dark:hover:bg-emerald-500/10'}`}
                                 >
                                     <svg className="w-5 h-5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth="2">
@@ -220,6 +208,38 @@ export default function DashboardSidebar() {
                     </div>
                 )}
             </aside>
+
+            {/* Modal de confirmación para el proceso de selección */}
+            <ConfirmModal
+                open={showConfirmModal}
+                title={isProcessStarted ? "Detener proceso de selección" : "Iniciar proceso de selección"}
+                description={
+                    isProcessStarted
+                        ? "¿Estás seguro de que quieres detener el proceso de selección de Erasmus? Esto detendrá todas las actividades relacionadas."
+                        : "¿Estás seguro de que quieres iniciar el proceso de selección de Erasmus? Esto notificará a todos los usuarios del sistema."
+                }
+                confirmLabel={isProcessStarted ? "Detener proceso" : "Iniciar proceso"}
+                cancelLabel="Cancelar"
+                onConfirm={async () => {
+                    const wasActive = isProcessStarted;
+                    try {
+                        const data = await apiPost<{ active: boolean }>('/selection-process/toggle', {});
+                        setIsProcessStarted(data.active);
+
+                        if (!wasActive && data.active) {
+                            await apiPost('/notifications/broadcast', {
+                                message_key: 'selection_process_started',
+                                type: 'application_update',
+                            });
+                        }
+                        setShowConfirmModal(false);
+                    } catch (error) {
+                        console.error('Error toggling process:', error);
+                        throw error; // Re-throw para que el modal maneje el error
+                    }
+                }}
+                onClose={() => setShowConfirmModal(false)}
+            />
 
         </>
     );
