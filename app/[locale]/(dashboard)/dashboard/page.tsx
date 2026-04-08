@@ -1,5 +1,5 @@
 "use client"
-import { useState } from "react"; // <-- Añadido useState
+import { useState, MouseEventHandler, ReactNode } from "react"; // <-- Añadido useState, MouseEventHandler y ReactNode
 import { useTranslations } from "next-intl";
 import { useAuth } from "@/context/AuthContext";
 import { useRolePreview } from "@/context/RolePreviewContext";
@@ -8,6 +8,14 @@ import { Link } from "@/i18n/routing";
 import { useRoleTheme } from "@/hooks/useRoleTheme";
 import LoadingSpinner from "@/components/ui/LoadingSpinner";
 import DashboardCalendar from "@/components/ui/DashboardCalendar";
+
+type DashboardAction = {
+    title: string;
+    icon: ReactNode;
+    color: string;
+    href?: string;
+    onClick?: MouseEventHandler<HTMLButtonElement>;
+};
 
 function useGreeting() {
     const t = useTranslations("dashboard");
@@ -34,7 +42,7 @@ export default function DashboardHome() {
     const { data: unreadData } = useApi<{ count: number }>("/notifications/me/unread-count");
     const unreadCount = unreadData?.count || 0;
 
-    const studentActions = [
+    const studentActions: DashboardAction[] = [
         {
             title: t("myInternships"),
             href: "/dashboard/practicas",
@@ -69,7 +77,7 @@ export default function DashboardHome() {
         },
     ];
 
-    const defaultActions = [
+    const defaultActions: DashboardAction[] = [
         ...(isAdmin
             ? [
                   {
@@ -184,10 +192,10 @@ export default function DashboardHome() {
                         const commonClasses = "group w-full bg-white dark:bg-gray-900 rounded-2xl p-6 border border-gray-100 dark:border-gray-800 shadow-sm hover:shadow-md hover:border-gray-200 dark:hover:border-gray-700 transition-all duration-200 flex flex-col items-center text-center";
 
                         // Si la acción tiene onClick, renderizamos un botón
-                        if ('onClick' in action && typeof action.onClick === 'function') {
+                        if (action.onClick) {
                             return (
                                 <button
-                                    key={index} // Usamos index como fallback seguro
+                                    key={index}
                                     onClick={action.onClick}
                                     className={commonClasses}
                                 >
@@ -200,7 +208,7 @@ export default function DashboardHome() {
                         return (
                             <Link
                                 key={action.href || index}
-                                href={action.href}
+                                href={action.href!}
                                 className={commonClasses}
                             >
                                 {actionContent}
