@@ -230,7 +230,9 @@
       "doc_approved": "Tu documento {doc_type} ha sido aprobado",
       "doc_rejected": "Tu documento {doc_type} ha sido rechazado: {reason}",
       "docs_ready_for_review": "El alumno {student_name} ha entregado todos los documentos obligatorios",
-      "selection_process_started": "El proceso de selección de Erasmus ha comenzado"
+      "selection_process_started": "El proceso de selección de Erasmus ha comenzado",
+      "interview_passed": "Has superado la entrevista con nota {grade}",
+      "interview_rejected": "No has superado la entrevista: {reason}"
     }
   },
 
@@ -648,6 +650,10 @@
     "filter_all": "Todos",
     "filter_pending": "Con pendientes",
     "filter_reviewed": "Revisados",
+    "tab_documentos": "Documentos",
+    "tab_entrevista": "Entrevista",
+    "badge_all_approved": "Todos aprobados",
+    "badge_pending_docs": "Pendientes",
     "colStudent": "Alumno",
     "colPending": "Pendientes",
     "colApproved": "Aprobados",
@@ -681,6 +687,25 @@
     "approvedSuccess": "Documento aprobado.",
     "rejectedSuccess": "Documento rechazado.",
     "actionError": "Ocurrió un error. Inténtalo de nuevo.",
-    "rejectionReason": "Motivo: {reason}"
+    "rejectionReason": "Motivo: {reason}",
+    "interview_colGrade": "Nota entrevista",
+    "interview_colActions": "Acciones",
+    "interview_gradeBtn": "Calificar",
+    "interview_rejectBtn": "Rechazar",
+    "interview_gradeLabel": "Nota (0 – 10)",
+    "interview_gradePlaceholder": "0.0 – 10.0",
+    "interview_saveGrade": "Guardar nota",
+    "interview_reasonLabel": "Motivo del rechazo",
+    "interview_reasonPlaceholder": "Explica por qué se rechaza al alumno...",
+    "interview_reasonRequired": "El motivo del rechazo es obligatorio.",
+    "interview_confirmReject": "Confirmar rechazo",
+    "interview_cancelAction": "Cancelar",
+    "interview_passed": "Aprobado",
+    "interview_rejected": "Rechazado",
+    "interview_gradeSuccess": "Nota guardada correctamente.",
+    "interview_rejectSuccess": "Alumno rechazado.",
+    "interview_actionError": "Ocurrió un error. Inténtalo de nuevo.",
+    "interview_empty": "No hay alumnos con todos los documentos aprobados.",
+    "interview_rejectionReason": "Motivo: {reason}"
   }
 }
