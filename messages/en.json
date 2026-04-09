@@ -498,7 +498,20 @@
     "state": "Status",
     "state_pending": "Pending",
     "state_approved": "Approved",
-    "state_rejected": "Rejected"
+    "state_rejected": "Rejected",
+    "mandatory": "Required",
+    "optional": "Optional",
+    "affectsScore": "{weight}% of score",
+    "courseLabel": "Year",
+    "coursePlaceholder": "Select your year...",
+    "courseGroupOsmilete": "Gymnázium 8-year",
+    "courseGroupCtyrilete": "Gymnázium 4-year",
+    "processInactiveTitle": "Selection process closed",
+    "processInactiveDesc": "Document uploads are not available until the selection process is active.",
+    "cardParental": "Parental Authorization",
+    "cardParentalDesc": "Authorization signed by legal guardian",
+    "docType_parental": "Parental Authorization",
+    "parentalAuthDesc": "Authorization document signed by parent or legal guardian"
   },
 
   "settings": {
@@ -647,6 +660,7 @@
     "docType_grade_certificate": "Grade certificate",
     "docType_cover_letter": "Motivation letter",
     "docType_disability_certificate": "Disability certificate",
+    "docType_parental_authorization": "Parental authorization",
     "docType_unknown": "Document",
     "uploadedAt": "Uploaded on {date}",
     "reviewedAt": "Reviewed on {date}",

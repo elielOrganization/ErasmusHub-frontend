@@ -6,20 +6,23 @@ import { useRoleTheme } from "@/hooks/useRoleTheme";
 import { uploadDocument } from "@/services/documentsService";
 import FileDropzone from "./FileDropzone";
 import { emptyFile } from "../types";
+import { GYMNASIUM_COURSES } from "../constants";
 import type { UploadDocType, FileState } from "../types";
 
 interface UploadModalProps {
     open: boolean;
     onClose: () => void;
     onUploaded: () => void;
-    user: { first_name: string; last_name: string };
+    user: { first_name: string; last_name: string; is_minor?: boolean; year?: string | null };
     initialDocType?: UploadDocType | "";
+    isMinor?: boolean;
 }
 
-export default function UploadModal({ open, onClose, onUploaded, user, initialDocType }: UploadModalProps) {
+export default function UploadModal({ open, onClose, onUploaded, user, initialDocType, isMinor }: UploadModalProps) {
     const t = useTranslations("documents");
     const theme = useRoleTheme();
     const [docType, setDocType] = useState<UploadDocType | "">(initialDocType ?? "");
+    const [curso, setCurso] = useState<string>(user.year ?? "");
     const [fileFront, setFileFront] = useState<FileState>(emptyFile());
     const [fileBack, setFileBack] = useState<FileState>(emptyFile());
     const [fileMain, setFileMain] = useState<FileState>(emptyFile());
@@ -30,12 +33,16 @@ export default function UploadModal({ open, onClose, onUploaded, user, initialDo
 
     useEffect(() => {
         document.body.style.overflow = open ? "hidden" : "";
-        if (open) setDocType(initialDocType ?? "");
+        if (open) {
+            setDocType(initialDocType ?? "");
+            setCurso(user.year ?? "");
+        }
         return () => { document.body.style.overflow = ""; };
-    }, [open, initialDocType]);
+    }, [open, initialDocType, user.year]);
 
     const resetForm = () => {
         setDocType("");
+        setCurso(user.year ?? "");
         setFileFront(emptyFile()); setFileBack(emptyFile()); setFileMain(emptyFile());
         setSubmitting(false); setSubmitSuccess(false); setSubmitError(null); setFormError(null);
     };
@@ -76,10 +83,13 @@ export default function UploadModal({ open, onClose, onUploaded, user, initialDo
 
     if (!open) return null;
 
+    const osmileteGroup = GYMNASIUM_COURSES.filter((c) => c.group === "osmilete");
+    const ctyrileteGroup = GYMNASIUM_COURSES.filter((c) => c.group === "ctyrilete");
+
     return (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
             <div className="absolute inset-0 bg-black/40 backdrop-blur-sm" onClick={handleClose} />
-            <div className="relative w-full max-w-lg max-h-[80vh] overflow-y-auto bg-white dark:bg-gray-900 rounded-2xl shadow-2xl border border-gray-100 dark:border-gray-800">
+            <div className="relative w-full max-w-lg max-h-[85vh] overflow-y-auto bg-white dark:bg-gray-900 rounded-2xl shadow-2xl border border-gray-100 dark:border-gray-800">
                 {/* Header */}
                 <div className="sticky top-0 z-10 flex items-center justify-between px-6 py-4 border-b border-gray-100 dark:border-gray-800 bg-white dark:bg-gray-900 rounded-t-2xl">
                     <div className="flex items-center gap-3">
@@ -119,32 +129,61 @@ export default function UploadModal({ open, onClose, onUploaded, user, initialDo
                     </div>
                 ) : (
                     <form onSubmit={handleSubmit} noValidate className="p-6 space-y-5">
-                        {/* Applicant */}
+                        {/* Full name (read-only) */}
                         <div>
                             <label className="block text-gray-500 dark:text-gray-400 text-[11px] font-semibold mb-1.5 tracking-wide uppercase">{t("fullName")}</label>
                             <div className="flex items-center gap-2.5 rounded-xl px-3.5 py-2.5 bg-gray-50 dark:bg-gray-800 border border-gray-100 dark:border-gray-700">
-                                <svg className={`w-4 h-4 ${theme.accent}`} fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth="2">
+                                <svg className={`w-4 h-4 ${theme.accent} shrink-0`} fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth="2">
                                     <path strokeLinecap="round" strokeLinejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
                                 </svg>
                                 <span className="text-sm text-gray-800 dark:text-gray-100">{user.first_name} {user.last_name}</span>
                             </div>
                         </div>
 
-                        {/* Document Type */}
+                        {/* Curso — dropdown with Gymnázium Třeboň courses (15+ only) */}
+                        <div>
+                            <label className="block text-gray-500 dark:text-gray-400 text-[11px] font-semibold mb-1.5 tracking-wide uppercase">{t("courseLabel")}</label>
+                            <select
+                                value={curso}
+                                onChange={(e) => setCurso(e.target.value)}
+                                className={`w-full rounded-xl px-3.5 py-2.5 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 text-sm text-gray-800 dark:text-gray-100 outline-none cursor-pointer ${theme.focusRing} transition-all`}
+                            >
+                                <option value="">{t("coursePlaceholder")}</option>
+                                <optgroup label={t("courseGroupOsmilete")}>
+                                    {osmileteGroup.map((c) => (
+                                        <option key={c.value} value={c.value}>{c.label}</option>
+                                    ))}
+                                </optgroup>
+                                <optgroup label={t("courseGroupCtyrilete")}>
+                                    {ctyrileteGroup.map((c) => (
+                                        <option key={c.value} value={c.value}>{c.label}</option>
+                                    ))}
+                                </optgroup>
+                            </select>
+                        </div>
+
+                        {/* Document type selector */}
                         <div>
                             <label className="block text-gray-500 dark:text-gray-400 text-[11px] font-semibold mb-1.5 tracking-wide uppercase">{t("selectDocType")}</label>
                             <select value={docType}
-                                onChange={(e) => { setDocType(e.target.value as UploadDocType); setFormError(null); setFileMain(emptyFile()); setFileFront(emptyFile()); setFileBack(emptyFile()); }}
+                                onChange={(e) => {
+                                    setDocType(e.target.value as UploadDocType);
+                                    setFormError(null);
+                                    setFileMain(emptyFile()); setFileFront(emptyFile()); setFileBack(emptyFile());
+                                }}
                                 className={`w-full rounded-xl px-3.5 py-2.5 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 text-sm text-gray-800 dark:text-gray-100 outline-none cursor-pointer ${theme.focusRing} transition-all`}>
                                 <option value="" disabled>{t("selectDocTypePlaceholder")}</option>
                                 <option value="idDoc">{t("docType_idDoc")}</option>
                                 <option value="grades">{t("docType_grades")}</option>
                                 <option value="coverLetter">{t("docType_coverLetter")}</option>
                                 <option value="disability">{t("docType_disability")}</option>
+                                {isMinor && (
+                                    <option value="parental">{t("docType_parental")}</option>
+                                )}
                             </select>
                         </div>
 
-                        {/* ID Document */}
+                        {/* ID Document — front + back */}
                         {docType === "idDoc" && (
                             <div className="space-y-4">
                                 <div>
@@ -160,14 +199,20 @@ export default function UploadModal({ open, onClose, onUploaded, user, initialDo
                             </div>
                         )}
 
-                        {/* Single file */}
-                        {(docType === "grades" || docType === "coverLetter" || docType === "disability") && (
+                        {/* Single-file documents */}
+                        {(docType === "grades" || docType === "coverLetter" || docType === "disability" || docType === "parental") && (
                             <div>
                                 <label className="block text-gray-500 dark:text-gray-400 text-[11px] font-semibold mb-1.5 tracking-wide uppercase">
                                     {t(`docType_${docType}` as Parameters<typeof t>[0])} <span className="text-red-400">*</span>
                                 </label>
                                 <p className="text-[11px] text-gray-400 mb-2">
-                                    {docType === "grades" ? t("gradesCertificateDesc") : docType === "coverLetter" ? t("coverLetterDesc") : t("disabilityCertificateDesc")}
+                                    {docType === "grades"
+                                        ? t("gradesCertificateDesc")
+                                        : docType === "coverLetter"
+                                        ? t("coverLetterDesc")
+                                        : docType === "parental"
+                                        ? t("parentalAuthDesc")
+                                        : t("disabilityCertificateDesc")}
                                 </p>
                                 <FileDropzone fileState={fileMain} onFileChange={(f, err) => { setFileMain({ file: f, error: err ?? null }); setFormError(null); }} onRemove={() => setFileMain(emptyFile())} />
                             </div>

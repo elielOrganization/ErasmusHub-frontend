@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useTranslations } from "next-intl";
 import { useAuth } from "@/context/AuthContext";
 import { useRoleTheme } from "@/hooks/useRoleTheme";
@@ -8,15 +8,16 @@ import { useApi } from "@/hooks/useApi";
 import LoadingSpinner from "@/components/ui/LoadingSpinner";
 import ConfirmModal from "@/components/ui/ConfirmModal";
 import { deleteDocument } from "@/services/documentsService";
+import Cookies from "js-cookie";
+import { API_URL } from "@/lib/api";
 
-import { DOC_TYPE_MAP, CARD_CONFIG } from "./constants";
-import type { UserDocument, UploadDocType } from "./types";
+import { DOC_TYPE_MAP, CARD_CONFIG, MANDATORY_CATEGORIES } from "./constants";
+import type { UserDocument, UploadDocType, CalificacionRead } from "./types";
 import DocumentCard from "./_components/DocumentCard";
 import AllDocumentsSection from "./_components/AllDocumentsSection";
 import UploadModal from "./_components/UploadModal";
 import PreviewModal from "./_components/PreviewModal";
 
-// Skeleton for card loading state
 function CardSkeleton() {
     return (
         <div className="bg-white dark:bg-gray-900 rounded-2xl border border-gray-100 dark:border-gray-800 p-5 space-y-3 animate-pulse">
@@ -34,14 +35,37 @@ export default function DocumentsPage() {
     const t = useTranslations("documents");
     const { user, loading: authLoading } = useAuth();
     const theme = useRoleTheme();
+
     const [modalOpen, setModalOpen] = useState(false);
     const [modalDocType, setModalDocType] = useState<UploadDocType | "">("");
     const [deleteTarget, setDeleteTarget] = useState<UserDocument | null>(null);
     const [previewDoc, setPreviewDoc] = useState<UserDocument | null>(null);
 
+    // Selection process active status — GET /selection-process/
+    const [processActive, setProcessActive] = useState<boolean>(true);
+
     const { data: documents, loading: docsLoading, refetch } = useApi<UserDocument[]>("/documents");
+    const { data: calificacion } = useApi<CalificacionRead>("/calificacion");
+
+    // Fetch selection process status (graceful degradation: if endpoint fails → allow uploads)
+    useEffect(() => {
+        const check = async () => {
+            try {
+                const token = Cookies.get("auth_token");
+                const res = await fetch(`${API_URL}/selection-process/`, {
+                    headers: { Authorization: `Bearer ${token}` },
+                });
+                if (res.ok) {
+                    const data = await res.json();
+                    setProcessActive(data.active === true);
+                }
+            } catch { /* silent — keep default true */ }
+        };
+        check();
+    }, []);
 
     const openModalWithType = (docType?: UploadDocType) => {
+        if (!processActive) return;
         setModalDocType(docType ?? "");
         setModalOpen(true);
     };
@@ -56,15 +80,50 @@ export default function DocumentsPage() {
     if (authLoading) return <LoadingSpinner />;
     if (!user) return null;
 
-    // Group documents by category
-    const docsByCategory: Record<string, UserDocument[]> = { idDoc: [], grades: [], coverLetter: [], disability: [] };
+    const isMinor = user.is_minor ?? false;
+
+    // Group documents by category; parental only initialised for minors
+    const docsByCategory: Record<string, UserDocument[]> = {
+        idDoc: [],
+        grades: [],
+        coverLetter: [],
+        disability: [],
+        ...(isMinor ? { parental: [] } : {}),
+    };
     (documents ?? []).forEach((doc) => {
         const cat = DOC_TYPE_MAP[doc.document_type];
-        if (cat && docsByCategory[cat]) docsByCategory[cat].push(doc);
+        if (cat && docsByCategory[cat] !== undefined) docsByCategory[cat].push(doc);
     });
+
+    // Score weights per category from calificacion
+    const categoryWeights: Record<string, number> = {
+        idDoc: 0,
+        grades: calificacion?.grade_certificate ?? 0,
+        coverLetter: calificacion?.motivation_letter ?? 0,
+        disability: calificacion?.disability_certificate ?? 0,
+        parental: 0,
+    };
+
+    // Cards to render — parental only for minors
+    const visibleCategories = Object.keys(CARD_CONFIG).filter(
+        (cat) => cat !== "parental" || isMinor
+    );
 
     return (
         <div className="max-w-5xl mx-auto space-y-6 p-4 sm:p-6">
+            {/* Process inactive banner */}
+            {!processActive && (
+                <div className="flex items-start gap-3 px-5 py-4 rounded-2xl border border-amber-200 dark:border-amber-700/50 bg-amber-50 dark:bg-amber-900/20">
+                    <svg className="w-5 h-5 text-amber-500 shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 9v2m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                    <div>
+                        <p className="text-sm font-semibold text-amber-700 dark:text-amber-400">{t("processInactiveTitle")}</p>
+                        <p className="text-xs text-amber-600 dark:text-amber-500 mt-0.5">{t("processInactiveDesc")}</p>
+                    </div>
+                </div>
+            )}
+
             {/* Header */}
             <div className="bg-white dark:bg-gray-900 rounded-3xl border border-gray-100 dark:border-gray-800 shadow-sm overflow-hidden">
                 <div className={`h-28 bg-gradient-to-r ${theme.gradientFrom} ${theme.gradientTo} flex items-center justify-between px-8`}>
@@ -79,8 +138,13 @@ export default function DocumentsPage() {
                             <p className={`text-sm ${theme.gradientSubtext}`}>{t("subtitle")}</p>
                         </div>
                     </div>
-                    <button onClick={() => openModalWithType()}
-                        className="flex items-center gap-2 px-5 py-2.5 bg-white/20 hover:bg-white/30 text-white rounded-xl text-sm font-semibold transition-all duration-200 active:scale-[0.97] backdrop-blur-sm">
+                    <button
+                        onClick={() => openModalWithType()}
+                        disabled={!processActive}
+                        className={`flex items-center gap-2 px-5 py-2.5 bg-white/20 text-white rounded-xl text-sm font-semibold transition-all duration-200 backdrop-blur-sm ${
+                            processActive ? "hover:bg-white/30 active:scale-[0.97]" : "opacity-40 cursor-not-allowed"
+                        }`}
+                    >
                         <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 4v16m8-8H4" />
                         </svg>
@@ -92,15 +156,18 @@ export default function DocumentsPage() {
             {/* Category cards */}
             {docsLoading ? (
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-                    {[...Array(4)].map((_, i) => <CardSkeleton key={i} />)}
+                    {[...Array(isMinor ? 5 : 4)].map((_, i) => <CardSkeleton key={i} />)}
                 </div>
             ) : (
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-                    {Object.keys(CARD_CONFIG).map((cat) => (
+                    {visibleCategories.map((cat) => (
                         <DocumentCard
                             key={cat}
                             category={cat}
                             docs={docsByCategory[cat] ?? []}
+                            mandatory={MANDATORY_CATEGORIES[cat] ?? false}
+                            weight={categoryWeights[cat] ?? 0}
+                            processActive={processActive}
                             onDelete={setDeleteTarget}
                             onPreview={setPreviewDoc}
                             onAdd={() => openModalWithType(cat as UploadDocType)}
@@ -126,6 +193,7 @@ export default function DocumentsPage() {
                 onUploaded={refetch}
                 user={user}
                 initialDocType={modalDocType}
+                isMinor={isMinor}
             />
             <PreviewModal
                 doc={previewDoc}

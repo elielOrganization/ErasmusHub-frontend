@@ -22,6 +22,7 @@ interface User {
     last_name: string;
     address: string;
     role: Role;
+    year?: string | null;
 }
 
 interface AuthContextType {
