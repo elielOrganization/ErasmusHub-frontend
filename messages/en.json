@@ -230,7 +230,9 @@
       "doc_approved": "Your document {doc_type} has been approved",
       "doc_rejected": "Your document {doc_type} has been rejected: {reason}",
       "docs_ready_for_review": "Student {student_name} has submitted all mandatory documents",
-      "selection_process_started": "The Erasmus selection process has begun"
+      "selection_process_started": "The Erasmus selection process has begun",
+      "interview_passed": "You passed the interview with grade {grade}",
+      "interview_rejected": "You did not pass the interview: {reason}"
     }
   },
 
@@ -648,6 +650,10 @@
     "filter_all": "All",
     "filter_pending": "With pending",
     "filter_reviewed": "Reviewed",
+    "tab_documentos": "Documents",
+    "tab_entrevista": "Interview",
+    "badge_all_approved": "All approved",
+    "badge_pending_docs": "Pending",
     "colStudent": "Student",
     "colPending": "Pending",
     "colApproved": "Approved",
@@ -681,6 +687,25 @@
     "approvedSuccess": "Document approved.",
     "rejectedSuccess": "Document rejected.",
     "actionError": "An error occurred. Please try again.",
-    "rejectionReason": "Reason: {reason}"
+    "rejectionReason": "Reason: {reason}",
+    "interview_colGrade": "Interview grade",
+    "interview_colActions": "Actions",
+    "interview_gradeBtn": "Grade",
+    "interview_rejectBtn": "Reject",
+    "interview_gradeLabel": "Grade (0 – 10)",
+    "interview_gradePlaceholder": "0.0 – 10.0",
+    "interview_saveGrade": "Save grade",
+    "interview_reasonLabel": "Rejection reason",
+    "interview_reasonPlaceholder": "Explain why this student is being rejected...",
+    "interview_reasonRequired": "Rejection reason is required.",
+    "interview_confirmReject": "Confirm rejection",
+    "interview_cancelAction": "Cancel",
+    "interview_passed": "Passed",
+    "interview_rejected": "Rejected",
+    "interview_gradeSuccess": "Grade saved successfully.",
+    "interview_rejectSuccess": "Student rejected.",
+    "interview_actionError": "An error occurred. Please try again.",
+    "interview_empty": "No students with all documents approved.",
+    "interview_rejectionReason": "Reason: {reason}"
   }
 }

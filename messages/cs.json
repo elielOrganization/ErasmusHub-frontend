@@ -230,7 +230,9 @@
       "doc_approved": "Váš dokument {doc_type} byl schválen",
       "doc_rejected": "Váš dokument {doc_type} byl zamítnut: {reason}",
       "docs_ready_for_review": "Student {student_name} odevzdal všechny povinné dokumenty",
-      "selection_process_started": "Proces výběru Erasmus začal"
+      "selection_process_started": "Proces výběru Erasmus začal",
+      "interview_passed": "Prošli jste pohovorem s hodnocením {grade}",
+      "interview_rejected": "Neprošli jste pohovorem: {reason}"
     }
   },
 
@@ -648,6 +650,10 @@
     "filter_all": "Všichni",
     "filter_pending": "S čekajícími",
     "filter_reviewed": "Zkontrolovaní",
+    "tab_documentos": "Dokumenty",
+    "tab_entrevista": "Pohovor",
+    "badge_all_approved": "Vše schváleno",
+    "badge_pending_docs": "Čekající",
     "colStudent": "Student",
     "colPending": "Čekající",
     "colApproved": "Schválené",
@@ -681,6 +687,25 @@
     "approvedSuccess": "Dokument schválen.",
     "rejectedSuccess": "Dokument zamítnut.",
     "actionError": "Došlo k chybě. Zkuste to znovu.",
-    "rejectionReason": "Důvod: {reason}"
+    "rejectionReason": "Důvod: {reason}",
+    "interview_colGrade": "Hodnocení pohovoru",
+    "interview_colActions": "Akce",
+    "interview_gradeBtn": "Ohodnotit",
+    "interview_rejectBtn": "Zamítnout",
+    "interview_gradeLabel": "Hodnocení (0 – 10)",
+    "interview_gradePlaceholder": "0.0 – 10.0",
+    "interview_saveGrade": "Uložit hodnocení",
+    "interview_reasonLabel": "Důvod zamítnutí",
+    "interview_reasonPlaceholder": "Vysvětlete, proč je student zamítnut...",
+    "interview_reasonRequired": "Důvod zamítnutí je povinný.",
+    "interview_confirmReject": "Potvrdit zamítnutí",
+    "interview_cancelAction": "Zrušit",
+    "interview_passed": "Úspěšný",
+    "interview_rejected": "Zamítnut",
+    "interview_gradeSuccess": "Hodnocení úspěšně uloženo.",
+    "interview_rejectSuccess": "Student zamítnut.",
+    "interview_actionError": "Došlo k chybě. Zkuste to znovu.",
+    "interview_empty": "Žádní studenti se všemi schválenými dokumenty.",
+    "interview_rejectionReason": "Důvod: {reason}"
   }
 }
