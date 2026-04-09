@@ -265,10 +265,64 @@ function AppearanceSection({ t }: { t: ReturnType<typeof useTranslations> }) {
 
 // ─── SECURITY ─────────────────────────────────────────────────────────────────
 
+// Defined OUTSIDE SecuritySection to avoid re-creating it on every render,
+// which would cause React to remount the input and lose focus on each keystroke.
+type PassForm = { current: string; newPass: string; confirm: string };
+type ShowPass = { current: boolean; newPass: boolean; confirm: boolean };
+
+function PasswordField({
+    fieldKey,
+    label,
+    form,
+    setForm,
+    showPass,
+    setShowPass,
+}: {
+    fieldKey: keyof PassForm;
+    label: string;
+    form: PassForm;
+    setForm: React.Dispatch<React.SetStateAction<PassForm>>;
+    showPass: ShowPass;
+    setShowPass: React.Dispatch<React.SetStateAction<ShowPass>>;
+}) {
+    const visible = showPass[fieldKey];
+    const [focused, setFocused] = useState(false);
+    return (
+        <div>
+            <label className="block text-gray-500 dark:text-gray-400 text-xs font-semibold mb-1.5 tracking-wide uppercase">{label}</label>
+            <div className={`flex items-center gap-2 rounded-xl px-4 py-3.5 border-2 transition-all duration-200
+                ${focused ? "border-blue-400 dark:border-blue-500 bg-blue-50/50 dark:bg-blue-900/10" : "border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800/50"}
+            `}>
+                <svg className={`w-4 h-4 shrink-0 ${focused ? "text-blue-400" : "text-gray-300 dark:text-gray-600"}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                </svg>
+                <input
+                    type={visible ? "text" : "password"}
+                    value={form[fieldKey]}
+                    onChange={(e) => setForm((p) => ({ ...p, [fieldKey]: e.target.value }))}
+                    onFocus={() => setFocused(true)}
+                    onBlur={() => setFocused(false)}
+                    className="flex-1 bg-transparent text-sm text-gray-800 dark:text-gray-100 outline-none placeholder-gray-300 dark:placeholder-gray-600"
+                    placeholder="••••••••"
+                />
+                <button type="button" onClick={() => setShowPass((p) => ({ ...p, [fieldKey]: !p[fieldKey] }))}
+                    className="text-gray-300 dark:text-gray-600 hover:text-gray-500 dark:hover:text-gray-400 transition-colors">
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        {visible
+                            ? <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17.94 17.94A10.07 10.07 0 0112 20c-7 0-11-8-11-8a18.45 18.45 0 015.06-5.94M9.9 4.24A9.12 9.12 0 0112 4c7 0 11 8 11 8a18.5 18.5 0 01-2.16 3.19m-6.72-1.07a3 3 0 11-4.24-4.24M1 1l22 22" />
+                            : <><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" /><circle cx="12" cy="12" r="3" /></>
+                        }
+                    </svg>
+                </button>
+            </div>
+        </div>
+    );
+}
+
 function SecuritySection({ t }: { t: ReturnType<typeof useTranslations> }) {
     const { user } = useAuth();
-    const [form, setForm] = useState({ current: "", newPass: "", confirm: "" });
-    const [showPass, setShowPass] = useState({ current: false, newPass: false, confirm: false });
+    const [form, setForm] = useState<PassForm>({ current: "", newPass: "", confirm: "" });
+    const [showPass, setShowPass] = useState<ShowPass>({ current: false, newPass: false, confirm: false });
     const [saving, setSaving] = useState(false);
     const [saved, setSaved] = useState(false);
     const [error, setError] = useState<string | null>(null);
@@ -297,41 +351,6 @@ function SecuritySection({ t }: { t: ReturnType<typeof useTranslations> }) {
         }
     };
 
-    const PasswordField = ({ fieldKey, label }: { fieldKey: keyof typeof form; label: string }) => {
-        const visible = showPass[fieldKey];
-        const [focused, setFocused] = useState(false);
-        return (
-            <div>
-                <label className="block text-gray-500 dark:text-gray-400 text-xs font-semibold mb-1.5 tracking-wide uppercase">{label}</label>
-                <div className={`flex items-center gap-2 rounded-xl px-4 py-3.5 border-2 transition-all duration-200
-                    ${focused ? "border-blue-400 dark:border-blue-500 bg-blue-50/50 dark:bg-blue-900/10" : "border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800/50"}
-                `}>
-                    <svg className={`w-4 h-4 shrink-0 ${focused ? "text-blue-400" : "text-gray-300 dark:text-gray-600"}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
-                    </svg>
-                    <input
-                        type={visible ? "text" : "password"}
-                        value={form[fieldKey]}
-                        onChange={(e) => setForm((p) => ({ ...p, [fieldKey]: e.target.value }))}
-                        onFocus={() => setFocused(true)}
-                        onBlur={() => setFocused(false)}
-                        className="flex-1 bg-transparent text-sm text-gray-800 dark:text-gray-100 outline-none placeholder-gray-300 dark:placeholder-gray-600"
-                        placeholder="••••••••"
-                    />
-                    <button type="button" onClick={() => setShowPass((p) => ({ ...p, [fieldKey]: !p[fieldKey] }))}
-                        className="text-gray-300 dark:text-gray-600 hover:text-gray-500 dark:hover:text-gray-400 transition-colors">
-                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            {visible
-                                ? <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17.94 17.94A10.07 10.07 0 0112 20c-7 0-11-8-11-8a18.45 18.45 0 015.06-5.94M9.9 4.24A9.12 9.12 0 0112 4c7 0 11 8 11 8a18.5 18.5 0 01-2.16 3.19m-6.72-1.07a3 3 0 11-4.24-4.24M1 1l22 22" />
-                                : <><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" /><circle cx="12" cy="12" r="3" /></>
-                            }
-                        </svg>
-                    </button>
-                </div>
-            </div>
-        );
-    };
-
     return (
         <SectionCard
             title={t("security")}
@@ -339,9 +358,9 @@ function SecuritySection({ t }: { t: ReturnType<typeof useTranslations> }) {
             iconPath={<path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />}
         >
             <div className="space-y-4 max-w-md">
-                <PasswordField fieldKey="current" label={t("currentPassword")} />
-                <PasswordField fieldKey="newPass" label={t("newPassword")} />
-                <PasswordField fieldKey="confirm" label={t("confirmPassword")} />
+                <PasswordField fieldKey="current" label={t("currentPassword")} form={form} setForm={setForm} showPass={showPass} setShowPass={setShowPass} />
+                <PasswordField fieldKey="newPass" label={t("newPassword")} form={form} setForm={setForm} showPass={showPass} setShowPass={setShowPass} />
+                <PasswordField fieldKey="confirm" label={t("confirmPassword")} form={form} setForm={setForm} showPass={showPass} setShowPass={setShowPass} />
                 {error && (
                     <p className="text-xs text-red-500 flex items-center gap-1">
                         <svg className="w-3 h-3 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
