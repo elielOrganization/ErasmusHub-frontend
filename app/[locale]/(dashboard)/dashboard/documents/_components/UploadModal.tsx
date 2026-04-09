@@ -6,7 +6,6 @@ import { useRoleTheme } from "@/hooks/useRoleTheme";
 import { uploadDocument } from "@/services/documentsService";
 import FileDropzone from "./FileDropzone";
 import { emptyFile } from "../types";
-import { GYMNASIUM_COURSES } from "../constants";
 import type { UploadDocType, FileState } from "../types";
 
 interface UploadModalProps {
@@ -22,7 +21,6 @@ export default function UploadModal({ open, onClose, onUploaded, user, initialDo
     const t = useTranslations("documents");
     const theme = useRoleTheme();
     const [docType, setDocType] = useState<UploadDocType | "">(initialDocType ?? "");
-    const [curso, setCurso] = useState<string>(user.year ?? "");
     const [fileFront, setFileFront] = useState<FileState>(emptyFile());
     const [fileBack, setFileBack] = useState<FileState>(emptyFile());
     const [fileMain, setFileMain] = useState<FileState>(emptyFile());
@@ -35,14 +33,12 @@ export default function UploadModal({ open, onClose, onUploaded, user, initialDo
         document.body.style.overflow = open ? "hidden" : "";
         if (open) {
             setDocType(initialDocType ?? "");
-            setCurso(user.year ?? "");
         }
         return () => { document.body.style.overflow = ""; };
     }, [open, initialDocType, user.year]);
 
     const resetForm = () => {
         setDocType("");
-        setCurso(user.year ?? "");
         setFileFront(emptyFile()); setFileBack(emptyFile()); setFileMain(emptyFile());
         setSubmitting(false); setSubmitSuccess(false); setSubmitError(null); setFormError(null);
     };
@@ -82,9 +78,6 @@ export default function UploadModal({ open, onClose, onUploaded, user, initialDo
     };
 
     if (!open) return null;
-
-    const osmileteGroup = GYMNASIUM_COURSES.filter((c) => c.group === "osmilete");
-    const ctyrileteGroup = GYMNASIUM_COURSES.filter((c) => c.group === "ctyrilete");
 
     return (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
@@ -138,28 +131,6 @@ export default function UploadModal({ open, onClose, onUploaded, user, initialDo
                                 </svg>
                                 <span className="text-sm text-gray-800 dark:text-gray-100">{user.first_name} {user.last_name}</span>
                             </div>
-                        </div>
-
-                        {/* Curso — dropdown with Gymnázium Třeboň courses (15+ only) */}
-                        <div>
-                            <label className="block text-gray-500 dark:text-gray-400 text-[11px] font-semibold mb-1.5 tracking-wide uppercase">{t("courseLabel")}</label>
-                            <select
-                                value={curso}
-                                onChange={(e) => setCurso(e.target.value)}
-                                className={`w-full rounded-xl px-3.5 py-2.5 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 text-sm text-gray-800 dark:text-gray-100 outline-none cursor-pointer ${theme.focusRing} transition-all`}
-                            >
-                                <option value="">{t("coursePlaceholder")}</option>
-                                <optgroup label={t("courseGroupOsmilete")}>
-                                    {osmileteGroup.map((c) => (
-                                        <option key={c.value} value={c.value}>{c.label}</option>
-                                    ))}
-                                </optgroup>
-                                <optgroup label={t("courseGroupCtyrilete")}>
-                                    {ctyrileteGroup.map((c) => (
-                                        <option key={c.value} value={c.value}>{c.label}</option>
-                                    ))}
-                                </optgroup>
-                            </select>
                         </div>
 
                         {/* Document type selector */}

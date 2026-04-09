@@ -11,7 +11,7 @@ import { deleteDocument } from "@/services/documentsService";
 import Cookies from "js-cookie";
 import { API_URL } from "@/lib/api";
 
-import { DOC_TYPE_MAP, CARD_CONFIG, MANDATORY_CATEGORIES } from "./constants";
+import { DOC_TYPE_MAP, CARD_CONFIG, MANDATORY_CATEGORIES, GYMNASIUM_COURSES } from "./constants";
 import type { UserDocument, UploadDocType, CalificacionRead } from "./types";
 import DocumentCard from "./_components/DocumentCard";
 import AllDocumentsSection from "./_components/AllDocumentsSection";
@@ -38,6 +38,7 @@ export default function DocumentsPage() {
 
     const [modalOpen, setModalOpen] = useState(false);
     const [modalDocType, setModalDocType] = useState<UploadDocType | "">("");
+    const [curso, setCurso] = useState<string>("");
     const [deleteTarget, setDeleteTarget] = useState<UserDocument | null>(null);
     const [previewDoc, setPreviewDoc] = useState<UserDocument | null>(null);
 
@@ -75,6 +76,23 @@ export default function DocumentsPage() {
         await deleteDocument(deleteTarget.id);
         refetch();
         setDeleteTarget(null);
+    };
+
+    // Initialise curso from user.year once user is loaded
+    useEffect(() => {
+        if (user?.year) setCurso(user.year);
+    }, [user?.year]);
+
+    const saveCurso = async (value: string) => {
+        setCurso(value);
+        try {
+            const token = Cookies.get("auth_token");
+            await fetch(`${API_URL}/users/${user?.id}`, {
+                method: "PATCH",
+                headers: { Authorization: `Bearer ${token}`, "Content-Type": "application/json" },
+                body: JSON.stringify({ year: value || null }),
+            });
+        } catch { /* silent */ }
     };
 
     if (authLoading) return <LoadingSpinner />;
@@ -151,6 +169,31 @@ export default function DocumentsPage() {
                         {t("addDocument")}
                     </button>
                 </div>
+            </div>
+
+            {/* Curso selector — set once, applies to all uploads */}
+            <div className="bg-white dark:bg-gray-900 rounded-2xl border border-gray-100 dark:border-gray-800 shadow-sm px-5 py-4 flex items-center gap-4">
+                <svg className={`w-5 h-5 shrink-0 ${theme.accent}`} fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth="2">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M12 14l9-5-9-5-9 5 9 5zm0 0l6.16-3.422a12.083 12.083 0 01.665 6.479A11.952 11.952 0 0012 20.055a11.952 11.952 0 00-6.824-2.998 12.078 12.078 0 01.665-6.479L12 14z" />
+                </svg>
+                <label className="text-sm font-semibold text-gray-700 dark:text-gray-300 shrink-0">{t("courseLabel")}</label>
+                <select
+                    value={curso}
+                    onChange={(e) => saveCurso(e.target.value)}
+                    className={`flex-1 rounded-xl px-3 py-2 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 text-sm text-gray-800 dark:text-gray-100 outline-none cursor-pointer ${theme.focusRing} transition-all`}
+                >
+                    <option value="">{t("coursePlaceholder")}</option>
+                    <optgroup label={t("courseGroupOsmilete")}>
+                        {GYMNASIUM_COURSES.filter(c => c.group === "osmilete").map(c => (
+                            <option key={c.value} value={c.value}>{c.label}</option>
+                        ))}
+                    </optgroup>
+                    <optgroup label={t("courseGroupCtyrilete")}>
+                        {GYMNASIUM_COURSES.filter(c => c.group === "ctyrilete").map(c => (
+                            <option key={c.value} value={c.value}>{c.label}</option>
+                        ))}
+                    </optgroup>
+                </select>
             </div>
 
             {/* Category cards */}
