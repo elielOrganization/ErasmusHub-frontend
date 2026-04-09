@@ -331,19 +331,6 @@ function SecuritySection({ t }: { t: ReturnType<typeof useTranslations> }) {
         try {
             const authToken = Cookies.get("auth_token");
 
-            // Step 1: verify current password via login endpoint
-            const verifyRes = await fetch(`${API_URL}/login`, {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ rodne_cislo: user?.rodne_cislo, password: form.current }),
-            });
-            if (!verifyRes.ok) {
-                setError(t("wrongCurrentPassword"));
-                setSaving(false);
-                return;
-            }
-
-            // Step 2: update password via PATCH /users/{id}
             const updateRes = await fetch(`${API_URL}/users/${user?.id}`, {
                 method: "PATCH",
                 headers: { Authorization: `Bearer ${authToken}`, "Content-Type": "application/json" },
