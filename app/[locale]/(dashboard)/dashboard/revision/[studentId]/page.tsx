@@ -10,6 +10,7 @@ import LoadingSpinner from "@/components/ui/LoadingSpinner";
 import { fetchDocumentBlob } from "@/services/documentsService";
 import Cookies from "js-cookie";
 import { API_URL } from "@/lib/api";
+import { GYMNASIUM_COURSES } from "../../documents/constants";
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Endpoints disponibles en el backend:
@@ -37,9 +38,10 @@ interface ReviewDocument {
 
 interface StudentInfo {
     id: number;
-    name: string;
+    first_name: string;
     last_name: string;
     email: string;
+    year?: string | null;
 }
 
 type ActionMode = "approve" | "reject" | null;
@@ -75,8 +77,9 @@ export default function StudentRevisionPage() {
     const { data: documents, loading, error, refetch } = useApi<ReviewDocument[]>(
         `/documents/user/${studentId}`
     );
-    // ✅ Datos del alumno desde el endpoint de usuarios
-    const { data: studentData } = useApi<StudentInfo>(`/users/${studentId}`);
+    // GET /users/ devuelve todos; filtramos por studentId (no existe GET /users/{id})
+    const { data: allUsers } = useApi<StudentInfo[]>("/users");
+    const studentData = allUsers?.find(u => u.id === parseInt(studentId));
 
     // Per-document action state
     const [activeDoc, setActiveDoc] = useState<number | null>(null);
@@ -160,7 +163,10 @@ export default function StudentRevisionPage() {
     }
 
     const docs = documents ?? [];
-    const studentName = studentData ? `${studentData.name} ${studentData.last_name}` : `#${studentId}`;
+    const studentName = studentData ? `${studentData.first_name} ${studentData.last_name}` : `#${studentId}`;
+    const studentCourse = studentData?.year
+        ? (GYMNASIUM_COURSES.find(c => c.value === studentData.year)?.label ?? studentData.year)
+        : null;
 
     return (
         <div className="space-y-6">
@@ -178,9 +184,17 @@ export default function StudentRevisionPage() {
                     <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
                         {(t as (k: string, p: Record<string, string>) => string)("studentDocs", { name: studentName })}
                     </h1>
-                    {studentData && (
-                        <p className="text-sm text-gray-500 dark:text-gray-400 mt-0.5">{studentData.email}</p>
-                    )}
+                    <div className="flex items-center gap-3 mt-0.5 flex-wrap">
+                        {studentData && (
+                            <p className="text-sm text-gray-500 dark:text-gray-400">{studentData.email}</p>
+                        )}
+                        {studentCourse && (
+                            <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400">
+                                <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 14l9-5-9-5-9 5 9 5z" /></svg>
+                                {studentCourse}
+                            </span>
+                        )}
+                    </div>
                 </div>
             </div>
 

@@ -8,6 +8,7 @@ import { useRoleTheme } from "@/hooks/useRoleTheme";
 import LoadingSpinner from "@/components/ui/LoadingSpinner";
 import Cookies from "js-cookie";
 import { API_URL } from "@/lib/api";
+import { GYMNASIUM_COURSES } from "../documents/constants";
 
 interface StudentDocSummary {
     user_id: number;
@@ -21,6 +22,11 @@ interface StudentDocSummary {
     interview_grade: number | null;
     interview_status: "pending" | "passed" | "rejected";
     interview_rejection_reason: string | null;
+}
+
+interface UserPublicMin {
+    id: number;
+    year?: string | null;
 }
 
 type TabType = "documentos" | "entrevista";
@@ -53,6 +59,14 @@ export default function RevisionPage() {
     const [tab, setTab] = useState<TabType>("documentos");
 
     const { data, loading, error, refetch } = useApi<StudentDocSummary[]>("/documents/pending");
+    const { data: usersData } = useApi<UserPublicMin[]>("/users");
+
+    // Map userId → course label
+    const courseLabel = (userId: number): string | null => {
+        const year = usersData?.find(u => u.id === userId)?.year;
+        if (!year) return null;
+        return GYMNASIUM_COURSES.find(c => c.value === year)?.label ?? year;
+    };
 
     // Interview inline state
     const [activeInterview, setActiveInterview] = useState<number | null>(null);
@@ -233,6 +247,12 @@ export default function RevisionPage() {
                                                 )}
                                             </div>
                                             <p className="text-xs text-gray-400 dark:text-gray-500">{s.email}</p>
+                                            {courseLabel(s.user_id) && (
+                                                <p className="text-xs text-blue-500 dark:text-blue-400 font-medium mt-0.5 flex items-center gap-1">
+                                                    <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 14l9-5-9-5-9 5 9 5z" /></svg>
+                                                    {courseLabel(s.user_id)}
+                                                </p>
+                                            )}
                                         </td>
                                         <td className="px-5 py-4 text-center">
                                             {s.pending > 0 ? (
@@ -293,6 +313,12 @@ export default function RevisionPage() {
                                         <div>
                                             <p className="text-sm font-semibold text-gray-800 dark:text-gray-200">{s.user_name}</p>
                                             <p className="text-xs text-gray-400 dark:text-gray-500">{s.email}</p>
+                                            {courseLabel(s.user_id) && (
+                                                <p className="text-xs text-blue-500 dark:text-blue-400 font-medium mt-0.5 flex items-center gap-1">
+                                                    <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 14l9-5-9-5-9 5 9 5z" /></svg>
+                                                    {courseLabel(s.user_id)}
+                                                </p>
+                                            )}
                                         </div>
 
                                         <div className="flex items-center gap-3 shrink-0">
