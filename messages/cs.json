@@ -110,7 +110,9 @@
     "adminPanelDesc": "Spravujte uživatele a nastavení systému",
     "pendingTasks": "Nevyřízené úkoly",
     "unreadNotices": "Nepřečtená upozornění",
-    "activeInternships": "Aktivní praxe"
+    "activeInternships": "Aktivní praxe",
+    "revision": "Kontrola dokumentů",
+    "calificacion": "Hodnoticí tabulka"
   },
 
   "practicas": {

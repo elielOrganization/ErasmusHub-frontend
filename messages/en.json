@@ -110,7 +110,9 @@
     "adminPanelDesc": "Manage users and system settings",
     "pendingTasks": "Pending tasks",
     "unreadNotices": "Unread notices",
-    "activeInternships": "Active internships"
+    "activeInternships": "Active internships",
+    "revision": "Document Review",
+    "calificacion": "Scoring Table"
   },
 
   "practicas": {

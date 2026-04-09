@@ -38,6 +38,8 @@ export default function DashboardHome() {
     const roleName = effectiveRoleName || user?.role?.name || "";
     const isStudent = roleName.includes("Student");
     const isAdmin = roleName.toLowerCase().includes("admin");
+    const isTeacher = roleName.toLowerCase().includes("teacher") || roleName.toLowerCase().includes("profesor") || roleName.toLowerCase().includes("professor") || roleName.toLowerCase().includes("coordinator") || roleName.toLowerCase().includes("coordinador");
+    const isLector = !isStudent && !isAdmin && !isTeacher;
 
     const { data: unreadData } = useApi<{ count: number }>("/notifications/me/unread-count");
     const unreadCount = unreadData?.count || 0;
@@ -77,19 +79,16 @@ export default function DashboardHome() {
         },
     ];
 
-    const defaultActions: DashboardAction[] = [
-        ...(isAdmin
-            ? [
-                  {
-                      title: t("adminPanel"),
-                      href: "/dashboard/admin",
-                      icon: (
-                          <path strokeLinecap="round" strokeLinejoin="round" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
-                      ),
-                      color: "bg-red-50 dark:bg-red-900/30 text-red-600 dark:text-red-400",
-                  },
-              ]
-            : []),
+    // Actions for admins: panel + students + documents
+    const adminActions: DashboardAction[] = [
+        {
+            title: t("adminPanel"),
+            href: "/dashboard/admin",
+            icon: (
+                <path strokeLinecap="round" strokeLinejoin="round" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+            ),
+            color: "bg-red-50 dark:bg-red-900/30 text-red-600 dark:text-red-400",
+        },
         {
             title: t("manageStudents"),
             href: "/dashboard/students",
@@ -108,7 +107,58 @@ export default function DashboardHome() {
         },
     ];
 
-    const actions = isStudent ? studentActions : defaultActions;
+    // Actions for teachers/coordinators: students + documents + revision
+    const teacherActions: DashboardAction[] = [
+        {
+            title: t("manageStudents"),
+            href: "/dashboard/students",
+            icon: (
+                <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
+            ),
+            color: "bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400",
+        },
+        {
+            title: t("manageDocuments"),
+            href: "/dashboard/documents",
+            icon: (
+                <path strokeLinecap="round" strokeLinejoin="round" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
+            ),
+            color: "bg-amber-50 dark:bg-amber-900/30 text-amber-600 dark:text-amber-400",
+        },
+        {
+            title: t("revision"),
+            href: "/dashboard/revision",
+            icon: (
+                <path strokeLinecap="round" strokeLinejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01" />
+            ),
+            color: "bg-green-50 dark:bg-green-900/30 text-green-600 dark:text-green-400",
+        },
+    ];
+
+    // Actions for lectors (read-only): opportunities + scoring table
+    const lectorActions: DashboardAction[] = [
+        {
+            title: t("opportunities"),
+            href: "/dashboard/opportunities",
+            icon: (
+                <path strokeLinecap="round" strokeLinejoin="round" d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9" />
+            ),
+            color: "bg-purple-50 dark:bg-purple-900/30 text-purple-600 dark:text-purple-400",
+        },
+        {
+            title: t("calificacion"),
+            href: "/dashboard/calificacion",
+            icon: (
+                <path strokeLinecap="round" strokeLinejoin="round" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+            ),
+            color: "bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400",
+        },
+    ];
+
+    const actions = isStudent ? studentActions
+        : isAdmin ? adminActions
+        : isTeacher ? teacherActions
+        : lectorActions;
 
     if (loading) return <LoadingSpinner />;
 
