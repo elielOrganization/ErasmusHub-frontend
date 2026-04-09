@@ -26,6 +26,7 @@ export const DOC_STATE_CONFIG: Record<
         dot: "bg-red-500",
     },
 };
+
 export const MAX_SIZE_BYTES = 10 * 1024 * 1024;
 
 export const DOC_TYPE_MAP: Record<string, string> = {
@@ -34,6 +35,7 @@ export const DOC_TYPE_MAP: Record<string, string> = {
     grade_certificate: "grades",
     cover_letter: "coverLetter",
     disability_certificate: "disability",
+    parental_authorization: "parental",
 };
 
 export const CARD_CONFIG: Record<string, { icon: React.ReactNode; labelKey: string; descKey: string }> = {
@@ -57,4 +59,44 @@ export const CARD_CONFIG: Record<string, { icon: React.ReactNode; labelKey: stri
         labelKey: "cardDisability",
         descKey: "cardDisabilityDesc",
     },
+    parental: {
+        icon: <path strokeLinecap="round" strokeLinejoin="round" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z" />,
+        labelKey: "cardParental",
+        descKey: "cardParentalDesc",
+    },
 };
+
+/**
+ * Mandatory document categories per backend logic.
+ * 'parental' is mandatory only for minors — handled in page.tsx.
+ */
+export const MANDATORY_CATEGORIES: Record<string, boolean> = {
+    idDoc: true,
+    grades: true,
+    coverLetter: true,
+    disability: false,
+    parental: true,
+};
+
+/**
+ * Gymnázium Třeboň course list — only courses for students aged 15+.
+ * Excluded (under 15): Prima, Sekunda, Tercie, Kvarta (8-year lower years).
+ */
+export interface GymnasiumCourse {
+    value: string;
+    label: string;
+    group: "osmilete" | "ctyrilete";
+}
+
+export const GYMNASIUM_COURSES: GymnasiumCourse[] = [
+    // 8-year program — upper years only (Kvinta onward, age 15+)
+    { value: "kvinta",  label: "Kvinta",    group: "osmilete" },
+    { value: "sexta",   label: "Sexta",     group: "osmilete" },
+    { value: "septima", label: "Septima",   group: "osmilete" },
+    { value: "oktava",  label: "Oktáva",    group: "osmilete" },
+    // 4-year program (all years = age 15+)
+    { value: "1rocnik", label: "1. ročník", group: "ctyrilete" },
+    { value: "2rocnik", label: "2. ročník", group: "ctyrilete" },
+    { value: "3rocnik", label: "3. ročník", group: "ctyrilete" },
+    { value: "4rocnik", label: "4. ročník", group: "ctyrilete" },
+];

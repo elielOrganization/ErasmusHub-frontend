@@ -500,7 +500,20 @@
     "state": "Estado",
     "state_pending": "Pendiente",
     "state_approved": "Aprobado",
-    "state_rejected": "Rechazado"
+    "state_rejected": "Rechazado",
+    "mandatory": "Obligatorio",
+    "optional": "Opcional",
+    "affectsScore": "{weight}% de la nota",
+    "courseLabel": "Curso",
+    "coursePlaceholder": "Selecciona tu curso...",
+    "courseGroupOsmilete": "Gymnázium 8 años",
+    "courseGroupCtyrilete": "Gymnázium 4 años",
+    "processInactiveTitle": "Proceso de selección cerrado",
+    "processInactiveDesc": "La subida de documentos no está disponible hasta que el proceso de selección esté activo.",
+    "cardParental": "Autorización Parental",
+    "cardParentalDesc": "Autorización firmada por el tutor legal",
+    "docType_parental": "Autorización Parental",
+    "parentalAuthDesc": "Documento de autorización firmado por padre, madre o tutor legal"
   },
 
   "settings": {
@@ -649,6 +662,7 @@
     "docType_grade_certificate": "Certificado de notas",
     "docType_cover_letter": "Carta de motivación",
     "docType_disability_certificate": "Certificado de discapacidad",
+    "docType_parental_authorization": "Autorización parental",
     "docType_unknown": "Documento",
     "uploadedAt": "Subido el {date}",
     "reviewedAt": "Revisado el {date}",

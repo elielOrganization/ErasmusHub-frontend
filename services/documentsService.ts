@@ -38,6 +38,8 @@ export async function uploadDocument(
         formData.append("cover_letter", files.main);
     } else if (docType === "disability" && files.main) {
         formData.append("disability_certificate", files.main);
+    } else if (docType === "parental" && files.main) {
+        formData.append("parental_authorization", files.main);
     }
     const res = await fetch(`${API_URL}/documents/upload`, {
         method: "POST",
