@@ -498,7 +498,20 @@
     "state": "Stav",
     "state_pending": "Čeká na schválení",
     "state_approved": "Schváleno",
-    "state_rejected": "Zamítnuto"
+    "state_rejected": "Zamítnuto",
+    "mandatory": "Povinné",
+    "optional": "Volitelné",
+    "affectsScore": "{weight}% hodnocení",
+    "courseLabel": "Ročník",
+    "coursePlaceholder": "Vyberte svůj ročník...",
+    "courseGroupOsmilete": "Gymnázium 8-leté",
+    "courseGroupCtyrilete": "Gymnázium 4-leté",
+    "processInactiveTitle": "Výběrové řízení uzavřeno",
+    "processInactiveDesc": "Nahrávání dokumentů není dostupné, dokud není výběrové řízení aktivní.",
+    "cardParental": "Rodičovský souhlas",
+    "cardParentalDesc": "Souhlas podepsaný zákonným zástupcem",
+    "docType_parental": "Rodičovský souhlas",
+    "parentalAuthDesc": "Dokument souhlasu podepsaný rodičem nebo zákonným zástupcem"
   },
 
   "settings": {
@@ -647,6 +660,7 @@
     "docType_grade_certificate": "Výpis výsledků",
     "docType_cover_letter": "Motivační dopis",
     "docType_disability_certificate": "Certifikát zdravotního postižení",
+    "docType_parental_authorization": "Rodičovský souhlas",
     "docType_unknown": "Dokument",
     "uploadedAt": "Nahráno {date}",
     "reviewedAt": "Zkontrolováno {date}",

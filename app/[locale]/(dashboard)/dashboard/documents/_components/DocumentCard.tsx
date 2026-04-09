@@ -9,24 +9,36 @@ import DocStateBadge from "./DocStateBadge";
 interface DocumentCardProps {
     category: string;
     docs: UserDocument[];
+    mandatory?: boolean;
+    weight?: number;
+    processActive?: boolean;
     onDelete: (doc: UserDocument) => void;
     onPreview: (doc: UserDocument) => void;
     onAdd: () => void;
 }
 
-export default function DocumentCard({ category, docs, onDelete, onPreview, onAdd }: DocumentCardProps) {
+export default function DocumentCard({
+    category,
+    docs,
+    mandatory = true,
+    weight = 0,
+    processActive = true,
+    onDelete,
+    onPreview,
+    onAdd,
+}: DocumentCardProps) {
     const t = useTranslations("documents");
     const theme = useRoleTheme();
     const config = CARD_CONFIG[category];
     if (!config) return null;
 
-    // Docs that are not rejected count as "uploaded"
     const activeDocs = docs.filter((d) => d.state !== "rejected");
     const rejectedDocs = docs.filter((d) => d.state === "rejected");
     const uploaded = activeDocs.length > 0;
 
     return (
         <div className="bg-white dark:bg-gray-900 rounded-2xl border border-gray-100 dark:border-gray-800 shadow-sm hover:shadow-md transition-all duration-200 p-5 flex flex-col gap-3">
+            {/* Header row */}
             <div className="flex items-start justify-between">
                 <div className={`w-10 h-10 rounded-xl ${theme.accentBg} flex items-center justify-center shrink-0`}>
                     <svg className={`w-5 h-5 ${theme.accent}`} fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth="2">
@@ -44,17 +56,34 @@ export default function DocumentCard({ category, docs, onDelete, onPreview, onAd
                 )}
             </div>
 
+            {/* Title + badges */}
             <div>
-                <h3 className="text-sm font-bold text-gray-800 dark:text-gray-100 mb-0.5">
-                    {t(config.labelKey as Parameters<typeof t>[0])}
-                </h3>
+                <div className="flex items-center gap-1.5 mb-0.5 flex-wrap">
+                    <h3 className="text-sm font-bold text-gray-800 dark:text-gray-100">
+                        {t(config.labelKey as Parameters<typeof t>[0])}
+                    </h3>
+                    {mandatory ? (
+                        <span className="text-[10px] font-semibold px-1.5 py-0.5 rounded-full bg-red-50 dark:bg-red-900/20 text-red-500 dark:text-red-400 border border-red-100 dark:border-red-800/40">
+                            {t("mandatory")}
+                        </span>
+                    ) : (
+                        <span className="text-[10px] font-semibold px-1.5 py-0.5 rounded-full bg-gray-50 dark:bg-gray-800 text-gray-400 dark:text-gray-500 border border-gray-100 dark:border-gray-700">
+                            {t("optional")}
+                        </span>
+                    )}
+                </div>
                 <p className="text-xs text-gray-400 dark:text-gray-500 leading-relaxed">
                     {t(config.descKey as Parameters<typeof t>[0])}
                 </p>
+                {weight > 0 && (
+                    <p className={`text-[11px] font-semibold mt-1 ${theme.accentText}`}>
+                        {(t as (k: string, p: Record<string, number>) => string)("affectsScore", { weight })}
+                    </p>
+                )}
             </div>
 
+            {/* Document list */}
             <div className="pt-1 border-t border-gray-100 dark:border-gray-800 space-y-2">
-                {/* Docs aprobados / pendientes — comportamiento normal */}
                 {activeDocs.map((doc) => (
                     <div key={doc.id} className="flex items-start gap-2 group">
                         <svg className="w-3.5 h-3.5 text-green-500 shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -85,7 +114,7 @@ export default function DocumentCard({ category, docs, onDelete, onPreview, onAd
                     </div>
                 ))}
 
-                {/* Docs rechazados — muestran motivo y botón reescribir */}
+                {/* Rejected docs */}
                 {rejectedDocs.map((doc) => (
                     <div key={doc.id} className="rounded-lg border border-red-200 dark:border-red-800/50 bg-red-50 dark:bg-red-900/10 p-2.5 space-y-2">
                         <div className="flex items-start gap-2">
@@ -102,7 +131,12 @@ export default function DocumentCard({ category, docs, onDelete, onPreview, onAd
                         </div>
                         <button
                             onClick={onAdd}
-                            className="w-full flex items-center justify-center gap-1.5 py-1.5 rounded-lg text-xs font-semibold bg-red-100 dark:bg-red-900/30 text-red-600 dark:text-red-400 hover:bg-red-200 dark:hover:bg-red-900/50 transition-colors"
+                            disabled={!processActive}
+                            className={`w-full flex items-center justify-center gap-1.5 py-1.5 rounded-lg text-xs font-semibold transition-colors ${
+                                processActive
+                                    ? "bg-red-100 dark:bg-red-900/30 text-red-600 dark:text-red-400 hover:bg-red-200 dark:hover:bg-red-900/50"
+                                    : "bg-gray-100 dark:bg-gray-800 text-gray-400 cursor-not-allowed"
+                            }`}
                         >
                             <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
@@ -112,10 +146,17 @@ export default function DocumentCard({ category, docs, onDelete, onPreview, onAd
                     </div>
                 ))}
 
-                {/* Botón subir — solo si no hay docs activos ni rechazados */}
+                {/* Add button — only when no active/rejected docs */}
                 {!uploaded && rejectedDocs.length === 0 && (
-                    <button onClick={onAdd}
-                        className={`mt-1 w-full flex items-center justify-center gap-1.5 py-2 rounded-lg text-xs font-semibold border border-dashed transition-all duration-200 ${theme.borderLight} ${theme.accentText} ${theme.accentBg} hover:opacity-80`}>
+                    <button
+                        onClick={onAdd}
+                        disabled={!processActive}
+                        className={`mt-1 w-full flex items-center justify-center gap-1.5 py-2 rounded-lg text-xs font-semibold border border-dashed transition-all duration-200 ${
+                            processActive
+                                ? `${theme.borderLight} ${theme.accentText} ${theme.accentBg} hover:opacity-80`
+                                : "border-gray-200 dark:border-gray-700 text-gray-400 cursor-not-allowed"
+                        }`}
+                    >
                         <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 4v16m8-8H4" />
                         </svg>
