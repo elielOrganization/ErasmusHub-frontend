@@ -29,10 +29,11 @@ interface UserPublicMin {
     year?: string | null;
 }
 
-type TabType = "documentos" | "entrevista";
+type TabType = "documentos" | "entrevista" | "resultados";
 type InterviewMode = "grade" | "reject" | null;
+type SortCol = "pending" | "approved" | "rejected" | "total" | null;
+type StatusFilter = "all" | "pending" | "reviewed" | "excluded";
 
-// Helper para usar claves de traducción que existen en el JSON pero no en el tipo de next-intl
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const ti = (t: ReturnType<typeof useTranslations>, key: string, params?: Record<string, string>) =>
     (t as unknown as (k: string, p?: Record<string, string>) => string)(key, params);
@@ -57,11 +58,14 @@ export default function RevisionPage() {
     const t = useTranslations("revision");
     const theme = useRoleTheme();
     const [tab, setTab] = useState<TabType>("documentos");
+    const [search, setSearch] = useState("");
+    const [sortCol, setSortCol] = useState<SortCol>(null);
+    const [sortDir, setSortDir] = useState<"asc" | "desc">("desc");
+    const [statusFilter, setStatusFilter] = useState<StatusFilter>("all");
 
     const { data, loading, error, refetch } = useApi<StudentDocSummary[]>("/documents/pending");
     const { data: usersData } = useApi<UserPublicMin[]>("/users");
 
-    // Map userId → course label
     const courseLabel = (userId: number): string | null => {
         const year = usersData?.find(u => u.id === userId)?.year;
         if (!year) return null;
@@ -126,13 +130,76 @@ export default function RevisionPage() {
         }
     }
 
+    function toggleSort(col: SortCol) {
+        if (sortCol === col) setSortDir(d => d === "asc" ? "desc" : "asc");
+        else { setSortCol(col); setSortDir("desc"); }
+    }
+
     const students = data ?? [];
-    const filtered = tab === "entrevista"
-        ? students.filter((s) => s.all_approved)
-        : students;
+    const searchLower = search.toLowerCase();
+
+    const matchesSearch = (s: StudentDocSummary) =>
+        !searchLower ||
+        s.user_name.toLowerCase().includes(searchLower) ||
+        s.email.toLowerCase().includes(searchLower);
+
+    const matchesStatus = (s: StudentDocSummary) => {
+        if (statusFilter === "pending") return s.pending > 0;
+        if (statusFilter === "reviewed") return s.pending === 0 && s.total > 0;
+        if (statusFilter === "excluded") return s.interview_status === "rejected";
+        return true;
+    };
+
+    const applySort = (arr: StudentDocSummary[]) => {
+        if (!sortCol) return arr;
+        return [...arr].sort((a, b) => {
+            const diff = a[sortCol] - b[sortCol];
+            return sortDir === "asc" ? diff : -diff;
+        });
+    };
+
+    const filtered = applySort(
+        tab === "entrevista"
+            ? students.filter(s => s.all_approved && matchesSearch(s))
+            : tab === "resultados"
+            ? students
+            : students.filter(s => matchesSearch(s) && matchesStatus(s))
+    );
+
+    const aptosParaErasmus = students
+        .filter(s => s.all_approved && s.interview_status === "passed")
+        .sort((a, b) => (b.interview_grade ?? 0) - (a.interview_grade ?? 0));
+
+    const noAptos = students.filter(
+        s => s.interview_status === "rejected" || (s.rejected > 0 && s.pending === 0 && !s.all_approved)
+    );
+
+    function rowBgClass(s: StudentDocSummary): string {
+        if (s.all_approved && s.interview_status === "passed") return "bg-green-50/40 dark:bg-green-900/10";
+        if (s.interview_status === "rejected") return "bg-red-50/40 dark:bg-red-900/10";
+        if (s.pending > 0) return "bg-amber-50/40 dark:bg-amber-900/10";
+        return "";
+    }
 
     const totalPending = students.reduce((acc, s) => acc + s.pending, 0);
-    const totalReviewed = students.filter((s) => s.pending === 0 && s.total > 0).length;
+    const totalReviewed = students.filter(s => s.pending === 0 && s.total > 0).length;
+
+    function SortIcon({ col }: { col: SortCol }) {
+        if (sortCol !== col) {
+            return (
+                <svg className="w-3 h-3 opacity-30 inline-block ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M7 16V4m0 0L3 8m4-4l4 4M17 8v12m0 0l4-4m-4 4l-4-4" />
+                </svg>
+            );
+        }
+        return (
+            <svg className="w-3 h-3 inline-block ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d={
+                    sortDir === "asc" ? "M5 15l7-7 7 7" : "M19 9l-7 7-7-7"
+                } />
+            </svg>
+        );
+    }
 
     if (loading) {
         return (
@@ -145,9 +212,20 @@ export default function RevisionPage() {
     return (
         <div className="space-y-6">
             {/* Header */}
-            <div>
-                <h1 className="text-2xl font-bold text-gray-900 dark:text-white">{t("pageTitle")}</h1>
-                <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">{t("subtitle")}</p>
+            <div className="flex items-start justify-between">
+                <div>
+                    <h1 className="text-2xl font-bold text-gray-900 dark:text-white">{t("pageTitle")}</h1>
+                    <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">{t("subtitle")}</p>
+                </div>
+                <button
+                    onClick={() => refetch()}
+                    className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 border border-gray-200 dark:border-gray-700 transition-colors"
+                >
+                    <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                    </svg>
+                    {ti(t, "refresh")}
+                </button>
             </div>
 
             {/* Stats */}
@@ -170,9 +248,9 @@ export default function RevisionPage() {
 
             {/* Table card */}
             <div className="bg-white dark:bg-gray-900 rounded-3xl border border-gray-100 dark:border-gray-800 shadow-sm overflow-hidden">
-                {/* Tabs */}
-                <div className="flex items-center gap-1 p-4 border-b border-gray-100 dark:border-gray-800">
-                    {(["documentos", "entrevista"] as TabType[]).map((t_key) => (
+                {/* Tabs + controls */}
+                <div className="flex items-center gap-1 p-4 border-b border-gray-100 dark:border-gray-800 flex-wrap gap-y-2">
+                    {(["documentos", "entrevista", "resultados"] as TabType[]).map((t_key) => (
                         <button
                             key={t_key}
                             onClick={() => setTab(t_key)}
@@ -185,6 +263,36 @@ export default function RevisionPage() {
                             {ti(t, `tab_${t_key}`)}
                         </button>
                     ))}
+
+                    {tab === "documentos" && (
+                        <div className="ml-auto flex items-center gap-2">
+                            {/* Resultado count */}
+                            {(search || statusFilter !== "all") && (
+                                <span className="text-xs text-gray-400 dark:text-gray-500 whitespace-nowrap">
+                                    {ti(t, "resultCount", { count: String(filtered.length), total: String(students.length) })}
+                                </span>
+                            )}
+                            {/* Status filter */}
+                            <select
+                                value={statusFilter}
+                                onChange={e => setStatusFilter(e.target.value as StatusFilter)}
+                                className="text-sm border border-gray-200 dark:border-gray-700 rounded-lg px-2 py-1.5 bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-400"
+                            >
+                                <option value="all">{ti(t, "filterAll")}</option>
+                                <option value="pending">{ti(t, "filterWithPending")}</option>
+                                <option value="reviewed">{ti(t, "filterReviewed")}</option>
+                                <option value="excluded">{ti(t, "filterExcluded")}</option>
+                            </select>
+                            {/* Search */}
+                            <input
+                                type="text"
+                                value={search}
+                                onChange={e => setSearch(e.target.value)}
+                                placeholder={ti(t, "searchPlaceholder")}
+                                className="text-sm border border-gray-200 dark:border-gray-700 rounded-lg px-3 py-1.5 bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-200 placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-400 w-48"
+                            />
+                        </div>
+                    )}
                 </div>
 
                 {/* Error */}
@@ -198,7 +306,7 @@ export default function RevisionPage() {
                 )}
 
                 {/* Empty */}
-                {!error && filtered.length === 0 && (
+                {!error && tab !== "resultados" && filtered.length === 0 && (
                     <div className="p-12 text-center">
                         <svg className="w-10 h-10 text-gray-300 dark:text-gray-600 mx-auto mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
@@ -206,6 +314,14 @@ export default function RevisionPage() {
                         <p className="text-sm text-gray-400 dark:text-gray-500">
                             {tab === "entrevista" ? ti(t, "interview_empty") : t("empty")}
                         </p>
+                    </div>
+                )}
+                {!error && tab === "resultados" && aptosParaErasmus.length === 0 && noAptos.length === 0 && (
+                    <div className="p-12 text-center">
+                        <svg className="w-10 h-10 text-gray-300 dark:text-gray-600 mx-auto mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                        </svg>
+                        <p className="text-sm text-gray-400 dark:text-gray-500">{ti(t, "resultadosEmpty")}</p>
                     </div>
                 )}
 
@@ -218,82 +334,101 @@ export default function RevisionPage() {
                                     <th className="text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider px-5 py-3">
                                         {t("colStudent")}
                                     </th>
-                                    <th className="text-center text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider px-5 py-3">
-                                        {t("colPending")}
-                                    </th>
-                                    <th className="text-center text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider px-5 py-3">
-                                        {t("colApproved")}
-                                    </th>
-                                    <th className="text-center text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider px-5 py-3">
-                                        {t("colRejected")}
-                                    </th>
+                                    {(["pending", "approved", "rejected", "total"] as SortCol[]).map(col => (
+                                        <th
+                                            key={col}
+                                            onClick={() => toggleSort(col)}
+                                            className="text-center text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider px-5 py-3 cursor-pointer select-none hover:text-gray-700 dark:hover:text-gray-200 transition-colors"
+                                        >
+                                            {ti(t, col === "pending" ? "colPending" : col === "approved" ? "colApproved" : col === "rejected" ? "colRejected" : "colTotal")}
+                                            <SortIcon col={col} />
+                                        </th>
+                                    ))}
                                     <th className="px-5 py-3" />
                                 </tr>
                             </thead>
                             <tbody className="divide-y divide-gray-100 dark:divide-gray-800">
-                                {filtered.map((s) => (
-                                    <tr key={s.user_id} className="hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors">
-                                        <td className="px-5 py-4">
-                                            <div className="flex items-center gap-2">
-                                                <p className="text-sm font-medium text-gray-800 dark:text-gray-200">{s.user_name}</p>
-                                                {s.all_approved ? (
-                                                    <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400">
-                                                        {ti(t, "badge_all_approved")}
+                                {filtered.map((s) => {
+                                    const pct = s.total > 0 ? Math.round(s.approved / s.total * 100) : 0;
+                                    return (
+                                        <tr key={s.user_id} className={`hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors ${rowBgClass(s)}`}>
+                                            <td className="px-5 py-4">
+                                                <div className="flex items-center gap-2">
+                                                    <p className="text-sm font-medium text-gray-800 dark:text-gray-200">{s.user_name}</p>
+                                                    {s.all_approved ? (
+                                                        <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400">
+                                                            {ti(t, "badge_all_approved")}
+                                                        </span>
+                                                    ) : (
+                                                        <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-400">
+                                                            {ti(t, "badge_pending_docs")}
+                                                        </span>
+                                                    )}
+                                                </div>
+                                                <p className="text-xs text-gray-400 dark:text-gray-500">{s.email}</p>
+                                                {courseLabel(s.user_id) && (
+                                                    <p className="text-xs text-blue-500 dark:text-blue-400 font-medium mt-0.5 flex items-center gap-1">
+                                                        <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 14l9-5-9-5-9 5 9 5z" /></svg>
+                                                        {courseLabel(s.user_id)}
+                                                    </p>
+                                                )}
+                                                {/* Progress bar */}
+                                                {s.total > 0 && (
+                                                    <div className="flex items-center gap-2 mt-1.5">
+                                                        <div className="flex-1 max-w-24 bg-gray-100 dark:bg-gray-800 rounded-full h-1.5">
+                                                            <div
+                                                                className="bg-green-500 h-1.5 rounded-full transition-all"
+                                                                style={{ width: `${pct}%` }}
+                                                            />
+                                                        </div>
+                                                        <span className="text-xs text-gray-400 dark:text-gray-500">{s.approved}/{s.total}</span>
+                                                    </div>
+                                                )}
+                                            </td>
+                                            <td className="px-5 py-4 text-center">
+                                                {s.pending > 0 ? (
+                                                    <span className="inline-flex items-center justify-center w-6 h-6 rounded-full bg-amber-100 dark:bg-amber-900/30 text-amber-600 dark:text-amber-400 text-xs font-bold">
+                                                        {s.pending}
                                                     </span>
                                                 ) : (
-                                                    <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-400">
-                                                        {ti(t, "badge_pending_docs")}
-                                                    </span>
+                                                    <span className="text-gray-300 dark:text-gray-600">—</span>
                                                 )}
-                                            </div>
-                                            <p className="text-xs text-gray-400 dark:text-gray-500">{s.email}</p>
-                                            {courseLabel(s.user_id) && (
-                                                <p className="text-xs text-blue-500 dark:text-blue-400 font-medium mt-0.5 flex items-center gap-1">
-                                                    <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 14l9-5-9-5-9 5 9 5z" /></svg>
-                                                    {courseLabel(s.user_id)}
-                                                </p>
-                                            )}
-                                        </td>
-                                        <td className="px-5 py-4 text-center">
-                                            {s.pending > 0 ? (
-                                                <span className="inline-flex items-center justify-center w-6 h-6 rounded-full bg-amber-100 dark:bg-amber-900/30 text-amber-600 dark:text-amber-400 text-xs font-bold">
-                                                    {s.pending}
-                                                </span>
-                                            ) : (
-                                                <span className="text-gray-300 dark:text-gray-600">—</span>
-                                            )}
-                                        </td>
-                                        <td className="px-5 py-4 text-center">
-                                            {s.approved > 0 ? (
-                                                <span className="inline-flex items-center justify-center w-6 h-6 rounded-full bg-green-100 dark:bg-green-900/30 text-green-600 dark:text-green-400 text-xs font-bold">
-                                                    {s.approved}
-                                                </span>
-                                            ) : (
-                                                <span className="text-gray-300 dark:text-gray-600">—</span>
-                                            )}
-                                        </td>
-                                        <td className="px-5 py-4 text-center">
-                                            {s.rejected > 0 ? (
-                                                <span className="inline-flex items-center justify-center w-6 h-6 rounded-full bg-red-100 dark:bg-red-900/30 text-red-600 dark:text-red-400 text-xs font-bold">
-                                                    {s.rejected}
-                                                </span>
-                                            ) : (
-                                                <span className="text-gray-300 dark:text-gray-600">—</span>
-                                            )}
-                                        </td>
-                                        <td className="px-5 py-4 text-right">
-                                            <Link
-                                                href={`/dashboard/revision/${s.user_id}`}
-                                                className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold text-white ${theme.activeBg} hover:opacity-90 transition-opacity`}
-                                            >
-                                                {t("viewLibrary")}
-                                                <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5l7 7-7 7" />
-                                                </svg>
-                                            </Link>
-                                        </td>
-                                    </tr>
-                                ))}
+                                            </td>
+                                            <td className="px-5 py-4 text-center">
+                                                {s.approved > 0 ? (
+                                                    <span className="inline-flex items-center justify-center w-6 h-6 rounded-full bg-green-100 dark:bg-green-900/30 text-green-600 dark:text-green-400 text-xs font-bold">
+                                                        {s.approved}
+                                                    </span>
+                                                ) : (
+                                                    <span className="text-gray-300 dark:text-gray-600">—</span>
+                                                )}
+                                            </td>
+                                            <td className="px-5 py-4 text-center">
+                                                {s.rejected > 0 ? (
+                                                    <span className="inline-flex items-center justify-center w-6 h-6 rounded-full bg-red-100 dark:bg-red-900/30 text-red-600 dark:text-red-400 text-xs font-bold">
+                                                        {s.rejected}
+                                                    </span>
+                                                ) : (
+                                                    <span className="text-gray-300 dark:text-gray-600">—</span>
+                                                )}
+                                            </td>
+                                            <td className="px-5 py-4 text-center">
+                                                <span className="text-xs font-semibold text-gray-600 dark:text-gray-400">{s.total}</span>
+                                            </td>
+                                            <td className="px-5 py-4 text-right">
+                                                <Link
+                                                    href={`/dashboard/revision/${s.user_id}`}
+                                                    className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold text-white ${theme.activeBg} hover:opacity-90 transition-opacity`}
+                                                >
+                                                    {t("viewLibrary")}
+                                                    <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5l7 7-7 7" />
+                                                    </svg>
+                                                </Link>
+                                            </td>
+                                        </tr>
+                                    );
+                                })}
                             </tbody>
                         </table>
                     </div>
@@ -308,7 +443,6 @@ export default function RevisionPage() {
 
                             return (
                                 <div key={s.user_id} className="px-5 py-4">
-                                    {/* Fila del alumno */}
                                     <div className="flex items-center justify-between gap-4">
                                         <div>
                                             <p className="text-sm font-semibold text-gray-800 dark:text-gray-200">{s.user_name}</p>
@@ -322,7 +456,6 @@ export default function RevisionPage() {
                                         </div>
 
                                         <div className="flex items-center gap-3 shrink-0">
-                                            {/* Aprobado */}
                                             {s.interview_status === "passed" && (
                                                 <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400">
                                                     <span className="w-1.5 h-1.5 rounded-full bg-green-500 shrink-0" />
@@ -333,7 +466,6 @@ export default function RevisionPage() {
                                                 </span>
                                             )}
 
-                                            {/* Rechazado */}
                                             {s.interview_status === "rejected" && (
                                                 <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-400">
                                                     <span className="w-1.5 h-1.5 rounded-full bg-red-500 shrink-0" />
@@ -341,7 +473,6 @@ export default function RevisionPage() {
                                                 </span>
                                             )}
 
-                                            {/* Acciones — solo pendiente y sin form abierto */}
                                             {s.interview_status === "pending" && !isActive && (
                                                 <div className="flex items-center gap-2">
                                                     <button
@@ -361,17 +492,14 @@ export default function RevisionPage() {
                                         </div>
                                     </div>
 
-                                    {/* Motivo de rechazo (estado resuelto) */}
                                     {s.interview_status === "rejected" && s.interview_rejection_reason && (
                                         <p className="mt-2 text-xs text-red-500 dark:text-red-400 bg-red-50 dark:bg-red-900/20 rounded-lg px-3 py-2">
                                             {ti(t, "interview_rejectionReason", { reason: s.interview_rejection_reason })}
                                         </p>
                                     )}
 
-                                    {/* Formulario inline */}
                                     {isActive && (
                                         <div className="mt-3 border border-gray-100 dark:border-gray-700 rounded-xl bg-gray-50 dark:bg-gray-800/40 px-4 py-3 space-y-3">
-                                            {/* Modo nota */}
                                             {interviewMode === "grade" && (
                                                 <>
                                                     <div>
@@ -384,38 +512,25 @@ export default function RevisionPage() {
                                                             max="10"
                                                             step="0.1"
                                                             value={interviewGrade}
-                                                            onChange={(e) => setInterviewGrade(e.target.value)}
+                                                            onChange={e => setInterviewGrade(e.target.value)}
                                                             placeholder={ti(t, "interview_gradePlaceholder")}
                                                             className="w-36 text-sm border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-1.5 bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-green-500"
                                                         />
                                                     </div>
                                                     <div className="flex items-center gap-2">
-                                                        <button
-                                                            onClick={() => handleInterviewSubmit(s.user_id)}
-                                                            disabled={submittingInterview}
-                                                            className={`px-4 py-1.5 rounded-lg text-xs font-semibold text-white ${theme.activeBg} hover:opacity-90 disabled:opacity-50 transition-opacity`}
-                                                        >
+                                                        <button onClick={() => handleInterviewSubmit(s.user_id)} disabled={submittingInterview} className={`px-4 py-1.5 rounded-lg text-xs font-semibold text-white ${theme.activeBg} hover:opacity-90 disabled:opacity-50 transition-opacity`}>
                                                             {ti(t, "interview_saveGrade")}
                                                         </button>
-                                                        <button
-                                                            onClick={() => setInterviewMode("reject")}
-                                                            disabled={submittingInterview}
-                                                            className="px-3 py-1.5 rounded-lg text-xs font-semibold bg-red-500 hover:bg-red-600 disabled:opacity-50 text-white transition-colors"
-                                                        >
+                                                        <button onClick={() => setInterviewMode("reject")} disabled={submittingInterview} className="px-3 py-1.5 rounded-lg text-xs font-semibold bg-red-500 hover:bg-red-600 disabled:opacity-50 text-white transition-colors">
                                                             {ti(t, "interview_rejectBtn")}
                                                         </button>
-                                                        <button
-                                                            onClick={cancelInterview}
-                                                            disabled={submittingInterview}
-                                                            className="px-3 py-1.5 rounded-lg text-xs font-medium text-gray-500 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors"
-                                                        >
+                                                        <button onClick={cancelInterview} disabled={submittingInterview} className="px-3 py-1.5 rounded-lg text-xs font-medium text-gray-500 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors">
                                                             {ti(t, "interview_cancelAction")}
                                                         </button>
                                                     </div>
                                                 </>
                                             )}
 
-                                            {/* Modo rechazo */}
                                             {interviewMode === "reject" && (
                                                 <>
                                                     <div>
@@ -424,35 +539,18 @@ export default function RevisionPage() {
                                                         </label>
                                                         <textarea
                                                             value={interviewReason}
-                                                            onChange={(e) => {
-                                                                setInterviewReason(e.target.value);
-                                                                setInterviewReasonError(false);
-                                                            }}
+                                                            onChange={e => { setInterviewReason(e.target.value); setInterviewReasonError(false); }}
                                                             placeholder={ti(t, "interview_reasonPlaceholder")}
                                                             rows={3}
-                                                            className={`w-full text-sm border rounded-lg px-3 py-2 bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:outline-none focus:ring-2 resize-none ${
-                                                                interviewReasonError
-                                                                    ? "border-red-400 focus:ring-red-400"
-                                                                    : "border-gray-300 dark:border-gray-600 focus:ring-red-400"
-                                                            }`}
+                                                            className={`w-full text-sm border rounded-lg px-3 py-2 bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:outline-none focus:ring-2 resize-none ${interviewReasonError ? "border-red-400 focus:ring-red-400" : "border-gray-300 dark:border-gray-600 focus:ring-red-400"}`}
                                                         />
-                                                        {interviewReasonError && (
-                                                            <p className="text-xs text-red-500 mt-1">{ti(t, "interview_reasonRequired")}</p>
-                                                        )}
+                                                        {interviewReasonError && <p className="text-xs text-red-500 mt-1">{ti(t, "interview_reasonRequired")}</p>}
                                                     </div>
                                                     <div className="flex items-center gap-2">
-                                                        <button
-                                                            onClick={() => handleInterviewSubmit(s.user_id)}
-                                                            disabled={submittingInterview}
-                                                            className="px-4 py-1.5 rounded-lg text-xs font-semibold bg-red-500 hover:bg-red-600 disabled:opacity-50 text-white transition-colors"
-                                                        >
+                                                        <button onClick={() => handleInterviewSubmit(s.user_id)} disabled={submittingInterview} className="px-4 py-1.5 rounded-lg text-xs font-semibold bg-red-500 hover:bg-red-600 disabled:opacity-50 text-white transition-colors">
                                                             {ti(t, "interview_confirmReject")}
                                                         </button>
-                                                        <button
-                                                            onClick={cancelInterview}
-                                                            disabled={submittingInterview}
-                                                            className="px-3 py-1.5 rounded-lg text-xs font-medium text-gray-500 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors"
-                                                        >
+                                                        <button onClick={cancelInterview} disabled={submittingInterview} className="px-3 py-1.5 rounded-lg text-xs font-medium text-gray-500 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors">
                                                             {ti(t, "interview_cancelAction")}
                                                         </button>
                                                     </div>
@@ -461,19 +559,70 @@ export default function RevisionPage() {
                                         </div>
                                     )}
 
-                                    {/* Feedback */}
                                     {fb && (
-                                        <p className={`mt-2 text-xs font-medium ${
-                                            fb.type === "success"
-                                                ? "text-green-600 dark:text-green-400"
-                                                : "text-red-600 dark:text-red-400"
-                                        }`}>
+                                        <p className={`mt-2 text-xs font-medium ${fb.type === "success" ? "text-green-600 dark:text-green-400" : "text-red-600 dark:text-red-400"}`}>
                                             {fb.msg}
                                         </p>
                                     )}
                                 </div>
                             );
                         })}
+                    </div>
+                )}
+
+                {/* ── Tab Resultados ─────────────────────────────────────────── */}
+                {!error && tab === "resultados" && (aptosParaErasmus.length > 0 || noAptos.length > 0) && (
+                    <div className="divide-y divide-gray-100 dark:divide-gray-800">
+                        {aptosParaErasmus.length > 0 && (
+                            <div className="p-5 space-y-3">
+                                <h3 className="text-xs font-bold uppercase tracking-wider text-green-600 dark:text-green-400 flex items-center gap-2">
+                                    <span className="w-2 h-2 rounded-full bg-green-500 shrink-0" />
+                                    {ti(t, "resultadosApto")}
+                                    <span className="ml-1 normal-case font-normal text-gray-400">({aptosParaErasmus.length})</span>
+                                </h3>
+                                <div className="space-y-2">
+                                    {aptosParaErasmus.map((s, idx) => (
+                                        <div key={s.user_id} className="flex items-center justify-between gap-4 bg-green-50 dark:bg-green-900/10 rounded-xl px-4 py-3">
+                                            <div className="flex items-center gap-3">
+                                                <span className="text-sm font-bold text-green-600 dark:text-green-400 w-6 text-center">{idx + 1}</span>
+                                                <div>
+                                                    <p className="text-sm font-semibold text-gray-800 dark:text-gray-200">{s.user_name}</p>
+                                                    <p className="text-xs text-gray-400 dark:text-gray-500">{s.email}</p>
+                                                </div>
+                                            </div>
+                                            {s.interview_grade != null && (
+                                                <span className="shrink-0 px-2.5 py-1 rounded-lg text-xs font-bold bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300">
+                                                    {ti(t, "resultadosGrade", { grade: String(s.interview_grade) })}
+                                                </span>
+                                            )}
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+                        )}
+
+                        {noAptos.length > 0 && (
+                            <div className="p-5 space-y-3">
+                                <h3 className="text-xs font-bold uppercase tracking-wider text-red-600 dark:text-red-400 flex items-center gap-2">
+                                    <span className="w-2 h-2 rounded-full bg-red-500 shrink-0" />
+                                    {ti(t, "resultadosNoApto")}
+                                    <span className="ml-1 normal-case font-normal text-gray-400">({noAptos.length})</span>
+                                </h3>
+                                <div className="space-y-2">
+                                    {noAptos.map((s) => (
+                                        <div key={s.user_id} className="bg-red-50 dark:bg-red-900/10 rounded-xl px-4 py-3">
+                                            <p className="text-sm font-semibold text-gray-800 dark:text-gray-200">{s.user_name}</p>
+                                            <p className="text-xs text-gray-400 dark:text-gray-500">{s.email}</p>
+                                            {s.interview_rejection_reason && (
+                                                <p className="text-xs text-red-500 dark:text-red-400 mt-1">
+                                                    {ti(t, "resultadosReason", { reason: s.interview_rejection_reason })}
+                                                </p>
+                                            )}
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+                        )}
                     </div>
                 )}
             </div>

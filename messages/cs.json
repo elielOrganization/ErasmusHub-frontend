@@ -232,7 +232,8 @@
       "docs_ready_for_review": "Student {student_name} odevzdal všechny povinné dokumenty",
       "selection_process_started": "Proces výběru Erasmus začal",
       "interview_passed": "Prošli jste pohovorem s hodnocením {grade}",
-      "interview_rejected": "Neprošli jste pohovorem: {reason}"
+      "interview_rejected": "Neprošli jste pohovorem: {reason}",
+      "interview_readmitted": "Byli jste readmitováni do výběrového řízení"
     }
   },
 
@@ -706,6 +707,34 @@
     "interview_rejectSuccess": "Student zamítnut.",
     "interview_actionError": "Došlo k chybě. Zkuste to znovu.",
     "interview_empty": "Žádní studenti se všemi schválenými dokumenty.",
-    "interview_rejectionReason": "Důvod: {reason}"
+    "interview_rejectionReason": "Důvod: {reason}",
+    "tab_resultados": "Výsledky",
+    "resultadosApto": "Způsobilí pro Erasmus",
+    "resultadosNoApto": "Nezpůsobilí",
+    "resultadosEmpty": "Zatím žádné výsledky.",
+    "resultadosGrade": "Hodnocení: {grade}",
+    "resultadosReason": "Důvod: {reason}",
+    "excludeFromProcess": "Vyloučit z výběru",
+    "excludeConfirmTitle": "Vyloučit studenta",
+    "excludeConfirmDesc": "Student bude vyloučen z aktuálního výběrového řízení. Uveďte důvod:",
+    "excludeReasonPlaceholder": "Důvod vyloučení...",
+    "excludeReasonRequired": "Důvod je povinný.",
+    "excludeSuccess": "Student byl vyloučen.",
+    "excludeError": "Chyba při vyloučení.",
+    "searchPlaceholder": "Hledat studenta...",
+    "colTotal": "Celkem",
+    "readmitStudent": "Readmitovat",
+    "readmitSuccess": "Student byl readmitován.",
+    "readmitError": "Chyba při readmitování studenta.",
+    "filterAll": "Vše",
+    "filterWithPending": "S nevyřízenými",
+    "filterReviewed": "Zkontrolováno",
+    "filterExcluded": "Vyloučení",
+    "resultCount": "{count} z {total} studentů",
+    "changeDecision": "Změnit rozhodnutí",
+    "docProgress": "{approved} z {total} schváleno",
+    "refresh": "Obnovit",
+    "interviewStatusLabel": "Pohovor:",
+    "docSummaryLabel": "Dokumenty:"
   }
 }

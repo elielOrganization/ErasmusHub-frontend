@@ -232,7 +232,8 @@
       "docs_ready_for_review": "Student {student_name} has submitted all mandatory documents",
       "selection_process_started": "The Erasmus selection process has begun",
       "interview_passed": "You passed the interview with grade {grade}",
-      "interview_rejected": "You did not pass the interview: {reason}"
+      "interview_rejected": "You did not pass the interview: {reason}",
+      "interview_readmitted": "You have been readmitted to the selection process"
     }
   },
 
@@ -706,6 +707,34 @@
     "interview_rejectSuccess": "Student rejected.",
     "interview_actionError": "An error occurred. Please try again.",
     "interview_empty": "No students with all documents approved.",
-    "interview_rejectionReason": "Reason: {reason}"
+    "interview_rejectionReason": "Reason: {reason}",
+    "tab_resultados": "Results",
+    "resultadosApto": "Eligible for Erasmus",
+    "resultadosNoApto": "Not eligible",
+    "resultadosEmpty": "No results yet.",
+    "resultadosGrade": "Grade: {grade}",
+    "resultadosReason": "Reason: {reason}",
+    "excludeFromProcess": "Exclude from process",
+    "excludeConfirmTitle": "Exclude student",
+    "excludeConfirmDesc": "The student will be excluded from the current selection process. State the reason:",
+    "excludeReasonPlaceholder": "Reason for exclusion...",
+    "excludeReasonRequired": "Reason is required.",
+    "excludeSuccess": "Student excluded from process.",
+    "excludeError": "Error excluding student.",
+    "searchPlaceholder": "Search student...",
+    "colTotal": "Total",
+    "readmitStudent": "Readmit",
+    "readmitSuccess": "Student readmitted to the process.",
+    "readmitError": "Error readmitting student.",
+    "filterAll": "All",
+    "filterWithPending": "With pending",
+    "filterReviewed": "Reviewed",
+    "filterExcluded": "Excluded",
+    "resultCount": "{count} of {total} students",
+    "changeDecision": "Change decision",
+    "docProgress": "{approved} of {total} approved",
+    "refresh": "Refresh",
+    "interviewStatusLabel": "Interview:",
+    "docSummaryLabel": "Documents:"
   }
 }
