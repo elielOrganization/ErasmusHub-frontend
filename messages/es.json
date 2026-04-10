@@ -232,7 +232,8 @@
       "docs_ready_for_review": "El alumno {student_name} ha entregado todos los documentos obligatorios",
       "selection_process_started": "El proceso de selección de Erasmus ha comenzado",
       "interview_passed": "Has superado la entrevista con nota {grade}",
-      "interview_rejected": "No has superado la entrevista: {reason}"
+      "interview_rejected": "No has superado la entrevista: {reason}",
+      "interview_readmitted": "Has sido readmitido al proceso de selección"
     }
   },
 
@@ -706,6 +707,34 @@
     "interview_rejectSuccess": "Alumno rechazado.",
     "interview_actionError": "Ocurrió un error. Inténtalo de nuevo.",
     "interview_empty": "No hay alumnos con todos los documentos aprobados.",
-    "interview_rejectionReason": "Motivo: {reason}"
+    "interview_rejectionReason": "Motivo: {reason}",
+    "tab_resultados": "Resultados",
+    "resultadosApto": "Aptos para Erasmus",
+    "resultadosNoApto": "No aptos",
+    "resultadosEmpty": "Aún no hay resultados.",
+    "resultadosGrade": "Nota: {grade}",
+    "resultadosReason": "Motivo: {reason}",
+    "excludeFromProcess": "Excluir del proceso",
+    "excludeConfirmTitle": "Excluir alumno",
+    "excludeConfirmDesc": "El alumno quedará excluido del proceso de selección actual. Indica el motivo:",
+    "excludeReasonPlaceholder": "Motivo de exclusión...",
+    "excludeReasonRequired": "El motivo es obligatorio.",
+    "excludeSuccess": "Alumno excluido del proceso.",
+    "excludeError": "Error al excluir al alumno.",
+    "searchPlaceholder": "Buscar alumno...",
+    "colTotal": "Total",
+    "readmitStudent": "Readmitir",
+    "readmitSuccess": "Alumno readmitido al proceso.",
+    "readmitError": "Error al readmitir al alumno.",
+    "filterAll": "Todos",
+    "filterWithPending": "Con pendientes",
+    "filterReviewed": "Revisados",
+    "filterExcluded": "Excluidos",
+    "resultCount": "{count} de {total} alumnos",
+    "changeDecision": "Cambiar decisión",
+    "docProgress": "{approved} de {total} aprobados",
+    "refresh": "Actualizar",
+    "interviewStatusLabel": "Entrevista:",
+    "docSummaryLabel": "Documentos:"
   }
 }
