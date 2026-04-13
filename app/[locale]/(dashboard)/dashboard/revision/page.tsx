@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useTranslations } from "next-intl";
 import { Link } from "@/i18n/routing";
 import { useApi } from "@/hooks/useApi";
@@ -27,6 +27,11 @@ interface StudentDocSummary {
 interface UserPublicMin {
     id: number;
     year?: string | null;
+}
+
+interface GradedUser {
+    id: number;
+    final_grade: number | null;
 }
 
 type TabType = "documentos" | "entrevista" | "resultados";
@@ -66,11 +71,40 @@ export default function RevisionPage() {
     const { data, loading, error, refetch } = useApi<StudentDocSummary[]>("/documents/pending");
     const { data: usersData } = useApi<UserPublicMin[]>("/users");
 
+    // Map: userId → final_grade (calculated by backend)
+    const [finalGrades, setFinalGrades] = useState<Map<number, number | null>>(new Map());
+    const [loadingGrades, setLoadingGrades] = useState(false);
+
     const courseLabel = (userId: number): string | null => {
         const year = usersData?.find(u => u.id === userId)?.year;
         if (!year) return null;
         return GYMNASIUM_COURSES.find(c => c.value === year)?.label ?? year;
     };
+
+    // Trigger backend grade calculation when entering Resultados tab
+    useEffect(() => {
+        if (tab !== "resultados") return;
+        const token = Cookies.get("auth_token");
+        setLoadingGrades(true);
+        fetch(`${API_URL}/users/calculate-all-grades`, {
+            method: "POST",
+            headers: { Authorization: `Bearer ${token}`, "Content-Type": "application/json" },
+        })
+            .then(res => res.ok ? res.json() : null)
+            .then((users: GradedUser[] | null) => {
+                if (!users) return;
+                const map = new Map<number, number | null>();
+                for (const u of users) map.set(u.id, u.final_grade);
+                setFinalGrades(map);
+            })
+            .catch(() => {})
+            .finally(() => setLoadingGrades(false));
+    }, [tab]);
+
+    function calcFinalGrade(s: StudentDocSummary): number | null {
+        const g = finalGrades.get(s.user_id);
+        return g !== undefined ? g : s.interview_grade;
+    }
 
     // Interview inline state
     const [activeInterview, setActiveInterview] = useState<number | null>(null);
@@ -168,7 +202,7 @@ export default function RevisionPage() {
 
     const aptosParaErasmus = students
         .filter(s => s.all_approved && s.interview_status === "passed")
-        .sort((a, b) => (b.interview_grade ?? 0) - (a.interview_grade ?? 0));
+        .sort((a, b) => (calcFinalGrade(b) ?? 0) - (calcFinalGrade(a) ?? 0));
 
     const noAptos = students.filter(
         s => s.interview_status === "rejected" || (s.rejected > 0 && s.pending === 0 && !s.all_approved)
@@ -302,6 +336,7 @@ export default function RevisionPage() {
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                         </svg>
                         <p className="text-sm text-gray-400 dark:text-gray-500">{t("endpointPending")}</p>
+                        <p className="text-xs text-red-400 mt-1 font-mono">{error}</p>
                     </div>
                 )}
 
@@ -579,24 +614,33 @@ export default function RevisionPage() {
                                     <span className="w-2 h-2 rounded-full bg-green-500 shrink-0" />
                                     {ti(t, "resultadosApto")}
                                     <span className="ml-1 normal-case font-normal text-gray-400">({aptosParaErasmus.length})</span>
+                                    {loadingGrades && (
+                                        <svg className="w-3.5 h-3.5 animate-spin text-gray-400" fill="none" viewBox="0 0 24 24">
+                                            <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                                            <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z" />
+                                        </svg>
+                                    )}
                                 </h3>
                                 <div className="space-y-2">
-                                    {aptosParaErasmus.map((s, idx) => (
-                                        <div key={s.user_id} className="flex items-center justify-between gap-4 bg-green-50 dark:bg-green-900/10 rounded-xl px-4 py-3">
-                                            <div className="flex items-center gap-3">
-                                                <span className="text-sm font-bold text-green-600 dark:text-green-400 w-6 text-center">{idx + 1}</span>
-                                                <div>
-                                                    <p className="text-sm font-semibold text-gray-800 dark:text-gray-200">{s.user_name}</p>
-                                                    <p className="text-xs text-gray-400 dark:text-gray-500">{s.email}</p>
+                                    {aptosParaErasmus.map((s, idx) => {
+                                        const finalGrade = calcFinalGrade(s);
+                                        return (
+                                            <div key={s.user_id} className="flex items-center justify-between gap-4 bg-green-50 dark:bg-green-900/10 rounded-xl px-4 py-3">
+                                                <div className="flex items-center gap-3">
+                                                    <span className="text-sm font-bold text-green-600 dark:text-green-400 w-6 text-center">{idx + 1}</span>
+                                                    <div>
+                                                        <p className="text-sm font-semibold text-gray-800 dark:text-gray-200">{s.user_name}</p>
+                                                        <p className="text-xs text-gray-400 dark:text-gray-500">{s.email}</p>
+                                                    </div>
                                                 </div>
+                                                {finalGrade != null && (
+                                                    <span className="shrink-0 px-2.5 py-1 rounded-lg text-xs font-bold bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300">
+                                                        {ti(t, "resultadosGrade", { grade: String(finalGrade) })}
+                                                    </span>
+                                                )}
                                             </div>
-                                            {s.interview_grade != null && (
-                                                <span className="shrink-0 px-2.5 py-1 rounded-lg text-xs font-bold bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300">
-                                                    {ti(t, "resultadosGrade", { grade: String(s.interview_grade) })}
-                                                </span>
-                                            )}
-                                        </div>
-                                    ))}
+                                        );
+                                    })}
                                 </div>
                             </div>
                         )}
@@ -609,17 +653,27 @@ export default function RevisionPage() {
                                     <span className="ml-1 normal-case font-normal text-gray-400">({noAptos.length})</span>
                                 </h3>
                                 <div className="space-y-2">
-                                    {noAptos.map((s) => (
-                                        <div key={s.user_id} className="bg-red-50 dark:bg-red-900/10 rounded-xl px-4 py-3">
-                                            <p className="text-sm font-semibold text-gray-800 dark:text-gray-200">{s.user_name}</p>
-                                            <p className="text-xs text-gray-400 dark:text-gray-500">{s.email}</p>
-                                            {s.interview_rejection_reason && (
-                                                <p className="text-xs text-red-500 dark:text-red-400 mt-1">
-                                                    {ti(t, "resultadosReason", { reason: s.interview_rejection_reason })}
-                                                </p>
-                                            )}
-                                        </div>
-                                    ))}
+                                    {noAptos.map((s) => {
+                                        const finalGrade = calcFinalGrade(s);
+                                        return (
+                                            <div key={s.user_id} className="flex items-center justify-between gap-4 bg-red-50 dark:bg-red-900/10 rounded-xl px-4 py-3">
+                                                <div>
+                                                    <p className="text-sm font-semibold text-gray-800 dark:text-gray-200">{s.user_name}</p>
+                                                    <p className="text-xs text-gray-400 dark:text-gray-500">{s.email}</p>
+                                                    {s.interview_rejection_reason && (
+                                                        <p className="text-xs text-red-500 dark:text-red-400 mt-1">
+                                                            {ti(t, "resultadosReason", { reason: s.interview_rejection_reason })}
+                                                        </p>
+                                                    )}
+                                                </div>
+                                                {finalGrade != null && (
+                                                    <span className="shrink-0 px-2.5 py-1 rounded-lg text-xs font-bold bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-300">
+                                                        {ti(t, "resultadosGrade", { grade: String(finalGrade) })}
+                                                    </span>
+                                                )}
+                                            </div>
+                                        );
+                                    })}
                                 </div>
                             </div>
                         )}

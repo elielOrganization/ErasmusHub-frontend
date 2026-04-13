@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { Link } from "@/i18n/routing";
@@ -27,7 +27,7 @@ import { GYMNASIUM_COURSES } from "../../documents/constants";
 // Tipos del backend (document_type enum values reales del backend)
 interface ReviewDocument {
     id: number;
-    document_type: "id_front" | "id_back" | "grade_certificate" | "cover_letter" | "disability_certificate" | string;
+    document_type: "id_front" | "id_back" | "grade_certificate" | "motivation_letter" | "language_certificate" | "disability_certificate" | string;
     name: string;
     state: "pending" | "approved" | "rejected";
     uploaded_at: string;
@@ -66,7 +66,9 @@ async function patchInterview(userId: number, payload: { status: "rejected"; rej
 }
 
 // ✅ Endpoint disponible: PATCH /documents/{docId}/review
-async function reviewDocument(docId: number, payload: ReviewPayload): Promise<ReviewDocument> {
+// Nota: no parseamos res.json() — si el backend devuelve body vacío lanzaría excepción
+// aunque el PATCH hubiera tenido éxito, causando un falso error al usuario.
+async function reviewDocument(docId: number, payload: ReviewPayload): Promise<void> {
     const token = Cookies.get("auth_token");
     const res = await fetch(`${API_URL}/documents/${docId}/review`, {
         method: "PATCH",
@@ -77,7 +79,6 @@ async function reviewDocument(docId: number, payload: ReviewPayload): Promise<Re
         body: JSON.stringify(payload),
     });
     if (!res.ok) throw new Error(`PATCH /documents/${docId}/review failed: ${res.status}`);
-    return res.json();
 }
 
 export default function StudentRevisionPage() {
@@ -138,25 +139,48 @@ export default function StudentRevisionPage() {
             return;
         }
         setSubmitting(true);
+        const targetState = actionMode === "approve" ? "approved" : "rejected";
+        const payload: ReviewPayload = {
+            state: targetState,
+            ...(actionMode === "approve" && grade && { grade: parseFloat(grade) }),
+            ...(actionMode === "reject" && { rejection_reason: reason.trim() }),
+        };
+
+        // El backend hace commit() antes de notificaciones, así que puede guardar
+        // correctamente pero devolver un error HTTP. Ignoramos el error del PATCH
+        // y verificamos el resultado real con un fetch directo.
+        try { await reviewDocument(docId, payload); } catch { /* verificar con fetch directo */ }
+
+        const token = Cookies.get("auth_token");
+        let savedState: string | null = null;
         try {
-            const payload: ReviewPayload = {
-                state: actionMode === "approve" ? "approved" : "rejected",
-                ...(actionMode === "approve" && grade && { grade: parseFloat(grade) }),
-                ...(actionMode === "reject" && { rejection_reason: reason.trim() }),
-            };
-            await reviewDocument(docId, payload);
+            const check = await fetch(`${API_URL}/documents/user/${studentId}`, {
+                headers: { Authorization: `Bearer ${token}` },
+            });
+            if (check.ok) {
+                const updated: ReviewDocument[] = await check.json();
+                savedState = updated.find(d => d.id === docId)?.state ?? null;
+            }
+        } catch { /* si falla la verificación asumimos éxito */ }
+
+        const success = savedState === targetState || savedState === null;
+
+        if (success) {
+            if (actionMode === "reject") {
+                try { await patchInterview(parseInt(studentId), { status: "pending" }); } catch { /* silent */ }
+            }
             setFeedback({
                 docId,
                 type: "success",
                 msg: actionMode === "approve" ? t("approvedSuccess") : t("rejectedSuccess"),
             });
             cancelAction();
-        } catch {
+        } else {
             setFeedback({ docId, type: "error", msg: t("actionError") });
-        } finally {
-            setSubmitting(false);
-            try { await refetch(); } catch { /* silent */ }
         }
+
+        setSubmitting(false);
+        try { await refetch(); } catch { /* silent */ }
     }
 
     async function handleExclude() {
@@ -187,6 +211,24 @@ export default function StudentRevisionPage() {
             setReadmitSubmitting(false);
         }
     }
+
+    // Auto-dismiss success feedback after 3s
+    useEffect(() => {
+        if (feedback?.type !== "success") return;
+        const timer = setTimeout(() => setFeedback(null), 3000);
+        return () => clearTimeout(timer);
+    }, [feedback]);
+
+    // Escape key: cierra modal o cancela acción activa
+    useEffect(() => {
+        function onKey(e: KeyboardEvent) {
+            if (e.key !== "Escape") return;
+            if (excludeModalOpen) { setExcludeModalOpen(false); return; }
+            if (activeDoc !== null) cancelAction();
+        }
+        window.addEventListener("keydown", onKey);
+        return () => window.removeEventListener("keydown", onKey);
+    }, [excludeModalOpen, activeDoc]);
 
     const openDocPreview = useCallback(async (docId: number) => {
         try {
@@ -224,10 +266,16 @@ export default function StudentRevisionPage() {
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z" />
                     </svg>
                 );
-            case "cover_letter":
+            case "motivation_letter":
                 return (
                     <svg className={cls} fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
+                    </svg>
+                );
+            case "language_certificate":
+                return (
+                    <svg className={cls} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M3 5h12M9 3v2m1.048 9.5A18.022 18.022 0 016.412 9m6.088 9h7M11 21l5-10 5 10M12.751 5C11.783 10.77 8.07 15.61 3 18.129" />
                     </svg>
                 );
             case "disability_certificate":
@@ -415,7 +463,15 @@ export default function StudentRevisionPage() {
                         return (
                             <div
                                 key={doc.id}
-                                className="bg-white dark:bg-gray-900 rounded-2xl border border-gray-100 dark:border-gray-800 overflow-hidden"
+                                className={`rounded-2xl border overflow-hidden transition-all ${
+                                    isActive
+                                        ? "bg-white dark:bg-gray-900 border-blue-300 dark:border-blue-600 shadow-md"
+                                        : isApproved
+                                        ? "bg-white dark:bg-gray-900 border-green-100 dark:border-green-900/40"
+                                        : isRejected
+                                        ? "bg-white dark:bg-gray-900 border-red-100 dark:border-red-900/40"
+                                        : "bg-white dark:bg-gray-900 border-gray-100 dark:border-gray-800"
+                                }`}
                             >
                                 {/* Document row */}
                                 <div className="flex items-center gap-4 px-5 py-4">
@@ -530,16 +586,17 @@ export default function StudentRevisionPage() {
                                                     <button
                                                         onClick={() => handleConfirm(doc.id)}
                                                         disabled={submitting}
-                                                        className="px-4 py-1.5 rounded-lg text-xs font-semibold bg-green-500 hover:bg-green-600 disabled:opacity-50 text-white transition-colors"
+                                                        className="inline-flex items-center gap-1.5 px-4 py-1.5 rounded-lg text-xs font-semibold bg-green-500 hover:bg-green-600 disabled:opacity-50 text-white transition-colors"
                                                     >
-                                                        {t("confirmApprove")}
+                                                        {submitting && <svg className="w-3 h-3 animate-spin" fill="none" viewBox="0 0 24 24"><circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"/><path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z"/></svg>}
+                                                        {submitting ? "..." : t("confirmApprove")}
                                                     </button>
                                                     <button
                                                         onClick={cancelAction}
                                                         disabled={submitting}
                                                         className="px-4 py-1.5 rounded-lg text-xs font-medium text-gray-500 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors"
                                                     >
-                                                        {t("cancelAction")}
+                                                        {t("cancelAction")} <span className="opacity-40 ml-0.5">Esc</span>
                                                     </button>
                                                 </div>
                                             </div>
@@ -574,16 +631,17 @@ export default function StudentRevisionPage() {
                                                     <button
                                                         onClick={() => handleConfirm(doc.id)}
                                                         disabled={submitting}
-                                                        className="px-4 py-1.5 rounded-lg text-xs font-semibold bg-red-500 hover:bg-red-600 disabled:opacity-50 text-white transition-colors"
+                                                        className="inline-flex items-center gap-1.5 px-4 py-1.5 rounded-lg text-xs font-semibold bg-red-500 hover:bg-red-600 disabled:opacity-50 text-white transition-colors"
                                                     >
-                                                        {t("confirmReject")}
+                                                        {submitting && <svg className="w-3 h-3 animate-spin" fill="none" viewBox="0 0 24 24"><circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"/><path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z"/></svg>}
+                                                        {submitting ? "..." : t("confirmReject")}
                                                     </button>
                                                     <button
                                                         onClick={cancelAction}
                                                         disabled={submitting}
                                                         className="px-4 py-1.5 rounded-lg text-xs font-medium text-gray-500 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors"
                                                     >
-                                                        {t("cancelAction")}
+                                                        {t("cancelAction")} <span className="opacity-40 ml-0.5">Esc</span>
                                                     </button>
                                                 </div>
                                             </div>
@@ -593,11 +651,15 @@ export default function StudentRevisionPage() {
 
                                 {/* Feedback message */}
                                 {docFeedback && (
-                                    <div className={`px-5 pb-4 text-xs font-medium ${
+                                    <div className={`mx-5 mb-4 rounded-xl px-4 py-3 text-xs font-semibold flex items-center gap-2 ${
                                         docFeedback.type === "success"
-                                            ? "text-green-600 dark:text-green-400"
-                                            : "text-red-600 dark:text-red-400"
+                                            ? "bg-green-50 dark:bg-green-900/20 text-green-700 dark:text-green-400"
+                                            : "bg-red-50 dark:bg-red-900/20 text-red-700 dark:text-red-400"
                                     }`}>
+                                        {docFeedback.type === "success"
+                                            ? <svg className="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" /></svg>
+                                            : <svg className="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" /></svg>
+                                        }
                                         {docFeedback.msg}
                                     </div>
                                 )}

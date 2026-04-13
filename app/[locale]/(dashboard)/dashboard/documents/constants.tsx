@@ -33,7 +33,8 @@ export const DOC_TYPE_MAP: Record<string, string> = {
     id_front: "idDoc",
     id_back: "idDoc",
     grade_certificate: "grades",
-    cover_letter: "coverLetter",
+    motivation_letter: "coverLetter",
+    language_certificate: "languageCert",
     disability_certificate: "disability",
     parental_authorization: "parental",
 };
@@ -53,6 +54,11 @@ export const CARD_CONFIG: Record<string, { icon: React.ReactNode; labelKey: stri
         icon: <path strokeLinecap="round" strokeLinejoin="round" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />,
         labelKey: "cardCoverLetter",
         descKey: "cardCoverLetterDesc",
+    },
+    languageCert: {
+        icon: <path strokeLinecap="round" strokeLinejoin="round" d="M3 5h12M9 3v2m1.048 9.5A18.022 18.022 0 016.412 9m6.088 9h7M11 21l5-10 5 10M12.751 5C11.783 10.77 8.07 15.61 3 18.129" />,
+        labelKey: "cardLanguageCert",
+        descKey: "cardLanguageCertDesc",
     },
     disability: {
         icon: <path strokeLinecap="round" strokeLinejoin="round" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />,
@@ -74,6 +80,7 @@ export const MANDATORY_CATEGORIES: Record<string, boolean> = {
     idDoc: true,
     grades: true,
     coverLetter: true,
+    languageCert: false,
     disability: false,
     parental: true,
 };

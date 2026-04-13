@@ -105,6 +105,7 @@ export default function DocumentsPage() {
         idDoc: [],
         grades: [],
         coverLetter: [],
+        languageCert: [],
         disability: [],
         ...(isMinor ? { parental: [] } : {}),
     };
@@ -118,6 +119,7 @@ export default function DocumentsPage() {
         idDoc: 0,
         grades: calificacion?.grade_certificate ?? 0,
         coverLetter: calificacion?.motivation_letter ?? 0,
+        languageCert: calificacion?.language_certificate ?? 0,
         disability: calificacion?.disability_certificate ?? 0,
         parental: 0,
     };
