@@ -336,7 +336,6 @@ export default function RevisionPage() {
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                         </svg>
                         <p className="text-sm text-gray-400 dark:text-gray-500">{t("endpointPending")}</p>
-                        <p className="text-xs text-red-400 mt-1 font-mono">{error}</p>
                     </div>
                 )}
 
