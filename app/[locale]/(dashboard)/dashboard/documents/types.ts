@@ -1,4 +1,4 @@
-export type UploadDocType = "idDoc" | "grades" | "coverLetter" | "disability" | "parental";
+export type UploadDocType = "idDoc" | "grades" | "coverLetter" | "languageCert" | "disability" | "parental";
 
 export type DocState = "pending" | "approved" | "rejected";
 

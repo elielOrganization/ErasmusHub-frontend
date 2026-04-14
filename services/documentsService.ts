@@ -35,7 +35,9 @@ export async function uploadDocument(
     } else if (docType === "grades" && files.main) {
         formData.append("grades_certificate", files.main);
     } else if (docType === "coverLetter" && files.main) {
-        formData.append("cover_letter", files.main);
+        formData.append("motivation_letter", files.main);
+    } else if (docType === "languageCert" && files.main) {
+        formData.append("language_certificate", files.main);
     } else if (docType === "disability" && files.main) {
         formData.append("disability_certificate", files.main);
     } else if (docType === "parental" && files.main) {
