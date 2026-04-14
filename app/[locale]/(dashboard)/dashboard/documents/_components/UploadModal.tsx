@@ -133,25 +133,32 @@ export default function UploadModal({ open, onClose, onUploaded, user, initialDo
                             </div>
                         </div>
 
-                        {/* Document type selector */}
+                        {/* Document type — read-only if pre-selected, dropdown otherwise */}
                         <div>
                             <label className="block text-gray-500 dark:text-gray-400 text-[11px] font-semibold mb-1.5 tracking-wide uppercase">{t("selectDocType")}</label>
-                            <select value={docType}
-                                onChange={(e) => {
-                                    setDocType(e.target.value as UploadDocType);
-                                    setFormError(null);
-                                    setFileMain(emptyFile()); setFileFront(emptyFile()); setFileBack(emptyFile());
-                                }}
-                                className={`w-full rounded-xl px-3.5 py-2.5 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 text-sm text-gray-800 dark:text-gray-100 outline-none cursor-pointer ${theme.focusRing} transition-all`}>
-                                <option value="" disabled>{t("selectDocTypePlaceholder")}</option>
-                                <option value="idDoc">{t("docType_idDoc")}</option>
-                                <option value="grades">{t("docType_grades")}</option>
-                                <option value="coverLetter">{t("docType_coverLetter")}</option>
-                                <option value="disability">{t("docType_disability")}</option>
-                                {isMinor && (
-                                    <option value="parental">{t("docType_parental")}</option>
-                                )}
-                            </select>
+                            {initialDocType ? (
+                                <div className={`w-full rounded-xl px-3.5 py-2.5 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 text-sm text-gray-800 dark:text-gray-100`}>
+                                    {t(`docType_${initialDocType}` as Parameters<typeof t>[0])}
+                                </div>
+                            ) : (
+                                <select value={docType}
+                                    onChange={(e) => {
+                                        setDocType(e.target.value as UploadDocType);
+                                        setFormError(null);
+                                        setFileMain(emptyFile()); setFileFront(emptyFile()); setFileBack(emptyFile());
+                                    }}
+                                    className={`w-full rounded-xl px-3.5 py-2.5 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 text-sm text-gray-800 dark:text-gray-100 outline-none cursor-pointer ${theme.focusRing} transition-all`}>
+                                    <option value="" disabled>{t("selectDocTypePlaceholder")}</option>
+                                    <option value="idDoc">{t("docType_idDoc")}</option>
+                                    <option value="grades">{t("docType_grades")}</option>
+                                    <option value="coverLetter">{t("docType_coverLetter")}</option>
+                                    <option value="languageCert">{t("docType_languageCert")}</option>
+                                    <option value="disability">{t("docType_disability")}</option>
+                                    {isMinor && (
+                                        <option value="parental">{t("docType_parental")}</option>
+                                    )}
+                                </select>
+                            )}
                         </div>
 
                         {/* ID Document — front + back */}
@@ -171,7 +178,7 @@ export default function UploadModal({ open, onClose, onUploaded, user, initialDo
                         )}
 
                         {/* Single-file documents */}
-                        {(docType === "grades" || docType === "coverLetter" || docType === "disability" || docType === "parental") && (
+                        {(docType === "grades" || docType === "coverLetter" || docType === "languageCert" || docType === "disability" || docType === "parental") && (
                             <div>
                                 <label className="block text-gray-500 dark:text-gray-400 text-[11px] font-semibold mb-1.5 tracking-wide uppercase">
                                     {t(`docType_${docType}` as Parameters<typeof t>[0])} <span className="text-red-400">*</span>
@@ -181,6 +188,8 @@ export default function UploadModal({ open, onClose, onUploaded, user, initialDo
                                         ? t("gradesCertificateDesc")
                                         : docType === "coverLetter"
                                         ? t("coverLetterDesc")
+                                        : docType === "languageCert"
+                                        ? t("cardLanguageCertDesc")
                                         : docType === "parental"
                                         ? t("parentalAuthDesc")
                                         : t("disabilityCertificateDesc")}
