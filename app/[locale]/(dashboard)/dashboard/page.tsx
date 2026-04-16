@@ -79,7 +79,7 @@ export default function DashboardHome() {
         },
     ];
 
-    // Actions for admins: panel + students + documents
+    // Actions for admins: panel + students
     const adminActions: DashboardAction[] = [
         {
             title: t("adminPanel"),
@@ -96,14 +96,6 @@ export default function DashboardHome() {
                 <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
             ),
             color: "bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400",
-        },
-        {
-            title: t("manageDocuments"),
-            href: "/dashboard/documents",
-            icon: (
-                <path strokeLinecap="round" strokeLinejoin="round" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
-            ),
-            color: "bg-amber-50 dark:bg-amber-900/30 text-amber-600 dark:text-amber-400",
         },
     ];
 

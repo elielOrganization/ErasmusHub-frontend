@@ -239,7 +239,7 @@ export default function CalificacionPage() {
                     <button
                         onClick={handleSave}
                         disabled={saving || !totalExact}
-                        className={`px-5 py-2.5 rounded-lg text-sm font-semibold text-white transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed ${theme.activeBg} hover:opacity-90 active:scale-95`}
+                        className={`px-5 py-2.5 rounded-lg text-sm font-semibold text-white transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed ${theme.btnPrimary} ${theme.btnPrimaryHover} active:scale-95`}
                     >
                         {saving ? t("saving") : t("save")}
                     </button>

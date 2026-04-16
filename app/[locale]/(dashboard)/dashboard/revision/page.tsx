@@ -75,6 +75,10 @@ export default function RevisionPage() {
     const [finalGrades, setFinalGrades] = useState<Map<number, number | null>>(new Map());
     const [loadingGrades, setLoadingGrades] = useState(false);
 
+    // Publish final list
+    const [publishingList, setPublishingList] = useState(false);
+    const [publishFeedback, setPublishFeedback] = useState<{ type: "success" | "error"; msg: string } | null>(null);
+
     const courseLabel = (userId: number): string | null => {
         const year = usersData?.find(u => u.id === userId)?.year;
         if (!year) return null;
@@ -161,6 +165,24 @@ export default function RevisionPage() {
             setInterviewFeedback({ userId, type: "error", msg: ti(t, "interview_actionError") });
         } finally {
             setSubmittingInterview(false);
+        }
+    }
+
+    async function handlePublishList() {
+        setPublishingList(true);
+        setPublishFeedback(null);
+        try {
+            const token = Cookies.get("auth_token");
+            const res = await fetch(`${API_URL}/final-list/publish`, {
+                method: "POST",
+                headers: { Authorization: `Bearer ${token}`, "Content-Type": "application/json" },
+            });
+            if (!res.ok) throw new Error(`${res.status}`);
+            setPublishFeedback({ type: "success", msg: ti(t, "publishSuccess") });
+        } catch {
+            setPublishFeedback({ type: "error", msg: ti(t, "publishError") });
+        } finally {
+            setPublishingList(false);
         }
     }
 
@@ -290,7 +312,7 @@ export default function RevisionPage() {
                             onClick={() => setTab(t_key)}
                             className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${
                                 tab === t_key
-                                    ? `${theme.activeBg} text-white`
+                                    ? `${theme.btnPrimary} text-white`
                                     : "text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800"
                             }`}
                         >
@@ -452,7 +474,7 @@ export default function RevisionPage() {
                                             <td className="px-5 py-4 text-right">
                                                 <Link
                                                     href={`/dashboard/revision/${s.user_id}`}
-                                                    className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold text-white ${theme.activeBg} hover:opacity-90 transition-opacity`}
+                                                    className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold text-white ${theme.btnPrimary} ${theme.btnPrimaryHover} transition-colors`}
                                                 >
                                                     {t("viewLibrary")}
                                                     <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -511,7 +533,7 @@ export default function RevisionPage() {
                                                 <div className="flex items-center gap-2">
                                                     <button
                                                         onClick={() => openInterview(s.user_id, "grade")}
-                                                        className={`px-3 py-1.5 rounded-lg text-xs font-semibold text-white ${theme.activeBg} hover:opacity-90 transition-opacity`}
+                                                        className={`px-3 py-1.5 rounded-lg text-xs font-semibold text-white ${theme.btnPrimary} ${theme.btnPrimaryHover} transition-colors`}
                                                     >
                                                         {ti(t, "interview_gradeBtn")}
                                                     </button>
@@ -552,7 +574,7 @@ export default function RevisionPage() {
                                                         />
                                                     </div>
                                                     <div className="flex items-center gap-2">
-                                                        <button onClick={() => handleInterviewSubmit(s.user_id)} disabled={submittingInterview} className={`px-4 py-1.5 rounded-lg text-xs font-semibold text-white ${theme.activeBg} hover:opacity-90 disabled:opacity-50 transition-opacity`}>
+                                                        <button onClick={() => handleInterviewSubmit(s.user_id)} disabled={submittingInterview} className={`px-4 py-1.5 rounded-lg text-xs font-semibold text-white ${theme.btnPrimary} ${theme.btnPrimaryHover} disabled:opacity-50 transition-colors`}>
                                                             {ti(t, "interview_saveGrade")}
                                                         </button>
                                                         <button onClick={() => setInterviewMode("reject")} disabled={submittingInterview} className="px-3 py-1.5 rounded-lg text-xs font-semibold bg-red-500 hover:bg-red-600 disabled:opacity-50 text-white transition-colors">
@@ -609,17 +631,36 @@ export default function RevisionPage() {
                     <div className="divide-y divide-gray-100 dark:divide-gray-800">
                         {aptosParaErasmus.length > 0 && (
                             <div className="p-5 space-y-3">
-                                <h3 className="text-xs font-bold uppercase tracking-wider text-green-600 dark:text-green-400 flex items-center gap-2">
-                                    <span className="w-2 h-2 rounded-full bg-green-500 shrink-0" />
-                                    {ti(t, "resultadosApto")}
-                                    <span className="ml-1 normal-case font-normal text-gray-400">({aptosParaErasmus.length})</span>
-                                    {loadingGrades && (
-                                        <svg className="w-3.5 h-3.5 animate-spin text-gray-400" fill="none" viewBox="0 0 24 24">
-                                            <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-                                            <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z" />
-                                        </svg>
-                                    )}
-                                </h3>
+                                <div className="flex items-center justify-between gap-3 flex-wrap">
+                                    <h3 className="text-xs font-bold uppercase tracking-wider text-green-600 dark:text-green-400 flex items-center gap-2">
+                                        <span className="w-2 h-2 rounded-full bg-green-500 shrink-0" />
+                                        {ti(t, "resultadosApto")}
+                                        <span className="ml-1 normal-case font-normal text-gray-400">({aptosParaErasmus.length})</span>
+                                        {loadingGrades && (
+                                            <svg className="w-3.5 h-3.5 animate-spin text-gray-400" fill="none" viewBox="0 0 24 24">
+                                                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                                                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z" />
+                                            </svg>
+                                        )}
+                                    </h3>
+                                    <div className="flex items-center gap-2">
+                                        {publishFeedback && (
+                                            <span className={`text-xs font-medium ${publishFeedback.type === "success" ? "text-green-600 dark:text-green-400" : "text-red-500"}`}>
+                                                {publishFeedback.msg}
+                                            </span>
+                                        )}
+                                        <button
+                                            onClick={handlePublishList}
+                                            disabled={publishingList || loadingGrades}
+                                            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold text-white ${theme.btnPrimary} ${theme.btnPrimaryHover} disabled:opacity-50 transition-colors`}
+                                        >
+                                            <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
+                                            </svg>
+                                            {publishingList ? "..." : ti(t, "publishList")}
+                                        </button>
+                                    </div>
+                                </div>
                                 <div className="space-y-2">
                                     {aptosParaErasmus.map((s, idx) => {
                                         const finalGrade = calcFinalGrade(s);

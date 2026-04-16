@@ -112,7 +112,10 @@
     "unreadNotices": "Unread notices",
     "activeInternships": "Active internships",
     "revision": "Document Review",
-    "calificacion": "Scoring Table"
+    "calificacion": "Scoring Table",
+    "listaFinal": "Final List",
+    "chat": "Chat",
+    "noMessages": "You have no new messages"
   },
 
   "practicas": {
@@ -716,6 +719,9 @@
     "resultadosApto": "Eligible for Erasmus",
     "resultadosNoApto": "Not eligible",
     "resultadosEmpty": "No results yet.",
+    "publishList": "Publish list",
+    "publishSuccess": "List published successfully",
+    "publishError": "Error publishing the list",
     "resultadosGrade": "Grade: {grade}",
     "resultadosReason": "Reason: {reason}",
     "excludeFromProcess": "Exclude from process",
@@ -740,5 +746,33 @@
     "refresh": "Refresh",
     "interviewStatusLabel": "Interview:",
     "docSummaryLabel": "Documents:"
+  },
+
+  "listaFinal": {
+    "pageTitle": "Final List",
+    "subtitle": "Summary of the Erasmus selection process",
+    "statRejected": "Rejected",
+    "statApproved": "Approved",
+    "filters": "Filters",
+    "filterAll": "All",
+    "filterApproved": "Approved",
+    "filterRejected": "Rejected",
+    "colPosition": "Position",
+    "colName": "Name",
+    "colCourse": "Course",
+    "colGrade": "Final Grade",
+    "colStatus": "Status",
+    "statusApproved": "Approved",
+    "statusRejected": "Rejected",
+    "statusPending": "Pending",
+    "sortBy": "Sort by",
+    "searchPlaceholder": "Search by name...",
+    "selectCourse": "Select a course",
+    "noCourseSelected": "Select a course to view the list",
+    "empty": "No students to display",
+    "errorLoad": "Could not load data",
+    "notAvailable": "The final list is not yet available",
+    "publishBtn": "Publish for users",
+    "unpublishBtn": "Hide from users"
   }
 }
