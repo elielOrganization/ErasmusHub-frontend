@@ -112,7 +112,10 @@
     "unreadNotices": "Avisos sin leer",
     "activeInternships": "Prácticas activas",
     "revision": "Revisión de Documentos",
-    "calificacion": "Tabla de Calificación"
+    "calificacion": "Tabla de Calificación",
+    "listaFinal": "Lista Final",
+    "chat": "Chat",
+    "noMessages": "No tienes mensajes nuevos"
   },
 
   "practicas": {
@@ -716,6 +719,9 @@
     "resultadosApto": "Aptos para Erasmus",
     "resultadosNoApto": "No aptos",
     "resultadosEmpty": "Aún no hay resultados.",
+    "publishList": "Publicar lista",
+    "publishSuccess": "Lista publicada correctamente",
+    "publishError": "Error al publicar la lista",
     "resultadosGrade": "Nota: {grade}",
     "resultadosReason": "Motivo: {reason}",
     "excludeFromProcess": "Excluir del proceso",
@@ -740,5 +746,33 @@
     "refresh": "Actualizar",
     "interviewStatusLabel": "Entrevista:",
     "docSummaryLabel": "Documentos:"
+  },
+
+  "listaFinal": {
+    "pageTitle": "Lista Final",
+    "subtitle": "Resumen del proceso de selección Erasmus",
+    "statRejected": "Rechazados",
+    "statApproved": "Aprobados",
+    "filters": "Filtros",
+    "filterAll": "Todos",
+    "filterApproved": "Aprobados",
+    "filterRejected": "Rechazados",
+    "colPosition": "Posición",
+    "colName": "Nombre",
+    "colCourse": "Curso",
+    "colGrade": "Nota Final",
+    "colStatus": "Estado",
+    "statusApproved": "Aprobado",
+    "statusRejected": "Rechazado",
+    "statusPending": "Pendiente",
+    "sortBy": "Ordenar por",
+    "searchPlaceholder": "Buscar por nombre...",
+    "selectCourse": "Selecciona un curso",
+    "noCourseSelected": "Selecciona un curso para ver el listado",
+    "empty": "No hay estudiantes que mostrar",
+    "errorLoad": "No se pudieron cargar los datos",
+    "notAvailable": "La lista final aún no está disponible",
+    "publishBtn": "Publicar para usuarios",
+    "unpublishBtn": "Ocultar para usuarios"
   }
 }

@@ -4,6 +4,7 @@ import { useTranslations } from 'next-intl';
 import LanguageSwitcher from "../dropdowns/LanguageSwitcher";
 import UserMenuDropdown from "../dropdowns/UserMenuDropdown";
 import NotificationDropdown from "../dropdowns/NotificationDropdown";
+import ChatDropdown from "../dropdowns/ChatDropdown";
 import { Link } from '@/i18n/routing';
 import { useSidebar } from '@/context/SidebarContext';
 import { useRoleTheme } from '@/hooks/useRoleTheme';
@@ -134,6 +135,7 @@ export default function DashboardHeader() {
 
             {/* Controls on the right */}
             <div className="flex items-center gap-2">
+                <ChatDropdown />
                 <NotificationDropdown />
                 <div className="h-6 w-px bg-gray-100 dark:bg-gray-700 mx-1 hidden md:block"></div>
                 <div className="hidden md:block">

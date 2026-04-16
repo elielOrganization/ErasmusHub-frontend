@@ -112,7 +112,10 @@
     "unreadNotices": "Nepřečtená upozornění",
     "activeInternships": "Aktivní praxe",
     "revision": "Kontrola dokumentů",
-    "calificacion": "Hodnoticí tabulka"
+    "calificacion": "Hodnoticí tabulka",
+    "listaFinal": "Konečný seznam",
+    "chat": "Chat",
+    "noMessages": "Nemáte žádné nové zprávy"
   },
 
   "practicas": {
@@ -716,6 +719,9 @@
     "resultadosApto": "Způsobilí pro Erasmus",
     "resultadosNoApto": "Nezpůsobilí",
     "resultadosEmpty": "Zatím žádné výsledky.",
+    "publishList": "Zveřejnit listinu",
+    "publishSuccess": "Listina úspěšně zveřejněna",
+    "publishError": "Chyba při zveřejňování listiny",
     "resultadosGrade": "Hodnocení: {grade}",
     "resultadosReason": "Důvod: {reason}",
     "excludeFromProcess": "Vyloučit z výběru",
@@ -740,5 +746,33 @@
     "refresh": "Obnovit",
     "interviewStatusLabel": "Pohovor:",
     "docSummaryLabel": "Dokumenty:"
+  },
+
+  "listaFinal": {
+    "pageTitle": "Konečný seznam",
+    "subtitle": "Přehled výběrového procesu Erasmus",
+    "statRejected": "Odmítnuti",
+    "statApproved": "Schváleni",
+    "filters": "Filtry",
+    "filterAll": "Všichni",
+    "filterApproved": "Schváleni",
+    "filterRejected": "Odmítnuti",
+    "colPosition": "Pozice",
+    "colName": "Jméno",
+    "colCourse": "Ročník",
+    "colGrade": "Závěrečná známka",
+    "colStatus": "Stav",
+    "statusApproved": "Schválen",
+    "statusRejected": "Odmítnut",
+    "statusPending": "Čeká",
+    "sortBy": "Seřadit podle",
+    "searchPlaceholder": "Hledat podle jména...",
+    "selectCourse": "Vyberte ročník",
+    "noCourseSelected": "Vyberte ročník pro zobrazení seznamu",
+    "empty": "Žádní studenti k zobrazení",
+    "errorLoad": "Data se nepodařilo načíst",
+    "notAvailable": "Výsledková listina zatím není k dispozici",
+    "publishBtn": "Zveřejnit pro uživatele",
+    "unpublishBtn": "Skrýt pro uživatele"
   }
 }
