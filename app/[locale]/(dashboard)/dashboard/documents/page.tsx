@@ -6,6 +6,7 @@ import { useAuth } from "@/context/AuthContext";
 import { useRoleTheme } from "@/hooks/useRoleTheme";
 import { useApi } from "@/hooks/useApi";
 import LoadingSpinner from "@/components/ui/LoadingSpinner";
+import RoleGuard from "@/components/ui/RoleGuard";
 import ConfirmModal from "@/components/ui/ConfirmModal";
 import { deleteDocument } from "@/services/documentsService";
 import Cookies from "js-cookie";
@@ -65,8 +66,10 @@ export default function DocumentsPage() {
         check();
     }, []);
 
+    const canUpload = processActive && !!curso;
+
     const openModalWithType = (docType?: UploadDocType) => {
-        if (!processActive) return;
+        if (!canUpload) return;
         setModalDocType(docType ?? "");
         setModalOpen(true);
     };
@@ -130,6 +133,7 @@ export default function DocumentsPage() {
     );
 
     return (
+        <RoleGuard allowed={['student']}>
         <div className="max-w-5xl mx-auto space-y-6 p-4 sm:p-6">
             {/* Process inactive banner */}
             {!processActive && (
@@ -144,9 +148,25 @@ export default function DocumentsPage() {
                 </div>
             )}
 
+            {/* No course selected banner */}
+            {processActive && !curso && (
+                <div className="flex items-start gap-3 px-5 py-4 rounded-2xl border border-blue-200 dark:border-blue-700/50 bg-blue-50 dark:bg-blue-900/20">
+                    <svg className="w-5 h-5 text-blue-500 shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                    <div>
+                        <p className="text-sm font-semibold text-blue-700 dark:text-blue-400">{t("noCourseTitle")}</p>
+                        <p className="text-xs text-blue-600 dark:text-blue-500 mt-0.5">{t("noCourseDesc")}</p>
+                    </div>
+                </div>
+            )}
+
             {/* Header */}
             <div className="bg-white dark:bg-gray-900 rounded-3xl border border-gray-100 dark:border-gray-800 shadow-sm overflow-hidden">
-                <div className={`h-28 bg-gradient-to-r ${theme.gradientFrom} ${theme.gradientTo} flex items-center justify-between px-8`}>
+                <div
+                    className="h-28 flex items-center justify-between px-8"
+                    style={{ background: `linear-gradient(to right, ${theme.gradientFromHex}, ${theme.gradientToHex})` }}
+                >
                     <div className="flex items-center gap-4">
                         <div className="w-12 h-12 rounded-2xl bg-white/20 flex items-center justify-center">
                             <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth="2">
@@ -160,9 +180,10 @@ export default function DocumentsPage() {
                     </div>
                     <button
                         onClick={() => openModalWithType()}
-                        disabled={!processActive}
+                        disabled={!canUpload}
+                        title={!processActive ? t("processInactiveTitle") : !curso ? t("noCourseTitle") : undefined}
                         className={`flex items-center gap-2 px-5 py-2.5 bg-white/20 text-white rounded-xl text-sm font-semibold transition-all duration-200 backdrop-blur-sm ${
-                            processActive ? "hover:bg-white/30 active:scale-[0.97]" : "opacity-40 cursor-not-allowed"
+                            canUpload ? "hover:bg-white/30 active:scale-[0.97]" : "opacity-40 cursor-not-allowed"
                         }`}
                     >
                         <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -212,7 +233,7 @@ export default function DocumentsPage() {
                             docs={docsByCategory[cat] ?? []}
                             mandatory={MANDATORY_CATEGORIES[cat] ?? false}
                             weight={categoryWeights[cat] ?? 0}
-                            processActive={processActive}
+                            processActive={canUpload}
                             onDelete={setDeleteTarget}
                             onPreview={setPreviewDoc}
                             onAdd={() => openModalWithType(cat as UploadDocType)}
@@ -256,5 +277,6 @@ export default function DocumentsPage() {
                 onClose={() => setDeleteTarget(null)}
             />
         </div>
+        </RoleGuard>
     );
 }

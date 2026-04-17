@@ -8,6 +8,7 @@ import { useRolePreview } from "@/context/RolePreviewContext";
 import { useAuth } from "@/context/AuthContext";
 import LoadingSpinner from "@/components/ui/LoadingSpinner";
 import Pagination from "@/components/ui/Pagination";
+import RoleGuard from "@/components/ui/RoleGuard";
 import { GYMNASIUM_COURSES } from "../documents/constants";
 
 interface GradedUser {
@@ -80,6 +81,7 @@ export default function ListaFinalPage() {
     }
 
     return (
+        <RoleGuard allowed={['admin', 'teacher', 'student']}>
         <div className="space-y-6">
             {/* Header */}
             <div>
@@ -215,5 +217,6 @@ export default function ListaFinalPage() {
                 )}
             </div>
         </div>
+        </RoleGuard>
     );
 }

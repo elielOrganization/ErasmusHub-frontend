@@ -4,6 +4,7 @@ import { getTranslations } from 'next-intl/server';
 import { fetchUsersServer, fetchRolesServer } from '@/services/userService';
 import UserTable from '@/components/admin/UserTable';
 import StatCards from '@/components/ui/StatCards';
+import RoleGuard from '@/components/ui/RoleGuard';
 
 export default async function AdminDashboardPage({ params }: { params: Promise<{ locale: string }> }) {
     const { locale } = await params;
@@ -25,6 +26,7 @@ export default async function AdminDashboardPage({ params }: { params: Promise<{
     const minorCount = users.filter(u => u.is_minor).length;
 
     return (
+        <RoleGuard allowed={['admin']}>
         <div className="space-y-6">
             <StatCards items={[
                 {
@@ -58,5 +60,6 @@ export default async function AdminDashboardPage({ params }: { params: Promise<{
                 <UserTable users={users} roles={roles} />
             </div>
         </div>
+        </RoleGuard>
     );
 }

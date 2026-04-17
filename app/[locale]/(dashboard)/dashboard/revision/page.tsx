@@ -6,6 +6,7 @@ import { Link } from "@/i18n/routing";
 import { useApi } from "@/hooks/useApi";
 import { useRoleTheme } from "@/hooks/useRoleTheme";
 import LoadingSpinner from "@/components/ui/LoadingSpinner";
+import RoleGuard from "@/components/ui/RoleGuard";
 import Cookies from "js-cookie";
 import { API_URL } from "@/lib/api";
 import { GYMNASIUM_COURSES } from "../documents/constants";
@@ -266,6 +267,7 @@ export default function RevisionPage() {
     }
 
     return (
+        <RoleGuard allowed={['admin', 'teacher']}>
         <div className="space-y-6">
             {/* Header */}
             <div className="flex items-start justify-between">
@@ -721,5 +723,6 @@ export default function RevisionPage() {
                 )}
             </div>
         </div>
+        </RoleGuard>
     );
 }

@@ -14,7 +14,7 @@ export default function PreviewModal({ doc, onClose }: PreviewModalProps) {
     const theme = useRoleTheme();
     const [blobUrl, setBlobUrl] = useState<string | null>(null);
     const [loadingFile, setLoadingFile] = useState(false);
-    const [fileError, setFileError] = useState(false);
+    const [fileError, setFileError] = useState<string | null>(null);
 
     useEffect(() => {
         document.body.style.overflow = doc ? "hidden" : "";
@@ -28,10 +28,19 @@ export default function PreviewModal({ doc, onClose }: PreviewModalProps) {
         }
         let cancelled = false;
         setLoadingFile(true);
-        setFileError(false);
+        setFileError(null);
         fetchDocumentBlob(doc.id)
             .then((blob) => { if (!cancelled) setBlobUrl(URL.createObjectURL(blob)); })
-            .catch(() => { if (!cancelled) setFileError(true); })
+            .catch((err: unknown) => {
+                if (cancelled) return;
+                const msg = err instanceof Error ? err.message : String(err);
+                const status = msg.match(/\d{3}/)?.[0];
+                if (status === "403") setFileError("Sin permiso para acceder a este archivo (403).");
+                else if (status === "404") setFileError("El archivo no existe o fue eliminado (404).");
+                else if (status === "401") setFileError("Sesión caducada. Recarga la página e inicia sesión de nuevo (401).");
+                else if (status === "500") setFileError("Error interno del servidor. Inténtalo más tarde (500).");
+                else setFileError(msg || "No se pudo descargar el archivo.");
+            })
             .finally(() => { if (!cancelled) setLoadingFile(false); });
         return () => { cancelled = true; };
     }, [doc]);
@@ -79,11 +88,25 @@ export default function PreviewModal({ doc, onClose }: PreviewModalProps) {
                             <p className="text-xs text-gray-400">Cargando...</p>
                         </div>
                     ) : fileError ? (
-                        <div className="flex flex-col items-center gap-2 text-center">
-                            <svg className="w-10 h-10 text-red-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                            </svg>
-                            <p className="text-sm text-gray-400">No se pudo cargar el archivo</p>
+                        <div className="flex flex-col items-center gap-3 text-center max-w-sm">
+                            <div className="w-12 h-12 rounded-full bg-red-50 dark:bg-red-900/20 flex items-center justify-center">
+                                <svg className="w-6 h-6 text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                </svg>
+                            </div>
+                            <div>
+                                <p className="text-sm font-semibold text-gray-700 dark:text-gray-200">No se pudo cargar el archivo</p>
+                                <p className="text-xs text-gray-400 dark:text-gray-500 mt-1">{fileError}</p>
+                            </div>
+                            <button
+                                onClick={() => { setFileError(null); setLoadingFile(true); fetchDocumentBlob(doc.id).then(blob => setBlobUrl(URL.createObjectURL(blob))).catch((err: unknown) => { const msg = err instanceof Error ? err.message : String(err); setFileError(msg || "Error desconocido."); }).finally(() => setLoadingFile(false)); }}
+                                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium border border-gray-200 dark:border-gray-700 text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors cursor-pointer"
+                            >
+                                <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                                </svg>
+                                Reintentar
+                            </button>
                         </div>
                     ) : blobUrl && isPdf ? (
                         <iframe src={blobUrl} className="w-full h-full rounded-lg border border-gray-200 dark:border-gray-700" />

@@ -5,6 +5,7 @@ import { fetchUsersServer } from '@/services/userService';
 import { fetchOpportunitiesServer } from '@/services/opportunityService';
 import StudentTable from '@/components/students/StudentTable';
 import StatCards from '@/components/ui/StatCards';
+import RoleGuard from '@/components/ui/RoleGuard';
 
 export default async function StudentsPage({ params }: { params: Promise<{ locale: string }> }) {
     const { locale } = await params;
@@ -28,6 +29,7 @@ export default async function StudentsPage({ params }: { params: Promise<{ local
     });
 
     return (
+        <RoleGuard allowed={['admin', 'teacher']}>
         <div className="space-y-6">
             <StatCards items={[
                 {
@@ -55,5 +57,6 @@ export default async function StudentsPage({ params }: { params: Promise<{ local
                 <StudentTable users={users} opportunities={opportunities} />
             </div>
         </div>
+        </RoleGuard>
     );
 }

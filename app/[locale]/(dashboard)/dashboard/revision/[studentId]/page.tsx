@@ -1,13 +1,14 @@
 "use client";
 
-import { useState, useCallback, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { Link } from "@/i18n/routing";
 import { useApi } from "@/hooks/useApi";
 import { useRoleTheme } from "@/hooks/useRoleTheme";
 import LoadingSpinner from "@/components/ui/LoadingSpinner";
-import { fetchDocumentBlob } from "@/services/documentsService";
+import PreviewModal from "../../documents/_components/PreviewModal";
+import type { UserDocument } from "../../documents/types";
 import Cookies from "js-cookie";
 import { API_URL } from "@/lib/api";
 import { GYMNASIUM_COURSES } from "../../documents/constants";
@@ -115,6 +116,21 @@ export default function StudentRevisionPage() {
     // Readmit state
     const [readmitSubmitting, setReadmitSubmitting] = useState(false);
     const [readmitFeedback, setReadmitFeedback] = useState<{ type: "success" | "error"; msg: string } | null>(null);
+
+    // Document preview modal
+    const [previewDoc, setPreviewDoc] = useState<UserDocument | null>(null);
+
+    function openDocPreview(doc: ReviewDocument) {
+        setPreviewDoc({
+            id: doc.id,
+            name: doc.name,
+            document_type: doc.document_type,
+            uploaded_at: doc.uploaded_at,
+            state: doc.state,
+            user_id: 0,
+            file_path: "",
+        });
+    }
 
     function openAction(docId: number, mode: ActionMode) {
         setActiveDoc(docId);
@@ -230,16 +246,6 @@ export default function StudentRevisionPage() {
         return () => window.removeEventListener("keydown", onKey);
     }, [excludeModalOpen, activeDoc]);
 
-    const openDocPreview = useCallback(async (docId: number) => {
-        try {
-            const blob = await fetchDocumentBlob(docId);
-            const url = URL.createObjectURL(blob);
-            window.open(url, "_blank");
-            setTimeout(() => URL.revokeObjectURL(url), 10_000);
-        } catch {
-            // silently fail — user will see nothing opened
-        }
-    }, []);
 
     function docTypeLabel(docType: string): string {
         const key = `docType_${docType}` as Parameters<typeof t>[0];
@@ -503,9 +509,13 @@ export default function StudentRevisionPage() {
 
                                         {/* View doc button */}
                                         <button
-                                            onClick={() => openDocPreview(doc.id)}
-                                            className="text-xs text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 underline underline-offset-2 transition-colors"
+                                            onClick={() => openDocPreview(doc)}
+                                            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium cursor-pointer border border-blue-200 dark:border-blue-700/50 text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-900/20 hover:bg-blue-100 dark:hover:bg-blue-900/40 hover:border-blue-300 dark:hover:border-blue-600 transition-colors"
                                         >
+                                            <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                                            </svg>
                                             {t("viewDoc")}
                                         </button>
 
@@ -530,8 +540,11 @@ export default function StudentRevisionPage() {
                                         {!isPending && !isActive && (
                                             <button
                                                 onClick={() => openAction(doc.id, isApproved ? "reject" : "approve")}
-                                                className="text-xs text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300 underline underline-offset-2 transition-colors"
+                                                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium cursor-pointer border border-amber-200 dark:border-amber-700/50 text-amber-600 dark:text-amber-400 bg-amber-50 dark:bg-amber-900/20 hover:bg-amber-100 dark:hover:bg-amber-900/40 hover:border-amber-300 dark:hover:border-amber-600 transition-colors"
                                             >
+                                                <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4" />
+                                                </svg>
                                                 {t("changeDecision")}
                                             </button>
                                         )}
@@ -668,6 +681,9 @@ export default function StudentRevisionPage() {
                     })}
                 </div>
             )}
+
+            {/* Document preview modal */}
+            <PreviewModal doc={previewDoc} onClose={() => setPreviewDoc(null)} />
         </div>
     );
 }

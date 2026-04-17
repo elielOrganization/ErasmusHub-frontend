@@ -35,7 +35,7 @@ export default function UserProfilePage() {
         <div className="max-w-4xl mx-auto space-y-6 p-4 sm:p-6">
             {/* Header card */}
             <div className="bg-white dark:bg-gray-900 rounded-3xl border border-gray-100 dark:border-gray-800 shadow-sm overflow-hidden">
-                <div className={`h-32 bg-gradient-to-r ${theme.gradientFrom} ${theme.gradientTo}`} />
+                <div className="h-32" style={{ background: `linear-gradient(to right, ${theme.gradientFromHex}, ${theme.gradientToHex})` }} />
                 <div className="px-6 sm:px-8 pb-8">
                     <div className="flex flex-col sm:flex-row items-center sm:items-end gap-4 -mt-14">
                         <div

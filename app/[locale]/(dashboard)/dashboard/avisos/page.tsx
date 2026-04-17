@@ -8,6 +8,7 @@ import { useRoleTheme } from "@/hooks/useRoleTheme";
 import { useApi, apiPatch } from "@/hooks/useApi";
 import { useNotificationPrefs, PREF_TYPE_MAP } from "@/hooks/useNotificationPrefs";
 import LoadingSpinner from "@/components/ui/LoadingSpinner";
+import RoleGuard from "@/components/ui/RoleGuard";
 import Cookies from "js-cookie";
 import { API_URL } from "@/lib/api";
 
@@ -161,6 +162,7 @@ export default function AvisosPage() {
     };
 
     return (
+        <RoleGuard allowed={['student']}>
         <div className="max-w-2xl mx-auto px-4 py-6 space-y-6">
             {/* Header */}
             <div className="flex items-center justify-between">
@@ -246,5 +248,6 @@ export default function AvisosPage() {
                 </>
             )}
         </div>
+        </RoleGuard>
     );
 }
