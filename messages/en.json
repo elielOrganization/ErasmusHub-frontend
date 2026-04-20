@@ -408,7 +408,15 @@
     "filters": "Filters",
     "clearFilters": "Clear filters",
     "applyFilters": "Apply filters",
-    "statusLabel": "Status"
+    "statusLabel": "Status",
+    "details": "Details",
+    "stayPeriod": "Stay period",
+    "noDescription": "No description provided.",
+    "translate": "Translate",
+    "showOriginal": "Show original",
+    "translating": "Translating...",
+    "autoTranslated": "Auto-translated",
+    "createdAt": "Created"
   },
 
   "studentsDashboard": {

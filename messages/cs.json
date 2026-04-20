@@ -408,7 +408,15 @@
     "filters": "Filtry",
     "clearFilters": "Vymazat filtry",
     "applyFilters": "Použít filtry",
-    "statusLabel": "Stav"
+    "statusLabel": "Stav",
+    "details": "Podrobnosti",
+    "stayPeriod": "Období pobytu",
+    "noDescription": "Žádný popis.",
+    "translate": "Přeložit",
+    "showOriginal": "Zobrazit originál",
+    "translating": "Překládání...",
+    "autoTranslated": "Automaticky přeloženo",
+    "createdAt": "Vytvořeno"
   },
 
   "studentsDashboard": {

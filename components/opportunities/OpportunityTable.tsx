@@ -8,6 +8,7 @@ import { useAuth } from '@/context/AuthContext';
 import { API_URL } from '@/lib/api';
 import { getCountryFlagUrl } from '@/lib/countryFlags';
 import { searchCountries } from '@/lib/countries';
+import OpportunityDetailSheet from '@/components/opportunities/OpportunityDetailSheet';
 import FilterBar from '@/components/ui/FilterBar';
 import Pagination from '@/components/ui/Pagination';
 import { useRoleTheme } from '@/hooks/useRoleTheme';
@@ -608,6 +609,7 @@ export default function OpportunityTable({ opportunities }: { opportunities: Opp
     const [countryFilter, setCountryFilter] = useState<string[]>([]);
     const [showCreate, setShowCreate] = useState(false);
     const [editOpp, setEditOpp] = useState<OpportunityWithStudents | null>(null);
+    const [selectedOpp, setSelectedOpp] = useState<OpportunityWithStudents | null>(null);
     const [page, setPage] = useState(1);
 
     const roleName = user?.role?.name?.toLowerCase() || '';
@@ -716,7 +718,7 @@ export default function OpportunityTable({ opportunities }: { opportunities: Opp
                             </thead>
                             <tbody className="divide-y divide-gray-50 dark:divide-gray-800">
                                 {paginatedOpps.map(opp => (
-                                    <tr key={opp.id} className="group hover:bg-gray-50/80 dark:hover:bg-gray-800/50 transition-colors">
+                                    <tr key={opp.id} className="group hover:bg-gray-50/80 dark:hover:bg-gray-800/50 transition-colors cursor-pointer" onClick={() => setSelectedOpp(opp)}>
                                         <td className="py-4 pr-6">
                                             <p className="font-medium text-gray-700 dark:text-gray-200">{opp.name}</p>
                                             {opp.city && <p className="text-xs text-gray-400">{opp.city}</p>}
@@ -742,7 +744,7 @@ export default function OpportunityTable({ opportunities }: { opportunities: Opp
                                         </td>
                                         <td className="py-4"><StudentPills students={opp.students} t={t} theme={theme} locale={locale} /></td>
                                         {canManage && (
-                                            <td className="py-4">
+                                            <td className="py-4" onClick={e => e.stopPropagation()}>
                                                 <div className="opacity-0 group-hover:opacity-100 transition-opacity">
                                                     <button
                                                         onClick={() => setEditOpp(opp)}
@@ -765,7 +767,7 @@ export default function OpportunityTable({ opportunities }: { opportunities: Opp
                     {/* Mobile cards */}
                     <div className="lg:hidden space-y-3">
                         {paginatedOpps.map(opp => (
-                            <div key={opp.id} className="rounded-2xl border border-gray-100 dark:border-gray-800 p-4 space-y-3">
+                            <div key={opp.id} className="rounded-2xl border border-gray-100 dark:border-gray-800 p-4 space-y-3 cursor-pointer hover:border-gray-200 dark:hover:border-gray-700 transition-colors" onClick={() => setSelectedOpp(opp)}>
                                 <div className="flex items-start justify-between gap-2">
                                     <div>
                                         <p className="font-semibold text-gray-800 dark:text-gray-100">{opp.name}</p>
@@ -796,7 +798,7 @@ export default function OpportunityTable({ opportunities }: { opportunities: Opp
                                     <StudentPills students={opp.students} t={t} theme={theme} locale={locale} />
                                 </div>
                                 {canManage && (
-                                    <div className="flex justify-end border-t border-gray-50 dark:border-gray-800 pt-2">
+                                    <div className="flex justify-end border-t border-gray-50 dark:border-gray-800 pt-2" onClick={e => e.stopPropagation()}>
                                         <button
                                             onClick={() => setEditOpp(opp)}
                                             className={`px-3 py-1.5 rounded-lg text-xs font-semibold ${theme.accentText} ${theme.accentBg} ${theme.softHover} transition-colors cursor-pointer`}
@@ -821,6 +823,15 @@ export default function OpportunityTable({ opportunities }: { opportunities: Opp
 
             <CreateModal open={showCreate} onClose={() => setShowCreate(false)} onCreated={() => window.location.reload()} />
             <EditModal opp={editOpp} open={!!editOpp} onClose={() => setEditOpp(null)} onUpdated={() => window.location.reload()} />
+            <OpportunityDetailSheet
+                opp={selectedOpp}
+                open={!!selectedOpp}
+                onClose={() => setSelectedOpp(null)}
+                locale={locale}
+                dateLocale={dateLocale}
+                canManage={canManage}
+                onEdit={() => { setEditOpp(selectedOpp); setSelectedOpp(null); }}
+            />
         </>
     );
 }
