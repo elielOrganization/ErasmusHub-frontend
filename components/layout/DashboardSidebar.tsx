@@ -16,8 +16,29 @@ import ConfirmModal from '@/components/ui/ConfirmModal';
 export default function DashboardSidebar() {
     // Estado para el proceso de selección
     const [isProcessStarted, setIsProcessStarted] = useState(false);
+    const [isTogglingProcess, setIsTogglingProcess] = useState(false);
     // Estado para el modal de confirmación
     const [showConfirmModal, setShowConfirmModal] = useState(false);
+
+    const handleToggleProcess = async () => {
+        setShowConfirmModal(false);
+        setIsTogglingProcess(true);
+        const wasActive = isProcessStarted;
+        try {
+            const data = await apiPost<{ active: boolean }>('/selection-process/toggle', {});
+            setIsProcessStarted(data.active);
+            if (!wasActive && data.active) {
+                await apiPost('/notifications/broadcast', {
+                    message_key: 'selection_process_started',
+                    type: 'application_update',
+                });
+            }
+        } catch (error) {
+            console.error('Error toggling process:', error);
+        } finally {
+            setIsTogglingProcess(false);
+        }
+    };
 
     const t = useTranslations('dashboard');
     const tp = useTranslations('practicas');
@@ -222,18 +243,26 @@ export default function DashboardSidebar() {
 
                             {isAdmin && (
                                 <button
-                                    onClick={() => setShowConfirmModal(true)}
-                                    className={`flex items-center gap-3 px-3 py-2.5 mt-6 w-full rounded-lg transition-all duration-200 ${isProcessStarted ? 'text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-500/10' : 'text-emerald-600 dark:text-emerald-400 hover:bg-emerald-50 dark:hover:bg-emerald-500/10'}`}
+                                    onClick={() => !isTogglingProcess && setShowConfirmModal(true)}
+                                    disabled={isTogglingProcess}
+                                    className={`flex items-center gap-3 px-3 py-2.5 mt-6 w-full rounded-lg transition-all duration-200 disabled:opacity-60 disabled:cursor-not-allowed ${isProcessStarted ? 'text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-500/10' : 'text-emerald-600 dark:text-emerald-400 hover:bg-emerald-50 dark:hover:bg-emerald-500/10'}`}
                                 >
-                                    <svg className="w-5 h-5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth="2">
-                                        {isProcessStarted ? (
-                                            <path strokeLinecap="round" strokeLinejoin="round" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z M9 10h6m-6 4h6" />
-                                        ) : (
-                                            <path strokeLinecap="round" strokeLinejoin="round" d="M5.25 5.653c0-.856.917-1.398 1.667-.986l11.54 6.348a1.125 1.125 0 010 1.971l-11.54 6.347a1.125 1.125 0 01-1.667-.985V5.653z" />
-                                        )}
-                                    </svg>
+                                    {isTogglingProcess ? (
+                                        <svg className="w-5 h-5 shrink-0 animate-spin" fill="none" viewBox="0 0 24 24">
+                                            <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                                            <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
+                                        </svg>
+                                    ) : (
+                                        <svg className="w-5 h-5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth="2">
+                                            {isProcessStarted ? (
+                                                <path strokeLinecap="round" strokeLinejoin="round" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z M9 10h6m-6 4h6" />
+                                            ) : (
+                                                <path strokeLinecap="round" strokeLinejoin="round" d="M5.25 5.653c0-.856.917-1.398 1.667-.986l11.54 6.348a1.125 1.125 0 010 1.971l-11.54 6.347a1.125 1.125 0 01-1.667-.985V5.653z" />
+                                            )}
+                                        </svg>
+                                    )}
                                     <span className={`text-sm font-semibold whitespace-nowrap transition-opacity duration-300 ${isCollapsed ? 'opacity-0' : 'opacity-100'}`}>
-                                        {isProcessStarted ? 'Detener proceso' : 'Empezar proceso'}
+                                        {isTogglingProcess ? 'Procesando...' : isProcessStarted ? 'Detener proceso' : 'Empezar proceso'}
                                     </span>
                                 </button>
                             )}
@@ -276,24 +305,7 @@ export default function DashboardSidebar() {
                 }
                 confirmLabel={isProcessStarted ? "Detener proceso" : "Iniciar proceso"}
                 cancelLabel="Cancelar"
-                onConfirm={async () => {
-                    const wasActive = isProcessStarted;
-                    try {
-                        const data = await apiPost<{ active: boolean }>('/selection-process/toggle', {});
-                        setIsProcessStarted(data.active);
-
-                        if (!wasActive && data.active) {
-                            await apiPost('/notifications/broadcast', {
-                                message_key: 'selection_process_started',
-                                type: 'application_update',
-                            });
-                        }
-                        setShowConfirmModal(false);
-                    } catch (error) {
-                        console.error('Error toggling process:', error);
-                        throw error; // Re-throw para que el modal maneje el error
-                    }
-                }}
+                onConfirm={handleToggleProcess}
                 onClose={() => setShowConfirmModal(false)}
             />
 

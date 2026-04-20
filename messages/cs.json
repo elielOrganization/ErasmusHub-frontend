@@ -423,6 +423,7 @@
     "createdAt": "Registrován",
     "assignBtn": "Přiřadit k příležitosti",
     "assignToOpportunity": "Přiřadit k příležitosti",
+    "changeOpportunity": "Změnit příležitost",
     "selectOpportunity": "Příležitost",
     "selectOpportunityPlaceholder": "Vyberte příležitost...",
     "noOpportunitiesYet": "Žádné otevřené příležitosti",
@@ -437,7 +438,17 @@
     "errorOpportunityNotFound": "Příležitost nenalezena.",
     "errorOpportunityNotOpen": "Tato příležitost není otevřena pro přihlášky.",
     "errorNoAvailableSlots": "Pro tuto příležitost nejsou dostupná žádná místa.",
-    "errorAlreadyApplied": "Tento student již má přihlášku na tuto příležitost."
+    "errorAlreadyApplied": "Tento student již má přihlášku na tuto příležitost.",
+    "finalListTitle": "Závěrečný seznam Erasmus",
+    "finalListSubtitle": "Vybraní žáci seřazení podle závěrečné známky",
+    "finalListEmpty": "Závěrečný seznam ještě nebyl zveřejněn",
+    "inFinalList": "V závěrečném seznamu",
+    "colPosition": "#",
+    "colName": "Žák",
+    "colCourse": "Kurz",
+    "colGrade": "Známka",
+    "selectCourse": "Všechny kurzy",
+    "errorLoad": "Chyba při načítání závěrečného seznamu"
   },
 
   "documents": {

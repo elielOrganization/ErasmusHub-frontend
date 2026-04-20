@@ -423,6 +423,7 @@
     "createdAt": "Fecha de registro",
     "assignBtn": "Asignar a Oportunidad",
     "assignToOpportunity": "Asignar a Oportunidad",
+    "changeOpportunity": "Cambiar Oportunidad",
     "selectOpportunity": "Oportunidad",
     "selectOpportunityPlaceholder": "Selecciona una oportunidad...",
     "noOpportunitiesYet": "No hay oportunidades abiertas",
@@ -437,7 +438,17 @@
     "errorOpportunityNotFound": "Oportunidad no encontrada.",
     "errorOpportunityNotOpen": "Esta oportunidad no está abierta para solicitudes.",
     "errorNoAvailableSlots": "No hay plazas disponibles para esta oportunidad.",
-    "errorAlreadyApplied": "Este alumno ya tiene una solicitud para esta oportunidad."
+    "errorAlreadyApplied": "Este alumno ya tiene una solicitud para esta oportunidad.",
+    "finalListTitle": "Lista Final Erasmus",
+    "finalListSubtitle": "Alumnos seleccionados ordenados por nota final",
+    "finalListEmpty": "La lista final aún no ha sido publicada",
+    "inFinalList": "En lista final",
+    "colPosition": "#",
+    "colName": "Alumno",
+    "colCourse": "Curso",
+    "colGrade": "Nota",
+    "selectCourse": "Todos los cursos",
+    "errorLoad": "Error al cargar la lista final"
   },
 
   "documents": {
