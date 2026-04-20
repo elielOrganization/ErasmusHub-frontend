@@ -423,6 +423,7 @@
     "createdAt": "Registered",
     "assignBtn": "Assign to Opportunity",
     "assignToOpportunity": "Assign to Opportunity",
+    "changeOpportunity": "Change Opportunity",
     "selectOpportunity": "Opportunity",
     "selectOpportunityPlaceholder": "Select an opportunity...",
     "noOpportunitiesYet": "No open opportunities available",
@@ -437,7 +438,17 @@
     "errorOpportunityNotFound": "Opportunity not found.",
     "errorOpportunityNotOpen": "This opportunity is not open for applications.",
     "errorNoAvailableSlots": "No available slots for this opportunity.",
-    "errorAlreadyApplied": "This student already has an application for this opportunity."
+    "errorAlreadyApplied": "This student already has an application for this opportunity.",
+    "finalListTitle": "Erasmus Final List",
+    "finalListSubtitle": "Selected students ranked by final grade",
+    "finalListEmpty": "The final list has not been published yet",
+    "inFinalList": "In final list",
+    "colPosition": "#",
+    "colName": "Student",
+    "colCourse": "Course",
+    "colGrade": "Grade",
+    "selectCourse": "All courses",
+    "errorLoad": "Error loading the final list"
   },
 
   "documents": {

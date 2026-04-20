@@ -1,12 +1,13 @@
 'use client';
 
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslations } from 'next-intl';
 import { useParams } from 'next/navigation';
 import Link from 'next/link';
 import { useAuth } from '@/context/AuthContext';
 import { API_URL } from '@/lib/api';
 import { getCountryFlagUrl } from '@/lib/countryFlags';
+import { searchCountries } from '@/lib/countries';
 import FilterBar from '@/components/ui/FilterBar';
 import Pagination from '@/components/ui/Pagination';
 import { useRoleTheme } from '@/hooks/useRoleTheme';
@@ -98,53 +99,148 @@ function StudentPills({ students, t, theme, locale }: { students: AssignedStuden
     );
 }
 
+/* ── Country autocomplete ──────────────────────────────────── */
+
+function CountryInput({ value, onChange, onRawChange, placeholder, inputCls, locale }: {
+    value: string;
+    onChange: (code: string) => void;
+    /** Called with the raw text the user is typing (even before selecting from list) */
+    onRawChange?: (raw: string) => void;
+    placeholder?: string;
+    inputCls: string;
+    locale: string;
+}) {
+    const [query, setQuery] = useState(value);
+    const [open, setOpen] = useState(false);
+    const ref = useRef<HTMLDivElement>(null);
+    const lang = locale === "cs" ? "cs" : locale === "es" ? "es" : "en";
+
+    // Sync query when value resets (e.g. modal opens)
+    useEffect(() => { setQuery(value); }, [value]);
+
+    // Close on outside click
+    useEffect(() => {
+        const handler = (e: MouseEvent) => {
+            if (ref.current && !ref.current.contains(e.target as Node)) setOpen(false);
+        };
+        document.addEventListener('mousedown', handler);
+        return () => document.removeEventListener('mousedown', handler);
+    }, []);
+
+    const results = searchCountries(query, locale);
+
+    const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const raw = e.target.value;
+        setQuery(raw);
+        setOpen(true);
+        onChange('');          // Clear confirmed code — user is typing something new
+        onRawChange?.(raw);
+    };
+
+    const handleSelect = (code: string, name: string) => {
+        onChange(code);
+        setQuery(name);
+        onRawChange?.(name);
+        setOpen(false);
+    };
+
+    return (
+        <div ref={ref} className="relative">
+            <input
+                type="text"
+                value={query}
+                onChange={handleInputChange}
+                onFocus={() => query && setOpen(true)}
+                placeholder={placeholder}
+                className={inputCls}
+                autoComplete="off"
+            />
+            {open && results.length > 0 && (
+                <div className="absolute z-50 mt-1 w-full bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 shadow-lg max-h-48 overflow-y-auto">
+                    {results.map(c => (
+                        <button
+                            key={c.code}
+                            type="button"
+                            onMouseDown={() => handleSelect(c.code, c[lang])}
+                            className="w-full flex items-center gap-2.5 px-3 py-2 text-left hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
+                        >
+                            {getCountryFlagUrl(c.code) && (
+                                <img src={getCountryFlagUrl(c.code)!} alt="" className="w-5 h-auto rounded-sm shrink-0" />
+                            )}
+                            <span className="text-sm text-gray-700 dark:text-gray-200 flex-1">{c[lang]}</span>
+                            <span className="text-xs text-gray-400 font-mono">{c.code}</span>
+                        </button>
+                    ))}
+                </div>
+            )}
+        </div>
+    );
+}
+
 /* ── Create opportunity modal ──────────────────────────────── */
 
 function CreateModal({ open, onClose, onCreated }: { open: boolean; onClose: () => void; onCreated: () => void }) {
     const t = useTranslations('opportunitiesDashboard');
     const theme = useRoleTheme();
+    const params = useParams();
+    const locale = (params?.locale as string) || 'en';
     const [form, setForm] = useState({
         name: '', description: '', country: '', city: '',
-        max_slots: '1', start_date: '', end_date: '',
+        max_slots: 1, start_date: '', end_date: '',
     });
     const [creating, setCreating] = useState(false);
-    const [msg, setMsg] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
+    const [success, setSuccess] = useState(false);
+    const [errorMsg, setErrorMsg] = useState('');
+    const [countryRaw, setCountryRaw] = useState('');
 
-    const updateField = (key: string, value: string) => setForm(f => ({ ...f, [key]: value }));
+    // Country is invalid when the user has typed something but hasn't selected from the list
+    const isCountryInvalid = !!countryRaw.trim() && !form.country;
+
+    const updateField = (key: string, value: string | number) => setForm(f => ({ ...f, [key]: value }));
+
+    // Reset when modal opens
+    useEffect(() => {
+        if (open) {
+            setForm({ name: '', description: '', country: '', city: '', max_slots: 1, start_date: '', end_date: '' });
+            setSuccess(false);
+            setErrorMsg('');
+            setCountryRaw('');
+        }
+    }, [open]);
 
     const handleCreate = async () => {
         if (!form.name.trim()) return;
+        if (isCountryInvalid) {
+            setErrorMsg('Selecciona un país válido del listado de sugerencias.');
+            return;
+        }
         setCreating(true);
-        setMsg(null);
+        setErrorMsg('');
         try {
             const token = Cookies.get('auth_token');
-            const body: Record<string, unknown> = {
-                name: form.name,
-                description: form.description || null,
-                country: form.country || null,
-                city: form.city || null,
-                max_slots: parseInt(form.max_slots) || 1,
-                status: 'open',
-                start_date: form.start_date || null,
-                end_date: form.end_date || null,
-            };
             const res = await fetch(`${API_URL}/opportunities/`, {
                 method: 'POST',
-                headers: {
-                    'Authorization': `Bearer ${token}`,
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(body),
+                headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    name: form.name,
+                    description: form.description || null,
+                    country: form.country || null,
+                    city: form.city || null,
+                    max_slots: form.max_slots,
+                    status: 'open',
+                    start_date: form.start_date || null,
+                    end_date: form.end_date || null,
+                }),
             });
             if (res.ok) {
-                setMsg({ type: 'success', text: t('createSuccess') });
-                setTimeout(() => { onCreated(); onClose(); }, 1000);
+                setSuccess(true);
+                setTimeout(() => { onCreated(); onClose(); }, 1500);
             } else {
                 const err = await res.json().catch(() => null);
-                setMsg({ type: 'error', text: err?.detail || t('createError') });
+                setErrorMsg(err?.detail || t('createError'));
             }
         } catch {
-            setMsg({ type: 'error', text: t('createError') });
+            setErrorMsg(t('createError'));
         } finally {
             setCreating(false);
         }
@@ -152,79 +248,127 @@ function CreateModal({ open, onClose, onCreated }: { open: boolean; onClose: () 
 
     if (!open) return null;
 
+    const inputCls = `w-full rounded-xl border border-gray-200 dark:border-gray-700 px-3 py-2 text-sm text-gray-700 dark:text-gray-200 bg-white dark:bg-gray-800 focus:outline-none focus:ring-2 ${theme.focusRing} transition-colors placeholder-gray-300 dark:placeholder-gray-600`;
+
     return (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-            <div className="fixed inset-0 bg-black/40 backdrop-blur-sm" onClick={onClose} />
-            <div className="relative bg-white dark:bg-gray-900 rounded-2xl shadow-xl w-full max-w-lg p-6 space-y-4">
-                <div className="flex items-center justify-between">
-                    <h3 className="text-lg font-bold text-gray-800 dark:text-gray-100">{t('addTitle')}</h3>
-                    <button onClick={onClose} className="p-1 rounded-lg text-gray-400 hover:text-gray-600 hover:bg-gray-100 dark:hover:bg-gray-800 dark:hover:text-gray-300 transition-colors cursor-pointer">
-                        <XMarkIcon />
-                    </button>
-                </div>
+        <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center sm:p-4">
+            <div className="fixed inset-0 bg-black/40 backdrop-blur-sm" onClick={!creating ? onClose : undefined} />
+            <div className="relative bg-white dark:bg-gray-900 rounded-t-2xl sm:rounded-2xl shadow-xl w-full sm:max-w-md">
 
-                <div className="space-y-3">
-                    <div>
-                        <label className="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">{t('fieldName')}</label>
-                        <input type="text" value={form.name} onChange={e => updateField('name', e.target.value)}
-                            placeholder={t('fieldNamePlaceholder')}
-                            className={`w-full rounded-xl border border-gray-200 dark:border-gray-700 px-3 py-2 text-sm text-gray-700 dark:text-gray-200 bg-white dark:bg-gray-800 focus:outline-none focus:ring-2 ${theme.focusRing} transition-colors`} />
-                    </div>
-                    <div>
-                        <label className="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">{t('fieldDescription')}</label>
-                        <textarea value={form.description} onChange={e => updateField('description', e.target.value)}
-                            placeholder={t('fieldDescriptionPlaceholder')} rows={2}
-                            className={`w-full rounded-xl border border-gray-200 dark:border-gray-700 px-3 py-2 text-sm text-gray-700 dark:text-gray-200 bg-white dark:bg-gray-800 focus:outline-none focus:ring-2 ${theme.focusRing} transition-colors resize-none`} />
-                    </div>
-                    <div className="grid grid-cols-2 gap-3">
-                        <div>
-                            <label className="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">{t('fieldCountry')}</label>
-                            <input type="text" value={form.country} onChange={e => updateField('country', e.target.value)}
-                                placeholder={t('fieldCountryPlaceholder')}
-                                className={`w-full rounded-xl border border-gray-200 dark:border-gray-700 px-3 py-2 text-sm text-gray-700 dark:text-gray-200 bg-white dark:bg-gray-800 focus:outline-none focus:ring-2 ${theme.focusRing} transition-colors`} />
+                {success ? (
+                    <div className="flex flex-col items-center justify-center py-10 gap-3">
+                        <div className="w-14 h-14 rounded-full bg-emerald-100 dark:bg-emerald-900/30 flex items-center justify-center">
+                            <svg className="w-7 h-7 text-emerald-600 dark:text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M5 13l4 4L19 7" />
+                            </svg>
                         </div>
-                        <div>
-                            <label className="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">{t('fieldCity')}</label>
-                            <input type="text" value={form.city} onChange={e => updateField('city', e.target.value)}
-                                placeholder={t('fieldCityPlaceholder')}
-                                className={`w-full rounded-xl border border-gray-200 dark:border-gray-700 px-3 py-2 text-sm text-gray-700 dark:text-gray-200 bg-white dark:bg-gray-800 focus:outline-none focus:ring-2 ${theme.focusRing} transition-colors`} />
+                        <div className="text-center">
+                            <p className="text-sm font-semibold text-gray-800 dark:text-gray-100">{t('createSuccess')}</p>
+                            <p className="text-xs text-gray-400 mt-0.5">{form.name}</p>
                         </div>
                     </div>
-                    <div className="grid grid-cols-3 gap-3">
-                        <div>
-                            <label className="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">{t('fieldMaxSlots')}</label>
-                            <input type="number" min="1" value={form.max_slots} onChange={e => updateField('max_slots', e.target.value)}
-                                className={`w-full rounded-xl border border-gray-200 dark:border-gray-700 px-3 py-2 text-sm text-gray-700 dark:text-gray-200 bg-white dark:bg-gray-800 focus:outline-none focus:ring-2 ${theme.focusRing} transition-colors`} />
+                ) : (
+                    <div className="p-4 space-y-4">
+                        {/* Header */}
+                        <div className="flex items-center justify-between">
+                            <h3 className="text-base font-bold text-gray-800 dark:text-gray-100">{t('addTitle')}</h3>
+                            <button onClick={onClose} disabled={creating} className="p-1 rounded-lg text-gray-400 hover:text-gray-600 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors cursor-pointer disabled:opacity-40">
+                                <XMarkIcon />
+                            </button>
                         </div>
-                        <div>
-                            <label className="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">{t('fieldStartDate')}</label>
-                            <input type="date" value={form.start_date} onChange={e => updateField('start_date', e.target.value)}
-                                className={`w-full rounded-xl border border-gray-200 dark:border-gray-700 px-3 py-2 text-sm text-gray-700 dark:text-gray-200 bg-white dark:bg-gray-800 focus:outline-none focus:ring-2 ${theme.focusRing} transition-colors`} />
-                        </div>
-                        <div>
-                            <label className="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">{t('fieldEndDate')}</label>
-                            <input type="date" value={form.end_date} onChange={e => updateField('end_date', e.target.value)}
-                                className={`w-full rounded-xl border border-gray-200 dark:border-gray-700 px-3 py-2 text-sm text-gray-700 dark:text-gray-200 bg-white dark:bg-gray-800 focus:outline-none focus:ring-2 ${theme.focusRing} transition-colors`} />
-                        </div>
-                    </div>
-                </div>
 
-                {msg && (
-                    <div className={`rounded-xl border p-3 text-sm font-medium ${msg.type === 'success' ? 'bg-emerald-50 border-emerald-100 text-emerald-700' : 'bg-red-50 border-red-100 text-red-700'}`}>
-                        {msg.text}
+                        {/* Nombre */}
+                        <div>
+                            <label className="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">
+                                {t('fieldName')} <span className="text-red-400">*</span>
+                            </label>
+                            <input type="text" value={form.name} onChange={e => updateField('name', e.target.value)}
+                                placeholder={t('fieldNamePlaceholder')} autoFocus className={inputCls} />
+                        </div>
+
+                        {/* Descripción */}
+                        <div>
+                            <label className="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">{t('fieldDescription')}</label>
+                            <textarea value={form.description} onChange={e => updateField('description', e.target.value)}
+                                placeholder={t('fieldDescriptionPlaceholder')} rows={2}
+                                className={`${inputCls} resize-none`} />
+                        </div>
+
+                        {/* País + Ciudad */}
+                        <div className="grid grid-cols-2 gap-2">
+                            <div>
+                                <label className="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">{t('fieldCountry')}</label>
+                                <CountryInput
+                                    value={form.country}
+                                    onChange={code => updateField('country', code)}
+                                    onRawChange={setCountryRaw}
+                                    placeholder="Ej: ES, DE, FR…"
+                                    inputCls={`${inputCls} ${isCountryInvalid ? 'border-red-400 dark:border-red-500 focus:ring-red-400' : ''}`}
+                                    locale={locale}
+                                />
+                                {isCountryInvalid && (
+                                    <p className="text-xs text-red-500 dark:text-red-400 mt-0.5">Selecciona del listado</p>
+                                )}
+                            </div>
+                            <div>
+                                <label className="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">{t('fieldCity')}</label>
+                                <input type="text" value={form.city} onChange={e => updateField('city', e.target.value)}
+                                    placeholder="Madrid" className={inputCls} />
+                            </div>
+                        </div>
+
+                        {/* Plazas + Fechas en una fila */}
+                        <div className="grid grid-cols-[auto_1fr] gap-3 items-start">
+                            {/* Stepper plazas */}
+                            <div>
+                                <label className="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">{t('fieldMaxSlots')}</label>
+                                <div className="flex items-center gap-1.5 h-9">
+                                    <button type="button" onClick={() => updateField('max_slots', Math.max(1, form.max_slots - 1))}
+                                        className="w-8 h-8 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-500 hover:bg-gray-50 dark:hover:bg-gray-700 flex items-center justify-center cursor-pointer text-base leading-none">−</button>
+                                    <span className={`w-7 text-center text-sm font-bold ${theme.accentText}`}>{form.max_slots}</span>
+                                    <button type="button" onClick={() => updateField('max_slots', form.max_slots + 1)}
+                                        className="w-8 h-8 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-500 hover:bg-gray-50 dark:hover:bg-gray-700 flex items-center justify-center cursor-pointer text-base leading-none">+</button>
+                                </div>
+                            </div>
+
+                            {/* Fechas estancia */}
+                            <div>
+                                <label className="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">
+                                    Estancia <span className="font-normal text-gray-400">(inicio → fin)</span>
+                                </label>
+                                <div className="grid grid-cols-2 gap-2">
+                                    <input type="date" value={form.start_date} onChange={e => updateField('start_date', e.target.value)}
+                                        className={inputCls} />
+                                    <input type="date" value={form.end_date} min={form.start_date || undefined} onChange={e => updateField('end_date', e.target.value)}
+                                        className={inputCls} />
+                                </div>
+                            </div>
+                        </div>
+
+                        {errorMsg && (
+                            <div className="rounded-xl bg-red-50 dark:bg-red-900/20 border border-red-100 dark:border-red-800 px-3 py-2 text-xs text-red-700 dark:text-red-400 font-medium">
+                                {errorMsg}
+                            </div>
+                        )}
+
+                        <div className="flex justify-end gap-2">
+                            <button onClick={onClose} disabled={creating}
+                                className="px-3 py-2 rounded-xl text-sm font-medium text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors cursor-pointer disabled:opacity-50">
+                                {t('cancel')}
+                            </button>
+                            <button onClick={handleCreate} disabled={!form.name.trim() || creating || isCountryInvalid}
+                                className={`px-4 py-2 rounded-xl text-sm font-medium text-white transition-colors inline-flex items-center gap-2 ${!form.name.trim() || creating || isCountryInvalid ? `${theme.btnDisabled} cursor-not-allowed opacity-60` : `${theme.btnPrimary} ${theme.btnPrimaryHover} cursor-pointer`}`}>
+                                {creating && (
+                                    <svg className="w-3.5 h-3.5 animate-spin" fill="none" viewBox="0 0 24 24">
+                                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
+                                    </svg>
+                                )}
+                                {creating ? t('creating') : t('create')}
+                            </button>
+                        </div>
                     </div>
                 )}
-
-                <div className="flex justify-end gap-2 pt-2">
-                    <button onClick={onClose}
-                        className="px-4 py-2 rounded-xl text-sm font-medium text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors cursor-pointer">
-                        {t('cancel')}
-                    </button>
-                    <button onClick={handleCreate} disabled={!form.name.trim() || creating}
-                        className={`px-4 py-2 rounded-xl text-sm font-medium text-white transition-colors ${!form.name.trim() || creating ? `${theme.btnDisabled} cursor-not-allowed opacity-60` : `${theme.btnPrimary} ${theme.btnPrimaryHover} cursor-pointer`}`}>
-                        {creating ? t('creating') : t('create')}
-                    </button>
-                </div>
             </div>
         </div>
     );
@@ -235,12 +379,18 @@ function CreateModal({ open, onClose, onCreated }: { open: boolean; onClose: () 
 function EditModal({ opp, open, onClose, onUpdated }: { opp: OpportunityWithStudents | null; open: boolean; onClose: () => void; onUpdated: () => void }) {
     const t = useTranslations('opportunitiesDashboard');
     const theme = useRoleTheme();
+    const params = useParams();
+    const locale = (params?.locale as string) || 'en';
     const [form, setForm] = useState({
         name: '', description: '', country: '', city: '',
-        max_slots: '1', status: 'open', start_date: '', end_date: '',
+        max_slots: 1, status: 'open', start_date: '', end_date: '',
     });
     const [saving, setSaving] = useState(false);
-    const [msg, setMsg] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
+    const [success, setSuccess] = useState(false);
+    const [errorMsg, setErrorMsg] = useState('');
+    const [countryRaw, setCountryRaw] = useState('');
+
+    const isCountryInvalid = !!countryRaw.trim() && !form.country;
 
     // Sync form when opp changes
     useEffect(() => {
@@ -250,50 +400,52 @@ function EditModal({ opp, open, onClose, onUpdated }: { opp: OpportunityWithStud
                 description: opp.description || '',
                 country: opp.country || '',
                 city: opp.city || '',
-                max_slots: String(opp.max_slots || 1),
+                max_slots: opp.max_slots || 1,
                 status: opp.status || 'open',
                 start_date: opp.start_date || '',
                 end_date: opp.end_date || '',
             });
-            setMsg(null);
+            setSuccess(false);
+            setErrorMsg('');
+            setCountryRaw(opp.country || '');
         }
     }, [opp?.id]);
 
-    const updateField = (key: string, value: string) => setForm(f => ({ ...f, [key]: value }));
+    const updateField = (key: string, value: string | number) => setForm(f => ({ ...f, [key]: value }));
 
     const handleSave = async () => {
         if (!opp || !form.name.trim()) return;
+        if (isCountryInvalid) {
+            setErrorMsg('Selecciona un país válido del listado de sugerencias.');
+            return;
+        }
         setSaving(true);
-        setMsg(null);
+        setErrorMsg('');
         try {
             const token = Cookies.get('auth_token');
-            const body: Record<string, unknown> = {
-                name: form.name,
-                description: form.description || null,
-                country: form.country || null,
-                city: form.city || null,
-                max_slots: parseInt(form.max_slots) || 1,
-                status: form.status,
-                start_date: form.start_date || null,
-                end_date: form.end_date || null,
-            };
             const res = await fetch(`${API_URL}/opportunities/${opp.id}`, {
                 method: 'PATCH',
-                headers: {
-                    'Authorization': `Bearer ${token}`,
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(body),
+                headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    name: form.name,
+                    description: form.description || null,
+                    country: form.country || null,
+                    city: form.city || null,
+                    max_slots: form.max_slots,
+                    status: form.status,
+                    start_date: form.start_date || null,
+                    end_date: form.end_date || null,
+                }),
             });
             if (res.ok) {
-                setMsg({ type: 'success', text: t('editSuccess') });
-                setTimeout(() => { onUpdated(); onClose(); }, 1000);
+                setSuccess(true);
+                setTimeout(() => { onUpdated(); onClose(); }, 1500);
             } else {
                 const err = await res.json().catch(() => null);
-                setMsg({ type: 'error', text: err?.detail || t('editError') });
+                setErrorMsg(err?.detail || t('editError'));
             }
         } catch {
-            setMsg({ type: 'error', text: t('editError') });
+            setErrorMsg(t('editError'));
         } finally {
             setSaving(false);
         }
@@ -301,92 +453,142 @@ function EditModal({ opp, open, onClose, onUpdated }: { opp: OpportunityWithStud
 
     if (!open || !opp) return null;
 
-    return (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-            <div className="fixed inset-0 bg-black/40 backdrop-blur-sm" onClick={onClose} />
-            <div className="relative bg-white dark:bg-gray-900 rounded-2xl shadow-xl w-full max-w-lg p-6 space-y-4">
-                <div className="flex items-center justify-between">
-                    <h3 className="text-lg font-bold text-gray-800 dark:text-gray-100">{t('editTitle')}</h3>
-                    <button onClick={onClose} className="p-1 rounded-lg text-gray-400 hover:text-gray-600 hover:bg-gray-100 dark:hover:bg-gray-800 dark:hover:text-gray-300 transition-colors cursor-pointer">
-                        <XMarkIcon />
-                    </button>
-                </div>
+    const inputCls = `w-full rounded-xl border border-gray-200 dark:border-gray-700 px-3 py-2 text-sm text-gray-700 dark:text-gray-200 bg-white dark:bg-gray-800 focus:outline-none focus:ring-2 ${theme.focusRing} transition-colors placeholder-gray-300 dark:placeholder-gray-600`;
 
-                <div className="space-y-3">
-                    <div>
-                        <label className="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">{t('fieldName')}</label>
-                        <input type="text" value={form.name} onChange={e => updateField('name', e.target.value)}
-                            placeholder={t('fieldNamePlaceholder')}
-                            className={`w-full rounded-xl border border-gray-200 dark:border-gray-700 px-3 py-2 text-sm text-gray-700 dark:text-gray-200 bg-white dark:bg-gray-800 focus:outline-none focus:ring-2 ${theme.focusRing} transition-colors`} />
-                    </div>
-                    <div>
-                        <label className="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">{t('fieldDescription')}</label>
-                        <textarea value={form.description} onChange={e => updateField('description', e.target.value)}
-                            placeholder={t('fieldDescriptionPlaceholder')} rows={2}
-                            className={`w-full rounded-xl border border-gray-200 dark:border-gray-700 px-3 py-2 text-sm text-gray-700 dark:text-gray-200 bg-white dark:bg-gray-800 focus:outline-none focus:ring-2 ${theme.focusRing} transition-colors resize-none`} />
-                    </div>
-                    <div className="grid grid-cols-2 gap-3">
-                        <div>
-                            <label className="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">{t('fieldCountry')}</label>
-                            <input type="text" value={form.country} onChange={e => updateField('country', e.target.value)}
-                                placeholder={t('fieldCountryPlaceholder')}
-                                className={`w-full rounded-xl border border-gray-200 dark:border-gray-700 px-3 py-2 text-sm text-gray-700 dark:text-gray-200 bg-white dark:bg-gray-800 focus:outline-none focus:ring-2 ${theme.focusRing} transition-colors`} />
+    return (
+        <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center sm:p-4">
+            <div className="fixed inset-0 bg-black/40 backdrop-blur-sm" onClick={!saving ? onClose : undefined} />
+            <div className="relative bg-white dark:bg-gray-900 rounded-t-2xl sm:rounded-2xl shadow-xl w-full sm:max-w-md">
+
+                {success ? (
+                    <div className="flex flex-col items-center justify-center py-10 gap-3">
+                        <div className="w-14 h-14 rounded-full bg-emerald-100 dark:bg-emerald-900/30 flex items-center justify-center">
+                            <svg className="w-7 h-7 text-emerald-600 dark:text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M5 13l4 4L19 7" />
+                            </svg>
                         </div>
-                        <div>
-                            <label className="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">{t('fieldCity')}</label>
-                            <input type="text" value={form.city} onChange={e => updateField('city', e.target.value)}
-                                placeholder={t('fieldCityPlaceholder')}
-                                className={`w-full rounded-xl border border-gray-200 dark:border-gray-700 px-3 py-2 text-sm text-gray-700 dark:text-gray-200 bg-white dark:bg-gray-800 focus:outline-none focus:ring-2 ${theme.focusRing} transition-colors`} />
+                        <div className="text-center">
+                            <p className="text-sm font-semibold text-gray-800 dark:text-gray-100">{t('editSuccess')}</p>
+                            <p className="text-xs text-gray-400 mt-0.5">{form.name}</p>
                         </div>
                     </div>
-                    <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-                        <div>
-                            <label className="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">{t('fieldMaxSlots')}</label>
-                            <input type="number" min="1" value={form.max_slots} onChange={e => updateField('max_slots', e.target.value)}
-                                className={`w-full rounded-xl border border-gray-200 dark:border-gray-700 px-3 py-2 text-sm text-gray-700 dark:text-gray-200 bg-white dark:bg-gray-800 focus:outline-none focus:ring-2 ${theme.focusRing} transition-colors`} />
+                ) : (
+                    <div className="p-4 space-y-4">
+                        {/* Header */}
+                        <div className="flex items-center justify-between">
+                            <h3 className="text-base font-bold text-gray-800 dark:text-gray-100">{t('editTitle')}</h3>
+                            <button onClick={onClose} disabled={saving} className="p-1 rounded-lg text-gray-400 hover:text-gray-600 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors cursor-pointer disabled:opacity-40">
+                                <XMarkIcon />
+                            </button>
                         </div>
+
+                        {/* Nombre */}
                         <div>
-                            <label className="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">{t('status')}</label>
-                            <div className="relative">
-                                <select value={form.status} onChange={e => updateField('status', e.target.value)}
-                                    className={`w-full appearance-none rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 px-3 py-2 pr-8 text-sm text-gray-700 dark:text-gray-200 focus:outline-none focus:ring-2 ${theme.focusRing} transition-colors cursor-pointer`}>
-                                    <option value="open">{t('open')}</option>
-                                    <option value="closed">{t('closed')}</option>
-                                </select>
-                                <div className="absolute inset-y-0 right-2 flex items-center text-gray-400">
-                                    <ChevronDownIcon />
+                            <label className="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">
+                                {t('fieldName')} <span className="text-red-400">*</span>
+                            </label>
+                            <input type="text" value={form.name} onChange={e => updateField('name', e.target.value)}
+                                placeholder={t('fieldNamePlaceholder')} autoFocus className={inputCls} />
+                        </div>
+
+                        {/* Descripción */}
+                        <div>
+                            <label className="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">{t('fieldDescription')}</label>
+                            <textarea value={form.description} onChange={e => updateField('description', e.target.value)}
+                                placeholder={t('fieldDescriptionPlaceholder')} rows={2}
+                                className={`${inputCls} resize-none`} />
+                        </div>
+
+                        {/* País + Ciudad */}
+                        <div className="grid grid-cols-2 gap-2">
+                            <div>
+                                <label className="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">{t('fieldCountry')}</label>
+                                <CountryInput
+                                    value={form.country}
+                                    onChange={code => updateField('country', code)}
+                                    onRawChange={setCountryRaw}
+                                    placeholder="Ej: ES, DE, FR…"
+                                    inputCls={`${inputCls} ${isCountryInvalid ? 'border-red-400 dark:border-red-500 focus:ring-red-400' : ''}`}
+                                    locale={locale}
+                                />
+                                {isCountryInvalid && (
+                                    <p className="text-xs text-red-500 dark:text-red-400 mt-0.5">Selecciona del listado</p>
+                                )}
+                            </div>
+                            <div>
+                                <label className="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">{t('fieldCity')}</label>
+                                <input type="text" value={form.city} onChange={e => updateField('city', e.target.value)}
+                                    placeholder="Madrid" className={inputCls} />
+                            </div>
+                        </div>
+
+                        {/* Plazas + Estado + Fechas */}
+                        <div className="grid grid-cols-[auto_auto_1fr] gap-3 items-start">
+                            {/* Stepper plazas */}
+                            <div>
+                                <label className="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">{t('fieldMaxSlots')}</label>
+                                <div className="flex items-center gap-1.5 h-9">
+                                    <button type="button" onClick={() => updateField('max_slots', Math.max(1, form.max_slots - 1))}
+                                        className="w-8 h-8 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-500 hover:bg-gray-50 dark:hover:bg-gray-700 flex items-center justify-center cursor-pointer text-base leading-none">−</button>
+                                    <span className={`w-7 text-center text-sm font-bold ${theme.accentText}`}>{form.max_slots}</span>
+                                    <button type="button" onClick={() => updateField('max_slots', form.max_slots + 1)}
+                                        className="w-8 h-8 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-500 hover:bg-gray-50 dark:hover:bg-gray-700 flex items-center justify-center cursor-pointer text-base leading-none">+</button>
+                                </div>
+                            </div>
+
+                            {/* Estado */}
+                            <div>
+                                <label className="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">{t('status')}</label>
+                                <div className="relative h-9">
+                                    <select value={form.status} onChange={e => updateField('status', e.target.value)}
+                                        className={`h-full w-full appearance-none rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 px-3 pr-7 text-sm text-gray-700 dark:text-gray-200 focus:outline-none focus:ring-2 ${theme.focusRing} transition-colors cursor-pointer`}>
+                                        <option value="open">{t('open')}</option>
+                                        <option value="closed">{t('closed')}</option>
+                                    </select>
+                                    <div className="pointer-events-none absolute inset-y-0 right-2 flex items-center text-gray-400">
+                                        <ChevronDownIcon />
+                                    </div>
+                                </div>
+                            </div>
+
+                            {/* Fechas estancia */}
+                            <div>
+                                <label className="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">
+                                    Estancia <span className="font-normal text-gray-400">(inicio → fin)</span>
+                                </label>
+                                <div className="grid grid-cols-2 gap-2">
+                                    <input type="date" value={form.start_date} onChange={e => updateField('start_date', e.target.value)}
+                                        className={inputCls} />
+                                    <input type="date" value={form.end_date} min={form.start_date || undefined} onChange={e => updateField('end_date', e.target.value)}
+                                        className={inputCls} />
                                 </div>
                             </div>
                         </div>
-                        <div>
-                            <label className="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">{t('fieldStartDate')}</label>
-                            <input type="date" value={form.start_date} onChange={e => updateField('start_date', e.target.value)}
-                                className={`w-full rounded-xl border border-gray-200 dark:border-gray-700 px-3 py-2 text-sm text-gray-700 dark:text-gray-200 bg-white dark:bg-gray-800 focus:outline-none focus:ring-2 ${theme.focusRing} transition-colors`} />
-                        </div>
-                        <div>
-                            <label className="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">{t('fieldEndDate')}</label>
-                            <input type="date" value={form.end_date} onChange={e => updateField('end_date', e.target.value)}
-                                className={`w-full rounded-xl border border-gray-200 dark:border-gray-700 px-3 py-2 text-sm text-gray-700 dark:text-gray-200 bg-white dark:bg-gray-800 focus:outline-none focus:ring-2 ${theme.focusRing} transition-colors`} />
-                        </div>
-                    </div>
-                </div>
 
-                {msg && (
-                    <div className={`rounded-xl border p-3 text-sm font-medium ${msg.type === 'success' ? 'bg-emerald-50 border-emerald-100 text-emerald-700' : 'bg-red-50 border-red-100 text-red-700'}`}>
-                        {msg.text}
+                        {errorMsg && (
+                            <div className="rounded-xl bg-red-50 dark:bg-red-900/20 border border-red-100 dark:border-red-800 px-3 py-2 text-xs text-red-700 dark:text-red-400 font-medium">
+                                {errorMsg}
+                            </div>
+                        )}
+
+                        <div className="flex justify-end gap-2">
+                            <button onClick={onClose} disabled={saving}
+                                className="px-3 py-2 rounded-xl text-sm font-medium text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors cursor-pointer disabled:opacity-50">
+                                {t('cancel')}
+                            </button>
+                            <button onClick={handleSave} disabled={!form.name.trim() || saving || isCountryInvalid}
+                                className={`px-4 py-2 rounded-xl text-sm font-medium text-white transition-colors inline-flex items-center gap-2 ${!form.name.trim() || saving || isCountryInvalid ? `${theme.btnDisabled} cursor-not-allowed opacity-60` : `${theme.btnPrimary} ${theme.btnPrimaryHover} cursor-pointer`}`}>
+                                {saving && (
+                                    <svg className="w-3.5 h-3.5 animate-spin" fill="none" viewBox="0 0 24 24">
+                                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
+                                    </svg>
+                                )}
+                                {saving ? t('saving') : t('save')}
+                            </button>
+                        </div>
                     </div>
                 )}
-
-                <div className="flex justify-end gap-2 pt-2">
-                    <button onClick={onClose}
-                        className="px-4 py-2 rounded-xl text-sm font-medium text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors cursor-pointer">
-                        {t('cancel')}
-                    </button>
-                    <button onClick={handleSave} disabled={!form.name.trim() || saving}
-                        className={`px-4 py-2 rounded-xl text-sm font-medium text-white transition-colors ${!form.name.trim() || saving ? `${theme.btnDisabled} cursor-not-allowed opacity-60` : `${theme.btnPrimary} ${theme.btnPrimaryHover} cursor-pointer`}`}>
-                        {saving ? t('saving') : t('save')}
-                    </button>
-                </div>
             </div>
         </div>
     );
@@ -400,6 +602,7 @@ export default function OpportunityTable({ opportunities }: { opportunities: Opp
     const theme = useRoleTheme();
     const params = useParams();
     const locale = (params?.locale as string) || 'en';
+    const dateLocale = locale === 'cs' ? 'cs-CZ' : locale === 'es' ? 'es-ES' : 'en-GB';
     const [searchQuery, setSearchQuery] = useState('');
     const [statusFilter, setStatusFilter] = useState('');
     const [countryFilter, setCountryFilter] = useState<string[]>([]);
@@ -535,7 +738,7 @@ export default function OpportunityTable({ opportunities }: { opportunities: Opp
                                         <td className="py-4 pr-6"><StatusPill status={opp.status} t={t} /></td>
                                         <td className="py-4 pr-6"><SlotsBar filled={opp.filled_slots} max={opp.max_slots} /></td>
                                         <td className="py-4 pr-6 text-gray-500 dark:text-gray-400 text-sm">
-                                            {opp.start_date ? new Date(opp.start_date).toLocaleDateString() : '—'}
+                                            {opp.start_date ? new Date(opp.start_date).toLocaleDateString(dateLocale) : '—'}
                                         </td>
                                         <td className="py-4"><StudentPills students={opp.students} t={t} theme={theme} locale={locale} /></td>
                                         {canManage && (
@@ -585,7 +788,7 @@ export default function OpportunityTable({ opportunities }: { opportunities: Opp
                                         <SlotsBar filled={opp.filled_slots} max={opp.max_slots} />
                                     </div>
                                     <span className="text-xs text-gray-400">
-                                        {opp.start_date ? new Date(opp.start_date).toLocaleDateString() : ''}
+                                        {opp.start_date ? new Date(opp.start_date).toLocaleDateString(dateLocale) : ''}
                                     </span>
                                 </div>
                                 <div>
