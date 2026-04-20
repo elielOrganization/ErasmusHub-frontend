@@ -34,7 +34,7 @@ export interface PaginatedOpportunities {
 
 /** Server-side fetch for opportunities */
 export async function fetchOpportunitiesServer(token: string): Promise<Opportunity[]> {
-    const response = await fetch(`${SERVER_API_URL}/opportunities/?page=1&page_size=100`, {
+    const response = await fetch(`${SERVER_API_URL}/opportunities/?page=1&page_size=100&all=true`, {
         headers: { Authorization: `Bearer ${token}` },
         cache: 'no-store',
     });
