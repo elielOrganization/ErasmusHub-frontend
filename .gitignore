@@ -23,3 +23,8 @@ public/swe-worker-*.js
 next-env.d.ts
 next-env.d.ts
 *.ts
+!lib/*.ts
+!hooks/*.ts
+!context/*.ts
+!services/*.ts
+!types/*.ts
