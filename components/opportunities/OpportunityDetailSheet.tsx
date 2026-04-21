@@ -371,22 +371,22 @@ export default function OpportunityDetailSheet({
                             <p className="text-sm text-gray-400 italic">{t("noTeachersAssigned")}</p>
                         ) : (
                             <div className="space-y-2">
-                                {assignedTeachers.map(t => (
-                                    <div key={t.id} className="flex items-center gap-2.5">
+                                {assignedTeachers.map(teacher => (
+                                    <div key={teacher.id} className="flex items-center gap-2.5">
                                         <div className="w-8 h-8 rounded-full bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center shrink-0">
                                             <span className="text-xs font-bold text-blue-600 dark:text-blue-400">
-                                                {t.first_name.charAt(0)}{t.last_name.charAt(0)}
+                                                {teacher.first_name.charAt(0)}{teacher.last_name.charAt(0)}
                                             </span>
                                         </div>
                                         <div className="flex-1 min-w-0">
                                             <p className="text-sm font-semibold text-gray-700 dark:text-gray-200 truncate">
-                                                {t.first_name} {t.last_name}
+                                                {teacher.first_name} {teacher.last_name}
                                             </p>
-                                            <p className="text-xs text-gray-400 dark:text-gray-500 truncate">{t.email}</p>
+                                            <p className="text-xs text-gray-400 dark:text-gray-500 truncate">{teacher.email}</p>
                                         </div>
                                         {isAdmin && (
                                             <button
-                                                onClick={() => handleRemoveTeacher(t.id)}
+                                                onClick={() => handleRemoveTeacher(teacher.id)}
                                                 className="p-1 rounded hover:bg-red-100 dark:hover:bg-red-900/20 text-red-400 hover:text-red-600 transition-colors shrink-0"
                                                 title={t("removeTeacher")}
                                             >
@@ -425,21 +425,21 @@ export default function OpportunityDetailSheet({
                                             </p>
                                         ) : (
                                             <div className="max-h-40 overflow-y-auto space-y-1 pr-1">
-                                                {unassignedTeachers.map(t => (
+                                                {unassignedTeachers.map(teacher => (
                                                     <button
-                                                        key={t.id}
-                                                        onClick={() => handleAddTeacher(t.id)}
+                                                        key={teacher.id}
+                                                        onClick={() => handleAddTeacher(teacher.id)}
                                                         disabled={addLoading}
                                                         className="w-full flex items-center gap-2.5 px-2 py-1.5 rounded-lg hover:bg-blue-50 dark:hover:bg-blue-900/20 transition-colors text-left disabled:opacity-50"
                                                     >
                                                         <div className="w-7 h-7 rounded-full bg-gray-200 dark:bg-gray-700 flex items-center justify-center shrink-0">
                                                             <span className="text-xs font-bold text-gray-500 dark:text-gray-300">
-                                                                {t.first_name.charAt(0)}{t.last_name.charAt(0)}
+                                                                {teacher.first_name.charAt(0)}{teacher.last_name.charAt(0)}
                                                             </span>
                                                         </div>
                                                         <div className="flex-1 min-w-0">
-                                                            <p className="text-xs font-medium text-gray-700 dark:text-gray-200 truncate">{t.first_name} {t.last_name}</p>
-                                                            <p className="text-[10px] text-gray-400 truncate">{t.email}</p>
+                                                            <p className="text-xs font-medium text-gray-700 dark:text-gray-200 truncate">{teacher.first_name} {teacher.last_name}</p>
+                                                            <p className="text-[10px] text-gray-400 truncate">{teacher.email}</p>
                                                         </div>
                                                         <svg className="w-3.5 h-3.5 text-blue-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth="2">
                                                             <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
