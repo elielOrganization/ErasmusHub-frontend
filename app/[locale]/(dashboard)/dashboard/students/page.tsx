@@ -2,6 +2,8 @@
 
 import { useState, useEffect } from "react";
 import { useTranslations } from "next-intl";
+import { useParams, useRouter } from "next/navigation";
+import Link from "next/link";
 import { useApi } from "@/hooks/useApi";
 import { useRoleTheme } from "@/hooks/useRoleTheme";
 import LoadingSpinner from "@/components/ui/LoadingSpinner";
@@ -189,6 +191,9 @@ function AssignModal({ student, onClose, opportunities, currentOpp, resolvedUser
 export default function StudentsPage() {
     const t = useTranslations("studentsDashboard");
     const theme = useRoleTheme();
+    const params = useParams();
+    const locale = (params?.locale as string) || "en";
+    const router = useRouter();
 
     const [search, setSearch] = useState("");
     const [courseFilter, setCourseFilter] = useState("");
@@ -356,7 +361,7 @@ export default function StudentsPage() {
                                         const appInfo = assignmentMap.get(`${s.first_name} ${s.last_name}`);
                                         const assignedOpp = appInfo?.oppName;
                                         return (
-                                            <tr key={s.id} className={`group transition-colors hover:bg-gray-50 dark:hover:bg-gray-800/40 ${isTop3 ? "bg-gradient-to-r from-transparent to-transparent" : ""}`}>
+                                            <tr key={s.id} onClick={() => router.push(`/${locale}/dashboard/students/${s.user_id}`)} className={`group transition-colors hover:bg-gray-50 dark:hover:bg-gray-800/40 cursor-pointer ${isTop3 ? "bg-gradient-to-r from-transparent to-transparent" : ""}`}>
                                                 <td className="px-4 py-3.5 text-center">
                                                     <span className={`inline-flex items-center justify-center w-7 h-7 rounded-full text-xs font-bold ${
                                                         position === 1 ? "bg-yellow-100 dark:bg-yellow-900/30 text-yellow-700 dark:text-yellow-400 ring-1 ring-yellow-200 dark:ring-yellow-700/50" :
@@ -399,7 +404,7 @@ export default function StudentsPage() {
                                                         <span className="text-gray-300 dark:text-gray-600 text-xs">—</span>
                                                     )}
                                                 </td>
-                                                <td className="px-5 py-3.5 text-right">
+                                                <td className="px-5 py-3.5 text-right" onClick={e => e.stopPropagation()}>
                                                     <button
                                                         onClick={() => setAssignStudent(s)}
                                                         className={`whitespace-nowrap px-3 py-1.5 rounded-lg text-xs font-semibold transition-colors cursor-pointer ${theme.accentText} ${theme.accentBg} ${theme.softHover}`}

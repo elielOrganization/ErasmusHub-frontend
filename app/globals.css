@@ -104,3 +104,36 @@ body {
 .animate-modal-out { animation: modal-out 0.15s ease-in both; }
 .animate-fade-in   { animation: fade-in   0.2s ease-out both; }
 .animate-fade-out  { animation: fade-out  0.15s ease-in both; }
+
+
+/* ── Auth card entrance ── */
+
+@keyframes auth-card-enter {
+  0%   { opacity: 0; transform: translateY(24px) scale(0.97); }
+  60%  { opacity: 1; transform: translateY(-4px) scale(1.005); }
+  100% { opacity: 1; transform: translateY(0) scale(1); }
+}
+.auth-card-enter {
+  animation: auth-card-enter 0.55s cubic-bezier(0.34, 1.4, 0.64, 1) both;
+}
+
+/* ── Auth card exit (on login success) ── */
+
+@keyframes auth-card-exit {
+  0%   { opacity: 1; transform: translateY(0) scale(1); }
+  100% { opacity: 0; transform: translateY(-32px) scale(0.96); }
+}
+.auth-card-exit {
+  animation: auth-card-exit 0.45s cubic-bezier(0.4, 0, 1, 1) forwards;
+}
+
+/* ── Login button success check ── */
+
+@keyframes check-pop {
+  0%   { transform: scale(0) rotate(-10deg); }
+  60%  { transform: scale(1.2) rotate(3deg); }
+  100% { transform: scale(1) rotate(0deg); }
+}
+.check-pop {
+  animation: check-pop 0.35s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+}

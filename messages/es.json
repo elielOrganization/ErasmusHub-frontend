@@ -821,5 +821,27 @@
     "notAvailable": "La lista final aún no está disponible",
     "publishBtn": "Publicar para usuarios",
     "unpublishBtn": "Ocultar para usuarios"
+  },
+
+  "studentProfile": {
+    "back": "Volver",
+    "notFound": "Estudiante no encontrado.",
+    "goBack": "Volver",
+    "grade": "Nota",
+    "docs": "Docs",
+    "minor": "Menor",
+    "personalContact": "Personal y Contacto",
+    "assignedOpportunity": "Oportunidad asignada",
+    "applicationNumber": "Solicitud #{id}",
+    "noOpportunity": "Sin oportunidad asignada.",
+    "documents": "Documentos",
+    "submitted": "subidos",
+    "approved": "Aprobados",
+    "pending": "Pendientes",
+    "other": "Otros",
+    "reviewDocuments": "Revisar documentos",
+    "noDocs": "No hay documentos subidos.",
+    "courseYear": "Curso / Año",
+    "finalGrade": "Nota final"
   }
 }

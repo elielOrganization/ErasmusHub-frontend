@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useRouter } from '@/i18n/routing';
 import { useAuth } from '@/context/AuthContext';
 import { usePWA } from '@/hooks/usePWA';
@@ -12,7 +12,19 @@ interface LoginTranslations {
     generic: string;
 }
 
-export const useLogin = (translations: LoginTranslations) => {
+interface LoginOptions {
+    translations: LoginTranslations;
+    onBeforeNavigate?: () => Promise<void>;
+}
+
+export const useLogin = (translationsOrOptions: LoginTranslations | LoginOptions) => {
+    const translations = 'translations' in translationsOrOptions
+        ? translationsOrOptions.translations
+        : translationsOrOptions;
+    const onBeforeNavigate = 'onBeforeNavigate' in translationsOrOptions
+        ? translationsOrOptions.onBeforeNavigate
+        : undefined;
+
     const router = useRouter();
     const { loginGlobal, user, loading: authLoading } = useAuth();
     const { isInstallable, installApp } = usePWA();
@@ -20,9 +32,10 @@ export const useLogin = (translations: LoginTranslations) => {
     const [formData, setFormData] = useState({ rodne_cislo: '', password: '' });
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
+    const navigatingRef = useRef(false);
 
     useEffect(() => {
-        if (user && !authLoading) {
+        if (user && !authLoading && !navigatingRef.current) {
             router.push("/dashboard");
         }
     }, [user, authLoading, router]);
@@ -69,10 +82,13 @@ export const useLogin = (translations: LoginTranslations) => {
             const expireTime = 30 / (24 * 60);
             Cookies.set('auth_token', data.access_token, { expires: expireTime, secure: true, sameSite: 'strict' });
 
+            navigatingRef.current = true;
             await loginGlobal(data.access_token);
+            if (onBeforeNavigate) await onBeforeNavigate();
             router.push("/dashboard");
 
         } catch (err: any) {
+            navigatingRef.current = false;
             setError(err.message);
         } finally {
             setLoading(false);
