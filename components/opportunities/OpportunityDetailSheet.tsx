@@ -7,7 +7,9 @@ import { getCountryFlagUrl } from '@/lib/countryFlags';
 import { COUNTRIES } from '@/lib/countries';
 import { translateOpportunity, type OpportunityTranslation } from '@/lib/translate';
 import { useRoleTheme } from '@/hooks/useRoleTheme';
+import { useAuth } from '@/context/AuthContext';
 import type { Opportunity, AssignedStudent } from '@/services/opportunityService';
+import { getOpportunityTeacher, assignTeacher, getOrCreateChat, type TeacherInfo } from '@/services/chatService';
 
 interface OpportunityWithStudents extends Opportunity {
     students: AssignedStudent[];
@@ -21,6 +23,7 @@ interface Props {
     dateLocale: string;
     canManage?: boolean;
     onEdit?: () => void;
+    onOpenChat?: (chatId: number) => void;
 }
 
 /* ── Icons ──────────────────────────────────────────────────── */
@@ -67,9 +70,11 @@ export default function OpportunityDetailSheet({
     dateLocale,
     canManage,
     onEdit,
+    onOpenChat,
 }: Props) {
     const t = useTranslations('opportunitiesDashboard');
     const theme = useRoleTheme();
+    const { user, roleName } = useAuth();
 
     // ── Animation state ──────────────────────────────────────
     // shouldRender keeps the DOM node alive during exit animation.
@@ -119,6 +124,41 @@ export default function OpportunityDetailSheet({
             setShowTranslated(true);
         } catch { /* silently fail */ }
         finally { setTranslating(false); }
+    };
+
+    // ── Teacher & chat state ──────────────────────────────────
+    const [teacher, setTeacher] = useState<TeacherInfo | null>(null);
+    const [assigningTeacherId, setAssigningTeacherId] = useState('');
+    const [assignLoading, setAssignLoading] = useState(false);
+    const [chatLoading, setChatLoading] = useState(false);
+
+    const isAdmin = roleName?.toLowerCase().includes('admin');
+    const isStudent = roleName?.toLowerCase() === 'student';
+
+    useEffect(() => {
+        if (!o) return;
+        getOpportunityTeacher(o.id).then(setTeacher).catch(() => setTeacher(null));
+    }, [o?.id]);
+
+    const handleAssignTeacher = async () => {
+        if (!o || !assigningTeacherId) return;
+        setAssignLoading(true);
+        try {
+            const info = await assignTeacher(o.id, Number(assigningTeacherId));
+            setTeacher(info);
+            setAssigningTeacherId('');
+        } catch { /* ignore */ }
+        finally { setAssignLoading(false); }
+    };
+
+    const handleOpenChat = async () => {
+        if (!o) return;
+        setChatLoading(true);
+        try {
+            const chat = await getOrCreateChat(o.id);
+            onOpenChat?.(chat.id);
+        } catch { /* ignore */ }
+        finally { setChatLoading(false); }
     };
 
     if (!shouldRender || !o) return null;
@@ -299,6 +339,60 @@ export default function OpportunityDetailSheet({
                                         <span className={`w-2 h-2 rounded-full shrink-0 ${s.status === 'approved' ? 'bg-emerald-500' : s.status === 'pending' ? 'bg-amber-500' : 'bg-gray-400'}`} />
                                     </Link>
                                 ))}
+                            </div>
+                        )}
+                    </div>
+
+                    {/* Responsible teacher */}
+                    <div className="rounded-xl bg-gray-50 dark:bg-gray-800/60 p-4 space-y-3">
+                        <p className="text-xs font-medium text-gray-400 dark:text-gray-500 uppercase tracking-wider">
+                            Profesor encargado
+                        </p>
+
+                        {teacher ? (
+                            <div className="flex items-center gap-3">
+                                <div className="w-9 h-9 rounded-full bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center shrink-0">
+                                    <span className="text-sm font-bold text-blue-600 dark:text-blue-400">
+                                        {teacher.first_name.charAt(0)}{teacher.last_name.charAt(0)}
+                                    </span>
+                                </div>
+                                <div className="flex-1 min-w-0">
+                                    <p className="text-sm font-semibold text-gray-700 dark:text-gray-200 truncate">
+                                        {teacher.first_name} {teacher.last_name}
+                                    </p>
+                                    <p className="text-xs text-gray-400 dark:text-gray-500 truncate">{teacher.email}</p>
+                                </div>
+                                {isStudent && (
+                                    <button
+                                        onClick={handleOpenChat}
+                                        disabled={chatLoading}
+                                        className="shrink-0 px-3 py-1.5 bg-blue-500 hover:bg-blue-600 text-white text-xs font-semibold rounded-lg transition-colors active:scale-95 disabled:opacity-50"
+                                    >
+                                        {chatLoading ? '...' : 'Chatear'}
+                                    </button>
+                                )}
+                            </div>
+                        ) : (
+                            <p className="text-sm text-gray-400 italic">Sin profesor asignado</p>
+                        )}
+
+                        {/* Admin: assign teacher by ID */}
+                        {isAdmin && (
+                            <div className="flex gap-2 pt-1">
+                                <input
+                                    type="number"
+                                    value={assigningTeacherId}
+                                    onChange={e => setAssigningTeacherId(e.target.value)}
+                                    placeholder="ID del profesor"
+                                    className="flex-1 text-xs bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-lg px-3 py-1.5 outline-none focus:ring-2 focus:ring-blue-500/40 text-gray-800 dark:text-gray-100"
+                                />
+                                <button
+                                    onClick={handleAssignTeacher}
+                                    disabled={!assigningTeacherId || assignLoading}
+                                    className="px-3 py-1.5 bg-blue-500 hover:bg-blue-600 text-white text-xs font-semibold rounded-lg transition-colors disabled:opacity-40"
+                                >
+                                    {assignLoading ? '...' : 'Asignar'}
+                                </button>
                             </div>
                         )}
                     </div>

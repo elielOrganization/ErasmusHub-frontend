@@ -12,6 +12,7 @@ export interface Opportunity {
     max_slots: number;
     filled_slots: number;
     creator_id: number | null;
+    responsible_teacher_id: number | null;
     created_at: string;
     updated_at: string;
 }
@@ -47,6 +48,7 @@ export async function fetchOpportunitiesServer(token: string): Promise<Opportuni
         max_slots: item.max_slots ?? 0,
         filled_slots: item.filled_slots ?? 0,
         creator_id: item.creator_id ?? null,
+        responsible_teacher_id: item.responsible_teacher_id ?? null,
         updated_at: item.updated_at ?? item.created_at,
     }));
 }
