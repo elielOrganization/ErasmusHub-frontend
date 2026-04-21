@@ -126,7 +126,11 @@
     "myDocumentsDesc": "Nahrajte a spravujte svou dokumentaci",
     "opportunitiesDesc": "Prozkoumejte dostupné destinace Erasmus",
     "chat": "Chat",
-    "noMessages": "Nemáte žádné nové zprávy"
+    "noMessages": "Nemáte žádné nové zprávy",
+    "justNow": "právě teď",
+    "chatBeFirst": "Buďte první, kdo napíše zprávu",
+    "chatWritePlaceholder": "Napište zprávu...",
+    "chatEnterHint": "Enter pro odeslání · Shift+Enter pro nový řádek"
   },
 
   "practicas": {
@@ -416,7 +420,15 @@
     "showOriginal": "Zobrazit originál",
     "translating": "Překládání...",
     "autoTranslated": "Automaticky přeloženo",
-    "createdAt": "Vytvořeno"
+    "createdAt": "Vytvořeno",
+    "responsibleTeachers": "Odpovědní učitelé",
+    "noTeachersAssigned": "Žádní přiřazení učitelé",
+    "chatWithTeacher": "Chatovat",
+    "removeTeacher": "Odebrat učitele",
+    "addTeacher": "Přidat učitele",
+    "selectTeacher": "Vybrat učitele",
+    "allTeachersAssigned": "Všichni učitelé jsou již přiřazeni",
+    "loading": "Načítání..."
   },
 
   "studentsDashboard": {

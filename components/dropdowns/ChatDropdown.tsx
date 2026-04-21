@@ -10,10 +10,10 @@ import {
     type ChatMessage,
 } from "@/services/chatService";
 
-function timeAgo(iso: string): string {
+function timeAgo(iso: string, tNow: string): string {
     const diff = Date.now() - new Date(iso).getTime();
     const mins = Math.floor(diff / 60000);
-    if (mins < 1) return "ahora";
+    if (mins < 1) return tNow;
     if (mins < 60) return `${mins}m`;
     const hrs = Math.floor(mins / 60);
     if (hrs < 24) return `${hrs}h`;
@@ -31,6 +31,7 @@ export default function ChatDropdown() {
     const menuRef = useRef<HTMLDivElement>(null);
     const messagesEndRef = useRef<HTMLDivElement>(null);
     const { user } = useAuth();
+    const t = useTranslations("dashboard");
 
     const totalUnread = chats.reduce((acc, c) => acc + c.unread_count, 0);
 
@@ -172,7 +173,7 @@ export default function ChatDropdown() {
                                             <path strokeLinecap="round" strokeLinejoin="round" d="M12 20.25c4.97 0 9-3.694 9-8.25s-4.03-8.25-9-8.25S3 7.444 3 12c0 2.104.859 4.023 2.273 5.48.432.447.74 1.04.586 1.641a4.483 4.483 0 01-.923 1.785A5.969 5.969 0 006 21c1.282 0 2.47-.402 3.445-1.087.81.22 1.668.337 2.555.337z" />
                                         </svg>
                                     </div>
-                                    <p className="text-xs text-gray-400 dark:text-gray-500">Sin mensajes</p>
+                                    <p className="text-xs text-gray-400 dark:text-gray-500">{t("noMessages")}</p>
                                 </div>
                             ) : (
                                 chats.map(chat => (
@@ -195,7 +196,7 @@ export default function ChatDropdown() {
                                                 </span>
                                                 {chat.last_message && (
                                                     <span className="text-[10px] text-gray-400 dark:text-gray-500 shrink-0">
-                                                        {timeAgo(chat.last_message.created_at)}
+                                                        {timeAgo(chat.last_message.created_at, t("justNow"))}
                                                     </span>
                                                 )}
                                             </div>
@@ -229,7 +230,7 @@ export default function ChatDropdown() {
                                     </div>
                                 ) : messages.length === 0 ? (
                                     <p className="text-xs text-gray-400 dark:text-gray-500 text-center py-6">
-                                        Sé el primero en escribir un mensaje
+                                        {t("chatBeFirst")}
                                     </p>
                                 ) : (
                                     messages.map(msg => {
@@ -246,7 +247,7 @@ export default function ChatDropdown() {
                                                     )}
                                                     <p className="leading-relaxed whitespace-pre-wrap break-words">{msg.content}</p>
                                                     <p className={`text-[9px] mt-0.5 ${isOwn ? "text-blue-100" : "text-gray-400 dark:text-gray-500"}`}>
-                                                        {timeAgo(msg.created_at)}
+                                                        {timeAgo(msg.created_at, t("justNow"))}
                                                     </p>
                                                 </div>
                                             </div>
@@ -263,7 +264,7 @@ export default function ChatDropdown() {
                                         value={input}
                                         onChange={e => setInput(e.target.value)}
                                         onKeyDown={handleKeyDown}
-                                        placeholder="Escribe un mensaje..."
+                                        placeholder={t("chatWritePlaceholder")}
                                         rows={1}
                                         className="flex-1 text-xs bg-gray-100 dark:bg-gray-800 text-gray-800 dark:text-gray-100 rounded-xl px-3 py-2 resize-none outline-none placeholder-gray-400 dark:placeholder-gray-500 focus:ring-2 focus:ring-blue-500/40"
                                         style={{ maxHeight: "80px" }}
@@ -282,7 +283,7 @@ export default function ChatDropdown() {
                                         )}
                                     </button>
                                 </div>
-                                <p className="text-[9px] text-gray-400 dark:text-gray-600 mt-1">Enter para enviar · Shift+Enter para nueva línea</p>
+                                <p className="text-[9px] text-gray-400 dark:text-gray-600 mt-1">{t("chatEnterHint")}</p>
                             </div>
                         </>
                     )}

@@ -126,7 +126,11 @@
     "myDocumentsDesc": "Sube y gestiona tu documentación",
     "opportunitiesDesc": "Explora los destinos Erasmus disponibles",
     "chat": "Chat",
-    "noMessages": "No tienes mensajes nuevos"
+    "noMessages": "No tienes mensajes nuevos",
+    "justNow": "ahora",
+    "chatBeFirst": "Sé el primero en escribir un mensaje",
+    "chatWritePlaceholder": "Escribe un mensaje...",
+    "chatEnterHint": "Enter para enviar · Shift+Enter para nueva línea"
   },
 
   "practicas": {
@@ -416,7 +420,15 @@
     "showOriginal": "Ver original",
     "translating": "Traduciendo...",
     "autoTranslated": "Traducido automáticamente",
-    "createdAt": "Creado"
+    "createdAt": "Creado",
+    "responsibleTeachers": "Profesores encargados",
+    "noTeachersAssigned": "Sin profesores asignados",
+    "chatWithTeacher": "Chatear",
+    "removeTeacher": "Quitar profesor",
+    "addTeacher": "Añadir profesor",
+    "selectTeacher": "Seleccionar profesor",
+    "allTeachersAssigned": "Todos los profesores ya están asignados",
+    "loading": "Cargando..."
   },
 
   "studentsDashboard": {

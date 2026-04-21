@@ -369,7 +369,7 @@ export default function OpportunityDetailSheet({
                     <div className="rounded-xl bg-gray-50 dark:bg-gray-800/60 p-4 space-y-3">
                         <div className="flex items-center justify-between">
                             <p className="text-xs font-medium text-gray-400 dark:text-gray-500 uppercase tracking-wider">
-                                Profesores encargados
+                                {t("responsibleTeachers")}
                             </p>
                             {isStudent && assignedTeachers.length > 0 && (
                                 <button
@@ -377,14 +377,14 @@ export default function OpportunityDetailSheet({
                                     disabled={chatLoading}
                                     className="px-3 py-1 bg-blue-500 hover:bg-blue-600 text-white text-xs font-semibold rounded-lg transition-colors active:scale-95 disabled:opacity-50"
                                 >
-                                    {chatLoading ? '...' : 'Chatear'}
+                                    {chatLoading ? '...' : t("chatWithTeacher")}
                                 </button>
                             )}
                         </div>
 
                         {/* Assigned teachers list */}
                         {assignedTeachers.length === 0 ? (
-                            <p className="text-sm text-gray-400 italic">Sin profesores asignados</p>
+                            <p className="text-sm text-gray-400 italic">{t("noTeachersAssigned")}</p>
                         ) : (
                             <div className="space-y-2">
                                 {assignedTeachers.map(t => (
@@ -404,7 +404,7 @@ export default function OpportunityDetailSheet({
                                             <button
                                                 onClick={() => handleRemoveTeacher(t.id)}
                                                 className="p-1 rounded hover:bg-red-100 dark:hover:bg-red-900/20 text-red-400 hover:text-red-600 transition-colors shrink-0"
-                                                title="Quitar profesor"
+                                                title={t("removeTeacher")}
                                             >
                                                 <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth="2.5">
                                                     <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
@@ -427,17 +427,17 @@ export default function OpportunityDetailSheet({
                                         <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth="2">
                                             <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
                                         </svg>
-                                        Añadir profesor
+                                        {t("addTeacher")}
                                     </button>
                                 ) : (
                                     <div className="space-y-1.5">
                                         <div className="flex items-center justify-between">
-                                            <p className="text-xs font-medium text-gray-500 dark:text-gray-400">Seleccionar profesor</p>
-                                            <button onClick={() => setShowTeacherPicker(false)} className="text-xs text-gray-400 hover:text-gray-600">Cerrar</button>
+                                            <p className="text-xs font-medium text-gray-500 dark:text-gray-400">{t("selectTeacher")}</p>
+                                            <button onClick={() => setShowTeacherPicker(false)} className="text-xs text-gray-400 hover:text-gray-600">{t("cancel")}</button>
                                         </div>
                                         {unassignedTeachers.length === 0 ? (
                                             <p className="text-xs text-gray-400 italic py-2">
-                                                {allTeachers.length === 0 ? 'Cargando...' : 'Todos los profesores ya están asignados'}
+                                                {allTeachers.length === 0 ? t("loading") : t("allTeachersAssigned")}
                                             </p>
                                         ) : (
                                             <div className="max-h-40 overflow-y-auto space-y-1 pr-1">
