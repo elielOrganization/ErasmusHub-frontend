@@ -2,6 +2,7 @@
 import { useState, useRef, useEffect, useCallback } from "react";
 import { useTranslations } from "next-intl";
 import { useAuth } from "@/context/AuthContext";
+import { useChatContext } from "@/context/ChatContext";
 import {
     fetchMyChats,
     fetchMessages,
@@ -32,6 +33,7 @@ export default function ChatDropdown() {
     const messagesEndRef = useRef<HTMLDivElement>(null);
     const { user } = useAuth();
     const t = useTranslations("dashboard");
+    const { pendingChatId, clearPendingChat } = useChatContext();
 
     const totalUnread = chats.reduce((acc, c) => acc + c.unread_count, 0);
 
@@ -48,6 +50,27 @@ export default function ChatDropdown() {
     useEffect(() => {
         if (isOpen) loadChats();
     }, [isOpen, loadChats]);
+
+    // Open automatically when a chat is triggered from elsewhere (e.g. "Chatear" button)
+    useEffect(() => {
+        if (!pendingChatId) return;
+        const open = async () => {
+            await loadChats();
+            setIsOpen(true);
+            const msgs = await fetchMessages(pendingChatId).catch(() => []);
+            setChats(prev => {
+                const found = prev.find(c => c.id === pendingChatId);
+                if (found) {
+                    setActiveChat(found);
+                    setMessages(msgs);
+                    setChats(p => p.map(c => c.id === pendingChatId ? { ...c, unread_count: 0 } : c));
+                }
+                return prev;
+            });
+            clearPendingChat();
+        };
+        open();
+    }, [pendingChatId]); // eslint-disable-line react-hooks/exhaustive-deps
 
     // Poll for new messages every 5s when a chat is open
     useEffect(() => {

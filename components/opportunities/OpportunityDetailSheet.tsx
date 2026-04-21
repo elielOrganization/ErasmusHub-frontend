@@ -8,6 +8,7 @@ import { COUNTRIES } from '@/lib/countries';
 import { translateOpportunity, type OpportunityTranslation } from '@/lib/translate';
 import { useRoleTheme } from '@/hooks/useRoleTheme';
 import { useAuth } from '@/context/AuthContext';
+import { useChatContext } from '@/context/ChatContext';
 import type { Opportunity, AssignedStudent } from '@/services/opportunityService';
 import {
     fetchOpportunityTeachers,
@@ -140,6 +141,7 @@ export default function OpportunityDetailSheet({
     const [addLoading, setAddLoading] = useState(false);
     const [chatLoading, setChatLoading] = useState(false);
 
+    const { openChat } = useChatContext();
     const isAdmin = roleName?.toLowerCase().includes('admin');
     const isStudent = roleName?.toLowerCase() === 'student';
 
@@ -176,7 +178,7 @@ export default function OpportunityDetailSheet({
         setChatLoading(true);
         try {
             const chat = await getOrCreateChat(o.id);
-            onOpenChat?.(chat.id);
+            openChat(chat.id);
         } catch { /* ignore */ }
         finally { setChatLoading(false); }
     };
