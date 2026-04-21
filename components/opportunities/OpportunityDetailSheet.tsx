@@ -9,7 +9,14 @@ import { translateOpportunity, type OpportunityTranslation } from '@/lib/transla
 import { useRoleTheme } from '@/hooks/useRoleTheme';
 import { useAuth } from '@/context/AuthContext';
 import type { Opportunity, AssignedStudent } from '@/services/opportunityService';
-import { getOpportunityTeacher, assignTeacher, getOrCreateChat, type TeacherInfo } from '@/services/chatService';
+import {
+    fetchOpportunityTeachers,
+    addOpportunityTeacher,
+    removeOpportunityTeacher,
+    fetchAllTeachers,
+    getOrCreateChat,
+    type TeacherInfo,
+} from '@/services/chatService';
 
 interface OpportunityWithStudents extends Opportunity {
     students: AssignedStudent[];
@@ -127,9 +134,10 @@ export default function OpportunityDetailSheet({
     };
 
     // ── Teacher & chat state ──────────────────────────────────
-    const [teacher, setTeacher] = useState<TeacherInfo | null>(null);
-    const [assigningTeacherId, setAssigningTeacherId] = useState('');
-    const [assignLoading, setAssignLoading] = useState(false);
+    const [assignedTeachers, setAssignedTeachers] = useState<TeacherInfo[]>([]);
+    const [allTeachers, setAllTeachers] = useState<TeacherInfo[]>([]);
+    const [showTeacherPicker, setShowTeacherPicker] = useState(false);
+    const [addLoading, setAddLoading] = useState(false);
     const [chatLoading, setChatLoading] = useState(false);
 
     const isAdmin = roleName?.toLowerCase().includes('admin');
@@ -137,18 +145,30 @@ export default function OpportunityDetailSheet({
 
     useEffect(() => {
         if (!o) return;
-        getOpportunityTeacher(o.id).then(setTeacher).catch(() => setTeacher(null));
+        fetchOpportunityTeachers(o.id).then(setAssignedTeachers).catch(() => setAssignedTeachers([]));
     }, [o?.id]);
 
-    const handleAssignTeacher = async () => {
-        if (!o || !assigningTeacherId) return;
-        setAssignLoading(true);
+    useEffect(() => {
+        if (!isAdmin || !showTeacherPicker) return;
+        fetchAllTeachers().then(setAllTeachers).catch(() => setAllTeachers([]));
+    }, [isAdmin, showTeacherPicker]);
+
+    const handleAddTeacher = async (teacherId: number) => {
+        if (!o) return;
+        setAddLoading(true);
         try {
-            const info = await assignTeacher(o.id, Number(assigningTeacherId));
-            setTeacher(info);
-            setAssigningTeacherId('');
+            const info = await addOpportunityTeacher(o.id, teacherId);
+            setAssignedTeachers(prev => [...prev, info]);
         } catch { /* ignore */ }
-        finally { setAssignLoading(false); }
+        finally { setAddLoading(false); }
+    };
+
+    const handleRemoveTeacher = async (teacherId: number) => {
+        if (!o) return;
+        try {
+            await removeOpportunityTeacher(o.id, teacherId);
+            setAssignedTeachers(prev => prev.filter(t => t.id !== teacherId));
+        } catch { /* ignore */ }
     };
 
     const handleOpenChat = async () => {
@@ -160,6 +180,8 @@ export default function OpportunityDetailSheet({
         } catch { /* ignore */ }
         finally { setChatLoading(false); }
     };
+
+    const unassignedTeachers = allTeachers.filter(t => !assignedTeachers.some(a => a.id === t.id));
 
     if (!shouldRender || !o) return null;
 
@@ -343,56 +365,107 @@ export default function OpportunityDetailSheet({
                         )}
                     </div>
 
-                    {/* Responsible teacher */}
+                    {/* Responsible teachers */}
                     <div className="rounded-xl bg-gray-50 dark:bg-gray-800/60 p-4 space-y-3">
-                        <p className="text-xs font-medium text-gray-400 dark:text-gray-500 uppercase tracking-wider">
-                            Profesor encargado
-                        </p>
+                        <div className="flex items-center justify-between">
+                            <p className="text-xs font-medium text-gray-400 dark:text-gray-500 uppercase tracking-wider">
+                                Profesores encargados
+                            </p>
+                            {isStudent && assignedTeachers.length > 0 && (
+                                <button
+                                    onClick={handleOpenChat}
+                                    disabled={chatLoading}
+                                    className="px-3 py-1 bg-blue-500 hover:bg-blue-600 text-white text-xs font-semibold rounded-lg transition-colors active:scale-95 disabled:opacity-50"
+                                >
+                                    {chatLoading ? '...' : 'Chatear'}
+                                </button>
+                            )}
+                        </div>
 
-                        {teacher ? (
-                            <div className="flex items-center gap-3">
-                                <div className="w-9 h-9 rounded-full bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center shrink-0">
-                                    <span className="text-sm font-bold text-blue-600 dark:text-blue-400">
-                                        {teacher.first_name.charAt(0)}{teacher.last_name.charAt(0)}
-                                    </span>
-                                </div>
-                                <div className="flex-1 min-w-0">
-                                    <p className="text-sm font-semibold text-gray-700 dark:text-gray-200 truncate">
-                                        {teacher.first_name} {teacher.last_name}
-                                    </p>
-                                    <p className="text-xs text-gray-400 dark:text-gray-500 truncate">{teacher.email}</p>
-                                </div>
-                                {isStudent && (
-                                    <button
-                                        onClick={handleOpenChat}
-                                        disabled={chatLoading}
-                                        className="shrink-0 px-3 py-1.5 bg-blue-500 hover:bg-blue-600 text-white text-xs font-semibold rounded-lg transition-colors active:scale-95 disabled:opacity-50"
-                                    >
-                                        {chatLoading ? '...' : 'Chatear'}
-                                    </button>
-                                )}
-                            </div>
+                        {/* Assigned teachers list */}
+                        {assignedTeachers.length === 0 ? (
+                            <p className="text-sm text-gray-400 italic">Sin profesores asignados</p>
                         ) : (
-                            <p className="text-sm text-gray-400 italic">Sin profesor asignado</p>
+                            <div className="space-y-2">
+                                {assignedTeachers.map(t => (
+                                    <div key={t.id} className="flex items-center gap-2.5">
+                                        <div className="w-8 h-8 rounded-full bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center shrink-0">
+                                            <span className="text-xs font-bold text-blue-600 dark:text-blue-400">
+                                                {t.first_name.charAt(0)}{t.last_name.charAt(0)}
+                                            </span>
+                                        </div>
+                                        <div className="flex-1 min-w-0">
+                                            <p className="text-sm font-semibold text-gray-700 dark:text-gray-200 truncate">
+                                                {t.first_name} {t.last_name}
+                                            </p>
+                                            <p className="text-xs text-gray-400 dark:text-gray-500 truncate">{t.email}</p>
+                                        </div>
+                                        {isAdmin && (
+                                            <button
+                                                onClick={() => handleRemoveTeacher(t.id)}
+                                                className="p-1 rounded hover:bg-red-100 dark:hover:bg-red-900/20 text-red-400 hover:text-red-600 transition-colors shrink-0"
+                                                title="Quitar profesor"
+                                            >
+                                                <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth="2.5">
+                                                    <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+                                                </svg>
+                                            </button>
+                                        )}
+                                    </div>
+                                ))}
+                            </div>
                         )}
 
-                        {/* Admin: assign teacher by ID */}
+                        {/* Admin: add teacher picker */}
                         {isAdmin && (
-                            <div className="flex gap-2 pt-1">
-                                <input
-                                    type="number"
-                                    value={assigningTeacherId}
-                                    onChange={e => setAssigningTeacherId(e.target.value)}
-                                    placeholder="ID del profesor"
-                                    className="flex-1 text-xs bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-lg px-3 py-1.5 outline-none focus:ring-2 focus:ring-blue-500/40 text-gray-800 dark:text-gray-100"
-                                />
-                                <button
-                                    onClick={handleAssignTeacher}
-                                    disabled={!assigningTeacherId || assignLoading}
-                                    className="px-3 py-1.5 bg-blue-500 hover:bg-blue-600 text-white text-xs font-semibold rounded-lg transition-colors disabled:opacity-40"
-                                >
-                                    {assignLoading ? '...' : 'Asignar'}
-                                </button>
+                            <div className="pt-1">
+                                {!showTeacherPicker ? (
+                                    <button
+                                        onClick={() => setShowTeacherPicker(true)}
+                                        className="w-full flex items-center justify-center gap-1.5 py-1.5 border border-dashed border-gray-300 dark:border-gray-600 rounded-lg text-xs text-gray-400 hover:text-blue-500 hover:border-blue-400 transition-colors"
+                                    >
+                                        <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth="2">
+                                            <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
+                                        </svg>
+                                        Añadir profesor
+                                    </button>
+                                ) : (
+                                    <div className="space-y-1.5">
+                                        <div className="flex items-center justify-between">
+                                            <p className="text-xs font-medium text-gray-500 dark:text-gray-400">Seleccionar profesor</p>
+                                            <button onClick={() => setShowTeacherPicker(false)} className="text-xs text-gray-400 hover:text-gray-600">Cerrar</button>
+                                        </div>
+                                        {unassignedTeachers.length === 0 ? (
+                                            <p className="text-xs text-gray-400 italic py-2">
+                                                {allTeachers.length === 0 ? 'Cargando...' : 'Todos los profesores ya están asignados'}
+                                            </p>
+                                        ) : (
+                                            <div className="max-h-40 overflow-y-auto space-y-1 pr-1">
+                                                {unassignedTeachers.map(t => (
+                                                    <button
+                                                        key={t.id}
+                                                        onClick={() => handleAddTeacher(t.id)}
+                                                        disabled={addLoading}
+                                                        className="w-full flex items-center gap-2.5 px-2 py-1.5 rounded-lg hover:bg-blue-50 dark:hover:bg-blue-900/20 transition-colors text-left disabled:opacity-50"
+                                                    >
+                                                        <div className="w-7 h-7 rounded-full bg-gray-200 dark:bg-gray-700 flex items-center justify-center shrink-0">
+                                                            <span className="text-xs font-bold text-gray-500 dark:text-gray-300">
+                                                                {t.first_name.charAt(0)}{t.last_name.charAt(0)}
+                                                            </span>
+                                                        </div>
+                                                        <div className="flex-1 min-w-0">
+                                                            <p className="text-xs font-medium text-gray-700 dark:text-gray-200 truncate">{t.first_name} {t.last_name}</p>
+                                                            <p className="text-[10px] text-gray-400 truncate">{t.email}</p>
+                                                        </div>
+                                                        <svg className="w-3.5 h-3.5 text-blue-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth="2">
+                                                            <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
+                                                        </svg>
+                                                    </button>
+                                                ))}
+                                            </div>
+                                        )}
+                                    </div>
+                                )}
                             </div>
                         )}
                     </div>

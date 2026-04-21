@@ -17,8 +17,7 @@ export interface Chat {
     opportunity_name: string;
     student_id: number;
     student_name: string;
-    teacher_id: number;
-    teacher_name: string;
+    teachers_names: string;
     unread_count: number;
     last_message: ChatMessage | null;
     created_at: string;
@@ -67,9 +66,15 @@ export async function sendMessage(chatId: number, content: string): Promise<Chat
     return res.json();
 }
 
-export async function assignTeacher(opportunityId: number, teacherId: number): Promise<TeacherInfo> {
-    const res = await fetch(`${API_URL}/chat/opportunities/${opportunityId}/teacher`, {
-        method: 'PUT',
+export async function fetchOpportunityTeachers(opportunityId: number): Promise<TeacherInfo[]> {
+    const res = await fetch(`${API_URL}/chat/opportunities/${opportunityId}/teachers`, { headers: authHeaders() });
+    if (!res.ok) return [];
+    return res.json();
+}
+
+export async function addOpportunityTeacher(opportunityId: number, teacherId: number): Promise<TeacherInfo> {
+    const res = await fetch(`${API_URL}/chat/opportunities/${opportunityId}/teachers`, {
+        method: 'POST',
         headers: authHeaders(),
         body: JSON.stringify({ teacher_id: teacherId }),
     });
@@ -77,11 +82,16 @@ export async function assignTeacher(opportunityId: number, teacherId: number): P
     return res.json();
 }
 
-export async function getOpportunityTeacher(opportunityId: number): Promise<TeacherInfo | null> {
-    const res = await fetch(`${API_URL}/chat/opportunities/${opportunityId}/teacher`, {
+export async function removeOpportunityTeacher(opportunityId: number, teacherId: number): Promise<void> {
+    const res = await fetch(`${API_URL}/chat/opportunities/${opportunityId}/teachers/${teacherId}`, {
+        method: 'DELETE',
         headers: authHeaders(),
     });
-    if (res.status === 404) return null;
     if (!res.ok) throw new Error(`Error ${res.status}`);
+}
+
+export async function fetchAllTeachers(): Promise<TeacherInfo[]> {
+    const res = await fetch(`${API_URL}/users/teachers`, { headers: authHeaders() });
+    if (!res.ok) return [];
     return res.json();
 }

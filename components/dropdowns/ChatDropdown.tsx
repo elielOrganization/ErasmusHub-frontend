@@ -154,9 +154,9 @@ export default function ChatDropdown() {
                                 : "Mensajes"}
                         </h3>
                         {activeChat && (
-                            <span className="text-xs text-gray-400 dark:text-gray-500 truncate max-w-[100px]">
+                            <span className="text-xs text-gray-400 dark:text-gray-500 truncate max-w-[120px]">
                                 {user?.id === activeChat.student_id
-                                    ? activeChat.teacher_name
+                                    ? activeChat.teachers_names
                                     : activeChat.student_name}
                             </span>
                         )}
@@ -184,14 +184,14 @@ export default function ChatDropdown() {
                                         <div className="w-9 h-9 rounded-full bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center shrink-0">
                                             <span className="text-xs font-bold text-blue-600 dark:text-blue-400">
                                                 {user?.id === chat.student_id
-                                                    ? chat.teacher_name.charAt(0).toUpperCase()
+                                                    ? chat.teachers_names.charAt(0).toUpperCase()
                                                     : chat.student_name.charAt(0).toUpperCase()}
                                             </span>
                                         </div>
                                         <div className="flex-1 min-w-0">
                                             <div className="flex items-center justify-between gap-1">
                                                 <span className="text-xs font-semibold text-gray-800 dark:text-gray-100 truncate">
-                                                    {user?.id === chat.student_id ? chat.teacher_name : chat.student_name}
+                                                    {user?.id === chat.student_id ? chat.teachers_names : chat.student_name}
                                                 </span>
                                                 {chat.last_message && (
                                                     <span className="text-[10px] text-gray-400 dark:text-gray-500 shrink-0">
