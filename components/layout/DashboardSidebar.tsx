@@ -60,6 +60,12 @@ export default function DashboardSidebar() {
     const isTeacher = roleName.toLowerCase().includes('teacher') || roleName.toLowerCase().includes('profesor') || roleName.toLowerCase().includes('professor') || roleName.toLowerCase().includes('coordinator') || roleName.toLowerCase().includes('coordinador');
     const isLector = !isStudent && !isAdmin && !isTeacher;
 
+    const { data: chatsData } = useApi<{ id: number; unread_count: number }[]>(
+        '/chat/',
+        { refreshInterval: 30_000 }
+    );
+    const totalUnreadChats = (chatsData ?? []).reduce((acc, c) => acc + c.unread_count, 0);
+
     const { prefs } = useNotificationPrefs();
     const { data: notifsData } = useApi<{ items: { type: string; is_read: boolean }[] }>(
         '/notifications/me?page_size=100',
@@ -115,6 +121,7 @@ export default function DashboardSidebar() {
             label: t('sidebarReferencia'),
             items: [
                 { name: t('opportunities'), path: '/dashboard/opportunities', icon: <path strokeLinecap="round" strokeLinejoin="round" d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9" /> },
+                { name: t('chat'), path: '/dashboard/messages', badge: totalUnreadChats || undefined, icon: <path strokeLinecap="round" strokeLinejoin="round" d="M12 20.25c4.97 0 9-3.694 9-8.25s-4.03-8.25-9-8.25S3 7.444 3 12c0 2.104.859 4.023 2.273 5.48.432.447.74 1.04.586 1.641a4.483 4.483 0 01-.923 1.785A5.969 5.969 0 006 21c1.282 0 2.47-.402 3.445-1.087.81.22 1.668.337 2.555.337z" /> },
             ],
         },
     ];
@@ -142,6 +149,7 @@ export default function DashboardSidebar() {
                 { name: tpo('title'), path: '/dashboard/calificacion', icon: <path strokeLinecap="round" strokeLinejoin="round" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" /> },
                 { name: t('listaFinal'), path: '/dashboard/lista-final', icon: <path strokeLinecap="round" strokeLinejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" /> },
                 { name: t('opportunities'), path: '/dashboard/opportunities', icon: <path strokeLinecap="round" strokeLinejoin="round" d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9" /> },
+                { name: t('chat'), path: '/dashboard/messages', badge: totalUnreadChats || undefined, icon: <path strokeLinecap="round" strokeLinejoin="round" d="M12 20.25c4.97 0 9-3.694 9-8.25s-4.03-8.25-9-8.25S3 7.444 3 12c0 2.104.859 4.023 2.273 5.48.432.447.74 1.04.586 1.641a4.483 4.483 0 01-.923 1.785A5.969 5.969 0 006 21c1.282 0 2.47-.402 3.445-1.087.81.22 1.668.337 2.555.337z" /> },
             ],
         },
     ];
