@@ -1,6 +1,9 @@
 "use client";
 
+import { useEffect } from "react";
 import { useTranslations } from "next-intl";
+import { useRouter } from "next/navigation";
+import { useLocale } from "next-intl";
 import { useAuth } from "@/context/AuthContext";
 import { useRolePreview } from "@/context/RolePreviewContext";
 import LoadingSpinner from "@/components/ui/LoadingSpinner";
@@ -14,8 +17,9 @@ interface RoleGuardProps {
     children: ReactNode;
 }
 
-function getRole(roleName: string): AllowedRole {
-    const r = roleName.toLowerCase();
+function mapRole(roleName: unknown): AllowedRole {
+    if (typeof roleName !== "string") return "lector";
+    const r = roleName.toLowerCase().trim();
     if (r.includes("admin")) return "admin";
     if (
         r.includes("teacher") ||
@@ -25,21 +29,45 @@ function getRole(roleName: string): AllowedRole {
         r.includes("coordinador") ||
         r.includes("tutor")
     ) return "teacher";
-    if (r.includes("student")) return "student";
+    if (
+        r.includes("student") ||
+        r.includes("alumno") ||
+        r.includes("estudiante")
+    ) return "student";
     return "lector";
 }
 
-export default function RoleGuard({ allowed, children }: RoleGuardProps) {
+/** Comprueba si role está en la lista sin usar .includes() sobre el prop */
+function roleIsAllowed(allowed: unknown, role: AllowedRole): boolean {
+    if (!Array.isArray(allowed)) return false;
+    for (let i = 0; i < allowed.length; i++) {
+        if (allowed[i] === role) return true;
+    }
+    return false;
+}
+
+export default function RoleGuard(props: RoleGuardProps) {
+    const { allowed, children } = props;
     const t = useTranslations("accessDenied");
     const { user, loading } = useAuth();
     const { effectiveRoleName } = useRolePreview();
+    const router = useRouter();
+    const locale = useLocale();
+
+    // Sin sesión → redirige al login en vez de mostrar "sin permisos"
+    useEffect(() => {
+        if (!loading && !user) {
+            router.replace(`/${locale}/login`);
+        }
+    }, [loading, user, router, locale]);
 
     if (loading) return <LoadingSpinner />;
+    if (!user)   return <LoadingSpinner />;
 
-    const roleName = effectiveRoleName || user?.role?.name || "";
-    const role = getRole(roleName);
+    const roleName = effectiveRoleName || user.role?.name || "";
+    const role = mapRole(roleName);
 
-    if (!allowed.includes(role)) {
+    if (!roleIsAllowed(allowed, role)) {
         return (
             <AccessDenied
                 title={t("title")}
