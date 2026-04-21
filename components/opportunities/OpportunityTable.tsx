@@ -88,7 +88,7 @@ function StudentPills({ students, t, theme, locale }: { students: AssignedStuden
             {students.map((s) => (
                 <Link
                     key={s.application_id}
-                    href={`/${locale}/dashboard/students`}
+                    href={`/${locale}/dashboard/students/${s.user_id}`}
                     className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium ${theme.accentBg} ${theme.accentText} hover:opacity-75 transition-opacity`}
                     title={s.email}
                 >

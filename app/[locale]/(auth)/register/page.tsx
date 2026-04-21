@@ -61,7 +61,7 @@ export default function Register() {
     return (
         <AuthLayout>
             <div className="mb-6 text-center">
-                <h1 className="text-2xl font-bold text-gray-800 dark:text-gray-100 tracking-tight">
+                <h1 className="text-xl font-bold text-gray-800 dark:text-gray-100 tracking-tight">
                     {t('createAccountTitle')}
                 </h1>
                 <p className="text-sm text-gray-500 dark:text-gray-400 mt-2">

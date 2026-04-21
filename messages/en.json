@@ -809,5 +809,27 @@
     "notAvailable": "The final list is not yet available",
     "publishBtn": "Publish for users",
     "unpublishBtn": "Hide from users"
+  },
+
+  "studentProfile": {
+    "back": "Back",
+    "notFound": "Student not found.",
+    "goBack": "Go back",
+    "grade": "Grade",
+    "docs": "Docs",
+    "minor": "Minor",
+    "personalContact": "Personal & Contact",
+    "assignedOpportunity": "Assigned Opportunity",
+    "applicationNumber": "Application #{id}",
+    "noOpportunity": "Not assigned to any opportunity.",
+    "documents": "Documents",
+    "submitted": "submitted",
+    "approved": "Approved",
+    "pending": "Pending",
+    "other": "Other",
+    "reviewDocuments": "Review Documents",
+    "noDocs": "No documents submitted.",
+    "courseYear": "Course / Year",
+    "finalGrade": "Final Grade"
   }
 }

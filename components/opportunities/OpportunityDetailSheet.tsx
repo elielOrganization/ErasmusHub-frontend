@@ -51,9 +51,9 @@ function EditIcon() {
     );
 }
 
-function TranslateIcon({ className }: { className?: string }) {
+function TranslateIcon() {
     return (
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className={className ?? 'w-3.5 h-3.5'}>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="w-3.5 h-3.5">
             <path fillRule="evenodd" d="M8.22 3.75a.75.75 0 01.75-.75h7.5a.75.75 0 010 1.5H15.5V6h.25a.75.75 0 010 1.5H15.5v.5a.75.75 0 01-.75.75h-.5a.75.75 0 01-.75-.75V7.5h-2v.5a.75.75 0 01-.75.75h-.5a.75.75 0 01-.75-.75V7.5h-.5A.75.75 0 018.22 6.75V6h-.25a.75.75 0 010-1.5H8.22V3.75zM10 6h4V5h-4v1zm-7.28 5.47a.75.75 0 011.06 0l.97.97.97-.97a.75.75 0 111.06 1.06l-.97.97.97.97a.75.75 0 11-1.06 1.06l-.97-.97-.97.97a.75.75 0 01-1.06-1.06l.97-.97-.97-.97a.75.75 0 010-1.06zM11.5 11a.75.75 0 01.688.452l2.5 5.5a.75.75 0 01-1.376.596L12.89 16.5h-2.78l-.422.048a.75.75 0 01-1.376-.596l2.5-5.5A.75.75 0 0111.5 11zm0 2.564L10.698 15h1.604L11.5 13.564z" clipRule="evenodd" />
         </svg>
     );
@@ -215,8 +215,8 @@ export default function OpportunityDetailSheet({
                 ${visible ? 'translate-x-0' : 'translate-x-full'}
             `}>
 
-                {/* ── Header ────────────────────────────────── */}
-                <div className="flex items-center justify-between px-5 py-4 border-b border-gray-100 dark:border-gray-800 shrink-0">
+                {/* ── Header — tinted with role colour when translated ── */}
+                <div className={`flex items-center justify-between px-5 py-4 border-b border-gray-100 dark:border-gray-800 shrink-0 transition-colors duration-300 ${showTranslated && translation ? theme.accentBg : ''}`}>
                     <span className="text-xs font-semibold text-gray-400 dark:text-gray-500 uppercase tracking-wider">
                         {t('details')}
                     </span>
@@ -228,22 +228,6 @@ export default function OpportunityDetailSheet({
                         )}
                         <button onClick={onClose} className="p-1.5 rounded-lg text-gray-400 hover:text-gray-600 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors cursor-pointer">
                             <XIcon />
-                        </button>
-                    </div>
-                </div>
-
-                {/* ── Translation banner (sticky, outside scroll) ── */}
-                <div className={`shrink-0 overflow-hidden transition-all duration-300 ease-out ${showTranslated && translation ? 'max-h-16 opacity-100' : 'max-h-0 opacity-0'}`}>
-                    <div className="flex items-center justify-between px-5 py-2.5 bg-blue-50 dark:bg-blue-950/40 border-b border-blue-100 dark:border-blue-900">
-                        <div className="flex items-center gap-2 text-blue-600 dark:text-blue-400">
-                            <TranslateIcon className="w-3.5 h-3.5 shrink-0" />
-                            <span className="text-xs font-semibold">{t('autoTranslated')}</span>
-                        </div>
-                        <button
-                            onClick={() => setShowTranslated(false)}
-                            className="text-xs font-medium text-blue-500 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-200 transition-colors cursor-pointer"
-                        >
-                            {t('showOriginal')}
                         </button>
                     </div>
                 </div>
@@ -350,7 +334,7 @@ export default function OpportunityDetailSheet({
                         ) : (
                             <div className="space-y-1.5">
                                 {o.students.map(s => (
-                                    <Link key={s.application_id} href={`/${locale}/dashboard/students`} className="flex items-center gap-3 p-2.5 rounded-xl hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors">
+                                    <Link key={s.application_id} href={`/${locale}/dashboard/students/${s.user_id}`} className="flex items-center gap-3 p-2.5 rounded-xl hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors">
                                         <div className={`w-8 h-8 rounded-full ${theme.accentBg} flex items-center justify-center shrink-0`}>
                                             <span className={`text-xs font-bold ${theme.accentText}`}>{s.first_name[0]}{s.last_name[0]}</span>
                                         </div>

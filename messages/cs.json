@@ -809,5 +809,27 @@
     "notAvailable": "Výsledková listina zatím není k dispozici",
     "publishBtn": "Zveřejnit pro uživatele",
     "unpublishBtn": "Skrýt pro uživatele"
+  },
+
+  "studentProfile": {
+    "back": "Zpět",
+    "notFound": "Student nebyl nalezen.",
+    "goBack": "Zpět",
+    "grade": "Známka",
+    "docs": "Dokumenty",
+    "minor": "Nezletilý",
+    "personalContact": "Osobní a kontaktní údaje",
+    "assignedOpportunity": "Přiřazená příležitost",
+    "applicationNumber": "Přihláška #{id}",
+    "noOpportunity": "Není přiřazen k žádné příležitosti.",
+    "documents": "Dokumenty",
+    "submitted": "nahráno",
+    "approved": "Schváleno",
+    "pending": "Čekající",
+    "other": "Ostatní",
+    "reviewDocuments": "Zkontrolovat dokumenty",
+    "noDocs": "Žádné dokumenty nebyly nahrány.",
+    "courseYear": "Ročník / Rok",
+    "finalGrade": "Výsledná známka"
   }
 }
