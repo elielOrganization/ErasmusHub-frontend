@@ -8,7 +8,6 @@ import FilterBar from '@/components/ui/FilterBar';
 import Pagination from '@/components/ui/Pagination';
 import Modal from '@/components/ui/Modal';
 import { useRoleTheme } from '@/hooks/useRoleTheme';
-import { useApi } from '@/hooks/useApi';
 import { translateRole } from '@/lib/translateRole';
 import type { User, Role } from '@/services/userService';
 import { useAuth } from '@/context/AuthContext';
@@ -58,6 +57,20 @@ function parseRodneCislo(rc: string, gender: 'male' | 'female' | ''): { error: s
 
 const PAGE_SIZE = 10;
 
+const AVATAR_PALETTES: [string, string][] = [
+    ['#6366f1', '#8b5cf6'],
+    ['#0ea5e9', '#6366f1'],
+    ['#10b981', '#0ea5e9'],
+    ['#f59e0b', '#ef4444'],
+    ['#ec4899', '#8b5cf6'],
+    ['#14b8a6', '#6366f1'],
+];
+
+function avatarGradient(name: string): [string, string] {
+    const code = name.charCodeAt(0) + (name.charCodeAt(1) || 0);
+    return AVATAR_PALETTES[code % AVATAR_PALETTES.length];
+}
+
 /* ── Icon components ────────────────────────────────────────── */
 
 function PencilIcon() {
@@ -76,6 +89,7 @@ function TrashIcon() {
     );
 }
 
+
 function XMarkIcon() {
     return (
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="w-5 h-5">
@@ -88,6 +102,14 @@ function ChevronDownIcon() {
     return (
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="w-4 h-4 pointer-events-none">
             <path fillRule="evenodd" d="M5.22 8.22a.75.75 0 011.06 0L10 11.94l3.72-3.72a.75.75 0 111.06 1.06l-4.25 4.25a.75.75 0 01-1.06 0L5.22 9.28a.75.75 0 010-1.06z" clipRule="evenodd" />
+        </svg>
+    );
+}
+
+function PlusIcon() {
+    return (
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="w-5 h-5">
+            <path d="M10.75 4.75a.75.75 0 00-1.5 0v4.5h-4.5a.75.75 0 000 1.5h4.5v4.5a.75.75 0 001.5 0v-4.5h4.5a.75.75 0 000-1.5h-4.5v-4.5z" />
         </svg>
     );
 }
@@ -115,13 +137,13 @@ function ActionButtons({ onEdit, onDelete, isSelf, isSuperAdmin }: {
     return (
         <div className="flex items-center gap-1">
             <button
-                onClick={onEdit}
+                onClick={e => { e.stopPropagation(); onEdit(); }}
                 className={`p-1.5 rounded-lg text-gray-400 ${theme.hoverText} ${theme.hoverBg} transition-colors cursor-pointer`}
             >
                 <PencilIcon />
             </button>
             <button
-                onClick={canDelete ? onDelete : undefined}
+                onClick={canDelete ? e => { e.stopPropagation(); onDelete(); } : undefined}
                 disabled={!canDelete}
                 title={isSuperAdmin ? '🔒 Super Admin' : isSelf ? '🔒 No puedes eliminarte' : undefined}
                 className={`p-1.5 rounded-lg transition-colors ${!canDelete ? 'text-gray-200 dark:text-gray-700 cursor-not-allowed' : 'text-gray-400 hover:text-red-600 hover:bg-red-50 cursor-pointer'}`}
@@ -132,11 +154,145 @@ function ActionButtons({ onEdit, onDelete, isSelf, isSuperAdmin }: {
     );
 }
 
-function PlusIcon() {
+/* ── User profile panel ─────────────────────────────────────── */
+
+function UserProfilePanel({ user, open, onClose, onEdit, onDelete, currentUserId }: {
+    user: User | null;
+    open: boolean;
+    onClose: () => void;
+    onEdit: () => void;
+    onDelete: () => void;
+    currentUserId?: number;
+}) {
+    const t = useTranslations('adminDashboard');
+    const tRoles = useTranslations('roles');
+    const tUp = useTranslations('userProfile');
+
+    useEffect(() => {
+        const handleKey = (e: KeyboardEvent) => { if (e.key === 'Escape') onClose(); };
+        if (open) document.addEventListener('keydown', handleKey);
+        return () => document.removeEventListener('keydown', handleKey);
+    }, [open, onClose]);
+
+    if (!open || !user) return null;
+
+    const isSuperAdmin = user.id === 1;
+    const isSelf = user.id === currentUserId;
+    const canDelete = !isSelf && !isSuperAdmin;
+    const rawRole = user.role?.name ?? '';
+    const displayRole = rawRole ? translateRole(rawRole, tRoles) : t('unknown');
+    const pillClasses = getRolePillClasses(rawRole);
+    const [avFrom, avTo] = avatarGradient(user.first_name + user.last_name);
+    const initials = `${user.first_name[0] ?? ''}${user.last_name[0] ?? ''}`.toUpperCase();
+
+    const fmt = (d?: string | null) =>
+        d ? new Date(d).toLocaleDateString(undefined, { year: 'numeric', month: 'long', day: 'numeric' }) : null;
+
+    const fields: { label: string; val: string | null | undefined }[] = [
+        { label: tUp('firstName'),  val: user.first_name },
+        { label: tUp('lastName'),   val: user.last_name },
+        { label: tUp('email'),      val: user.email },
+        { label: tUp('phone'),      val: user.phone },
+        { label: tUp('address'),    val: user.address },
+        { label: tUp('birthDate'),  val: fmt(user.birth_date) },
+        { label: tUp('memberSince'), val: fmt(user.created_at) },
+        ...(user.rodne_cislo
+            ? [{ label: tUp('rodneCislo'), val: user.rodne_cislo.slice(0, 4) + '••••••' }]
+            : []),
+    ];
+
     return (
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="w-5 h-5">
-            <path d="M10.75 4.75a.75.75 0 00-1.5 0v4.5h-4.5a.75.75 0 000 1.5h4.5v4.5a.75.75 0 001.5 0v-4.5h4.5a.75.75 0 000-1.5h-4.5v-4.5z" />
-        </svg>
+        <div className="fixed inset-0 z-50 flex">
+            {/* Backdrop */}
+            <div className="fixed inset-0 bg-black/40 backdrop-blur-sm" onClick={onClose} />
+
+            {/* Panel */}
+            <div className="relative ml-auto h-full w-full max-w-sm bg-white dark:bg-gray-900 shadow-2xl flex flex-col overflow-hidden">
+
+                {/* Header */}
+                <div className="flex items-start justify-between gap-3 p-5 border-b border-gray-100 dark:border-gray-800">
+                    <div className="flex items-center gap-4 min-w-0">
+                        <div
+                            className="w-14 h-14 rounded-2xl flex items-center justify-center text-white text-lg font-bold shrink-0 shadow"
+                            style={{ background: `linear-gradient(135deg, ${avFrom}, ${avTo})` }}
+                        >
+                            {initials}
+                        </div>
+                        <div className="min-w-0">
+                            <div className="flex items-center gap-2 flex-wrap">
+                                <h2 className="text-base font-bold text-gray-800 dark:text-gray-100 truncate">
+                                    {user.first_name} {user.last_name}
+                                </h2>
+                            </div>
+                            <div className="flex items-center gap-1.5 flex-wrap mt-1.5">
+                                <span className={`px-2 py-0.5 rounded-lg text-xs font-semibold ${pillClasses}`}>
+                                    {displayRole}
+                                </span>
+                                {user.is_minor && (
+                                    <span className="px-2 py-0.5 rounded-lg text-xs font-semibold bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-400">
+                                        {t('minor')}
+                                    </span>
+                                )}
+                                {isSuperAdmin && (
+                                    <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-medium tracking-widest uppercase border border-amber-300/60 dark:border-amber-600/50 text-amber-600 dark:text-amber-400">
+                                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="currentColor" className="w-3 h-3"><path fillRule="evenodd" d="M8 1a3.5 3.5 0 0 0-3.5 3.5V7A1.5 1.5 0 0 0 3 8.5v4A1.5 1.5 0 0 0 4.5 14h7a1.5 1.5 0 0 0 1.5-1.5v-4A1.5 1.5 0 0 0 11 7V4.5A3.5 3.5 0 0 0 8 1Zm2 6V4.5a2 2 0 1 0-4 0V7h4Z" clipRule="evenodd" /></svg>
+                                        {t('superAdminBadge')}
+                                    </span>
+                                )}
+                                {isSelf && !isSuperAdmin && (
+                                    <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-medium tracking-widest uppercase border border-violet-300/60 dark:border-violet-600/50 text-violet-500 dark:text-violet-400">
+                                        <span className="w-1.5 h-1.5 rounded-full bg-violet-400 dark:bg-violet-500" />
+                                        {t('youBadge')}
+                                    </span>
+                                )}
+                            </div>
+                        </div>
+                    </div>
+                    <button
+                        onClick={onClose}
+                        className="p-1.5 rounded-lg text-gray-400 hover:text-gray-600 hover:bg-gray-100 dark:hover:bg-gray-800 dark:hover:text-gray-300 transition-colors cursor-pointer shrink-0 mt-0.5"
+                    >
+                        <XMarkIcon />
+                    </button>
+                </div>
+
+                {/* Body */}
+                <div className="flex-1 overflow-y-auto p-5 space-y-1">
+                    {fields.map(({ label, val }) =>
+                        val ? (
+                            <div key={label} className="flex items-baseline gap-2 py-2.5 border-b border-gray-50 dark:border-gray-800 last:border-0">
+                                <span className="w-28 shrink-0 text-xs text-gray-400 dark:text-gray-500">{label}</span>
+                                <span className="text-sm text-gray-700 dark:text-gray-200 font-medium break-all">{val}</span>
+                            </div>
+                        ) : null
+                    )}
+                </div>
+
+                {/* Footer */}
+                <div className="p-5 border-t border-gray-100 dark:border-gray-800 flex items-center gap-2">
+                    <button
+                        onClick={() => { onClose(); onEdit(); }}
+                        className="flex-1 flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl text-sm font-medium bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors cursor-pointer"
+                    >
+                        <PencilIcon />
+                        {t('editUser')}
+                    </button>
+                    <button
+                        onClick={canDelete ? () => { onClose(); onDelete(); } : undefined}
+                        disabled={!canDelete}
+                        title={isSuperAdmin ? '🔒 Super Admin' : isSelf ? '🔒 No puedes eliminarte' : undefined}
+                        className={`flex-1 flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl text-sm font-medium transition-colors ${
+                            !canDelete
+                                ? 'bg-gray-50 dark:bg-gray-800/50 text-gray-300 dark:text-gray-600 cursor-not-allowed'
+                                : 'bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400 hover:bg-red-100 dark:hover:bg-red-900/30 cursor-pointer'
+                        }`}
+                    >
+                        <TrashIcon />
+                        {t('deleteUser')}
+                    </button>
+                </div>
+            </div>
+        </div>
     );
 }
 
@@ -448,7 +604,6 @@ function EditModal({ user, roles, open, onClose, onUpdated, currentUserId }: { u
     const [saving, setSaving] = useState(false);
     const [msg, setMsg] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
 
-    // Sync form when user changes
     useEffect(() => {
         if (user) {
             setForm({
@@ -707,6 +862,7 @@ export default function UserTable({ users, roles }: { users: User[]; roles: Role
     const tRoles = useTranslations('roles');
     const { user: currentUser } = useAuth();
     const [searchQuery, setSearchQuery] = useState('');
+    const [viewUser, setViewUser] = useState<User | null>(null);
     const [editUser, setEditUser] = useState<User | null>(null);
     const [deleteUser, setDeleteUser] = useState<User | null>(null);
     const [showCreate, setShowCreate] = useState(false);
@@ -717,8 +873,8 @@ export default function UserTable({ users, roles }: { users: User[]; roles: Role
     const [minorFilter, setMinorFilter] = useState<'' | 'minor' | 'adult'>('');
 
     // Sorting
-    type SortKey = 'user' | 'email' | 'phone' | 'role' | 'birthDate' | 'minor' | 'createdAt';
-    const [sortKey, setSortKey] = useState<SortKey | null>(null);
+    type SortKey = 'user' | 'email' | 'phone' | 'role' | 'createdAt';
+    const [sortKey, setSortKey] = useState<SortKey | null>('createdAt');
     const [sortDir, setSortDir] = useState<'asc' | 'desc'>('asc');
 
     const toggleSort = (key: SortKey) => {
@@ -731,7 +887,6 @@ export default function UserTable({ users, roles }: { users: User[]; roles: Role
     };
 
     const clearSort = () => { setSortKey(null); setSortDir('asc'); };
-
 
     // Filtered users
     const filteredUsers = useMemo(() => {
@@ -762,8 +917,6 @@ export default function UserTable({ users, roles }: { users: User[]; roles: Role
                 case 'email': aVal = a.email.toLowerCase(); bVal = b.email.toLowerCase(); break;
                 case 'phone': aVal = (a.phone || '').toLowerCase(); bVal = (b.phone || '').toLowerCase(); break;
                 case 'role': aVal = (a.role?.name || '').toLowerCase(); bVal = (b.role?.name || '').toLowerCase(); break;
-                case 'birthDate': aVal = a.birth_date || ''; bVal = b.birth_date || ''; break;
-                case 'minor': aVal = a.is_minor ? '0' : '1'; bVal = b.is_minor ? '0' : '1'; break;
                 case 'createdAt': aVal = a.created_at || ''; bVal = b.created_at || ''; break;
             }
             if (aVal < bVal) return sortDir === 'asc' ? -1 : 1;
@@ -839,9 +992,6 @@ export default function UserTable({ users, roles }: { users: User[]; roles: Role
                                         ['email', t('email')],
                                         ['phone', t('phone')],
                                         ['role', t('role')],
-                                        ['birthDate', t('birthDate')],
-                                        ['minor', t('minor')],
-                                        ['createdAt', t('createdAt')],
                                     ] as [SortKey, string][]).map(([key, label]) => (
                                         <th key={key}
                                             onClick={() => toggleSort(key)}
@@ -862,7 +1012,7 @@ export default function UserTable({ users, roles }: { users: User[]; roles: Role
                                             </span>
                                         </th>
                                     ))}
-                                    <th className="pb-4 font-medium w-20">
+                                    <th className="pb-4 font-medium w-28">
                                         {sortKey && (
                                             <button onClick={clearSort}
                                                 className="p-1 rounded-lg text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors cursor-pointer">
@@ -883,13 +1033,17 @@ export default function UserTable({ users, roles }: { users: User[]; roles: Role
                                     const isSuperAdmin = user.id === 1;
 
                                     return (
-                                        <tr key={user.id} className={`group transition-colors ${
-                                            isSuperAdmin
-                                                ? 'bg-amber-50/40 dark:bg-amber-950/10'
-                                                : isSelf
-                                                    ? 'bg-violet-50/40 dark:bg-violet-950/10'
-                                                    : 'hover:bg-gray-50/80 dark:hover:bg-gray-800/50'
-                                        }`}>
+                                        <tr
+                                            key={user.id}
+                                            onClick={() => setViewUser(user)}
+                                            className={`group cursor-pointer transition-colors ${
+                                                isSuperAdmin
+                                                    ? 'bg-amber-50/40 dark:bg-amber-950/10 hover:bg-amber-50/80 dark:hover:bg-amber-950/20'
+                                                    : isSelf
+                                                        ? 'bg-violet-50/40 dark:bg-violet-950/10 hover:bg-violet-50/80 dark:hover:bg-violet-950/20'
+                                                        : 'hover:bg-gray-50/80 dark:hover:bg-gray-800/50'
+                                            }`}
+                                        >
                                             <td className="py-4 font-medium text-gray-700 dark:text-gray-200">
                                                 <div className="flex items-center gap-2">
                                                     {user.first_name} {user.last_name}
@@ -913,19 +1067,6 @@ export default function UserTable({ users, roles }: { users: User[]; roles: Role
                                                 <span className={`px-2 py-1 rounded-lg text-xs font-semibold ${pillClasses}`}>
                                                     {displayRole}
                                                 </span>
-                                            </td>
-                                            <td className="py-4 text-gray-500 dark:text-gray-400 text-sm">
-                                                {user.birth_date ? new Date(user.birth_date).toLocaleDateString() : '—'}
-                                            </td>
-                                            <td className="py-4">
-                                                {user.is_minor && (
-                                                    <span className="px-2 py-1 rounded-lg text-xs font-semibold bg-amber-100 text-amber-700">
-                                                        {t('minor')}
-                                                    </span>
-                                                )}
-                                            </td>
-                                            <td className="py-4 text-gray-500 dark:text-gray-400 text-sm">
-                                                {new Date(user.created_at).toLocaleDateString()}
                                             </td>
                                             <td className="py-4">
                                                 <div className={isSelf || isSuperAdmin ? '' : 'opacity-0 group-hover:opacity-100 transition-opacity'}>
@@ -976,34 +1117,37 @@ export default function UserTable({ users, roles }: { users: User[]; roles: Role
                             const pillClasses = getRolePillClasses(rawRole);
                             const isSelf = user.id === currentUser?.id;
                             const isSuperAdmin = user.id === 1;
+                            const [avFrom, avTo] = avatarGradient(user.first_name + user.last_name);
+                            const initials = `${user.first_name[0] ?? ''}${user.last_name[0] ?? ''}`.toUpperCase();
 
                             return (
-                                <div key={user.id} className={`rounded-2xl p-4 space-y-3 ${
-                                    isSuperAdmin
-                                        ? 'border border-amber-100 dark:border-amber-900/40 bg-amber-50/40 dark:bg-amber-950/10'
-                                        : isSelf
-                                            ? 'border border-violet-100 dark:border-violet-900/40 bg-violet-50/40 dark:bg-violet-950/10'
-                                            : 'border border-gray-100 dark:border-gray-800'
-                                }`}>
+                                <div
+                                    key={user.id}
+                                    onClick={() => setViewUser(user)}
+                                    className={`rounded-2xl p-4 space-y-3 cursor-pointer transition-colors ${
+                                        isSuperAdmin
+                                            ? 'border border-amber-100 dark:border-amber-900/40 bg-amber-50/40 dark:bg-amber-950/10 hover:bg-amber-50/80 dark:hover:bg-amber-950/20'
+                                            : isSelf
+                                                ? 'border border-violet-100 dark:border-violet-900/40 bg-violet-50/40 dark:bg-violet-950/10 hover:bg-violet-50/80 dark:hover:bg-violet-950/20'
+                                                : 'border border-gray-100 dark:border-gray-800 hover:bg-gray-50 dark:hover:bg-gray-800/50'
+                                    }`}
+                                >
                                     <div className="flex items-center justify-between">
-                                        <div className="flex items-center gap-2 flex-wrap">
-                                            <p className="font-semibold text-gray-800 dark:text-gray-100">
-                                                {user.first_name} {user.last_name}
-                                            </p>
-                                            {isSuperAdmin && (
-                                                <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-[10px] font-medium tracking-widest uppercase border border-amber-300/60 dark:border-amber-600/50 text-amber-600 dark:text-amber-400">
-                                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="currentColor" className="w-3 h-3"><path fillRule="evenodd" d="M8 1a3.5 3.5 0 0 0-3.5 3.5V7A1.5 1.5 0 0 0 3 8.5v4A1.5 1.5 0 0 0 4.5 14h7a1.5 1.5 0 0 0 1.5-1.5v-4A1.5 1.5 0 0 0 11 7V4.5A3.5 3.5 0 0 0 8 1Zm2 6V4.5a2 2 0 1 0-4 0V7h4Z" clipRule="evenodd" /></svg>
-                                                    {t('superAdminBadge')}
-                                                </span>
-                                            )}
-                                            {isSelf && !isSuperAdmin && (
-                                                <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-[10px] font-medium tracking-widest uppercase border border-violet-300/60 dark:border-violet-600/50 text-violet-500 dark:text-violet-400">
-                                                    <span className="w-1.5 h-1.5 rounded-full bg-violet-400 dark:bg-violet-500" />
-                                                    {t('youBadge')}
-                                                </span>
-                                            )}
+                                        <div className="flex items-center gap-3 min-w-0">
+                                            <div
+                                                className="w-9 h-9 rounded-xl flex items-center justify-center text-white text-xs font-bold shrink-0"
+                                                style={{ background: `linear-gradient(135deg, ${avFrom}, ${avTo})` }}
+                                            >
+                                                {initials}
+                                            </div>
+                                            <div className="min-w-0">
+                                                <p className="font-semibold text-gray-800 dark:text-gray-100 truncate">
+                                                    {user.first_name} {user.last_name}
+                                                </p>
+                                                <p className="text-xs text-gray-400 truncate">{user.email}</p>
+                                            </div>
                                         </div>
-                                        <div className="flex items-center gap-2">
+                                        <div className="flex items-center gap-2 shrink-0 ml-2">
                                             {user.is_minor && (
                                                 <span className="px-2 py-0.5 rounded-lg text-xs font-semibold bg-amber-100 text-amber-700">
                                                     {t('minor')}
@@ -1014,29 +1158,8 @@ export default function UserTable({ users, roles }: { users: User[]; roles: Role
                                             </span>
                                         </div>
                                     </div>
-                                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-1.5 text-sm">
-                                        <div>
-                                            <span className="text-gray-400">{t('email')}: </span>
-                                            <span className="text-gray-600 dark:text-gray-300 break-all">{user.email}</span>
-                                        </div>
-                                        <div>
-                                            <span className="text-gray-400">{t('phone')}: </span>
-                                            <span className="text-gray-600 dark:text-gray-300">{user.phone || '—'}</span>
-                                        </div>
-                                        <div>
-                                            <span className="text-gray-400">{t('birthDate')}: </span>
-                                            <span className="text-gray-600 dark:text-gray-300">
-                                                {user.birth_date ? new Date(user.birth_date).toLocaleDateString() : '—'}
-                                            </span>
-                                        </div>
-                                        <div>
-                                            <span className="text-gray-400">{t('createdAt')}: </span>
-                                            <span className="text-gray-600 dark:text-gray-300">
-                                                {new Date(user.created_at).toLocaleDateString()}
-                                            </span>
-                                        </div>
-                                    </div>
-                                    <div className="flex justify-end border-t border-gray-50 dark:border-gray-800 pt-2">
+                                    <div className="flex items-center justify-between border-t border-gray-50 dark:border-gray-800 pt-2">
+                                        <p className="text-sm text-gray-500 dark:text-gray-400">{user.phone || '—'}</p>
                                         <ActionButtons
                                             onEdit={() => setEditUser(user)}
                                             onDelete={() => setDeleteUser(user)}
@@ -1059,7 +1182,15 @@ export default function UserTable({ users, roles }: { users: User[]; roles: Role
                 </>
             )}
 
-            {/* Modals */}
+            {/* Panels & Modals */}
+            <UserProfilePanel
+                user={viewUser}
+                open={!!viewUser}
+                onClose={() => setViewUser(null)}
+                onEdit={() => setEditUser(viewUser)}
+                onDelete={() => setDeleteUser(viewUser)}
+                currentUserId={currentUser?.id}
+            />
             <CreateUserModal open={showCreate} onClose={() => setShowCreate(false)} onCreated={() => window.location.reload()} />
             <EditModal user={editUser} roles={roles} open={!!editUser} onClose={() => setEditUser(null)} onUpdated={() => window.location.reload()} currentUserId={currentUser?.id} />
             <DeleteModal user={deleteUser} open={!!deleteUser} onClose={() => setDeleteUser(null)} onDeleted={() => window.location.reload()} />

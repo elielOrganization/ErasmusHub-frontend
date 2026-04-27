@@ -132,7 +132,16 @@
     "justNow": "právě teď",
     "chatBeFirst": "Buďte první, kdo napíše zprávu",
     "chatWritePlaceholder": "Napište zprávu...",
-    "chatEnterHint": "Enter pro odeslání · Shift+Enter pro nový řádek"
+    "chatEnterHint": "Enter pro odeslání · Shift+Enter pro nový řádek",
+    "noTeacherAssigned": "Žádný přiřazený učitel",
+    "processStart": "Zahájit proces",
+    "processStop": "Zastavit proces",
+    "processProcessing": "Zpracovávám...",
+    "processStartTitle": "Zahájit výběrový proces",
+    "processStopTitle": "Zastavit výběrový proces",
+    "processStartDesc": "Opravdu chcete zahájit výběrový proces Erasmus? Tímto budou upozorněni všichni uživatelé systému.",
+    "processStopDesc": "Opravdu chcete zastavit výběrový proces Erasmus? Tímto budou zastaveny všechny související aktivity.",
+    "processCancel": "Zrušit"
   },
 
   "practicas": {
@@ -451,10 +460,12 @@
     "responsibleTeachers": "Odpovědní učitelé",
     "noTeachersAssigned": "Žádní přiřazení učitelé",
     "chatWithTeacher": "Chatovat",
+    "chatNoTeachers": "K této příležitosti zatím nebyli přiřazeni žádní učitelé.",
     "removeTeacher": "Odebrat učitele",
     "addTeacher": "Přidat učitele",
     "selectTeacher": "Vybrat učitele",
     "allTeachersAssigned": "Všichni učitelé jsou již přiřazeni",
+    "addTeacherError": "Nepodařilo se přiřadit učitele. Zkontrolujte, zda máte oprávnění správce.",
     "loading": "Načítání..."
   },
 

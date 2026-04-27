@@ -61,7 +61,7 @@ export default function DashboardSidebar() {
     const isLector = !isStudent && !isAdmin && !isTeacher;
 
     const { data: chatsData } = useApi<{ id: number; unread_count: number }[]>(
-        '/chat/',
+        isLector ? null : '/chat',
         { refreshInterval: 30_000 }
     );
     const totalUnreadChats = (chatsData ?? []).reduce((acc, c) => acc + c.unread_count, 0);
@@ -100,6 +100,7 @@ export default function DashboardSidebar() {
             label: t('sidebarInicio'),
             items: [
                 { name: t('home'), path: '/dashboard', icon: <path strokeLinecap="round" strokeLinejoin="round" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" /> },
+                ...(!isLector ? [{ name: t('chat'), path: '/dashboard/messages', badge: totalUnreadChats || undefined, icon: <path strokeLinecap="round" strokeLinejoin="round" d="M12 20.25c4.97 0 9-3.694 9-8.25s-4.03-8.25-9-8.25S3 7.444 3 12c0 2.104.859 4.023 2.273 5.48.432.447.74 1.04.586 1.641a4.483 4.483 0 01-.923 1.785A5.969 5.969 0 006 21c1.282 0 2.47-.402 3.445-1.087.81.22 1.668.337 2.555.337z" /> }] : []),
             ],
         },
         {
@@ -121,7 +122,6 @@ export default function DashboardSidebar() {
             label: t('sidebarReferencia'),
             items: [
                 { name: t('opportunities'), path: '/dashboard/opportunities', icon: <path strokeLinecap="round" strokeLinejoin="round" d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9" /> },
-                { name: t('chat'), path: '/dashboard/messages', badge: totalUnreadChats || undefined, icon: <path strokeLinecap="round" strokeLinejoin="round" d="M12 20.25c4.97 0 9-3.694 9-8.25s-4.03-8.25-9-8.25S3 7.444 3 12c0 2.104.859 4.023 2.273 5.48.432.447.74 1.04.586 1.641a4.483 4.483 0 01-.923 1.785A5.969 5.969 0 006 21c1.282 0 2.47-.402 3.445-1.087.81.22 1.668.337 2.555.337z" /> },
             ],
         },
     ];
@@ -132,6 +132,7 @@ export default function DashboardSidebar() {
             items: [
                 { name: t('home'), path: '/dashboard', icon: <path strokeLinecap="round" strokeLinejoin="round" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" /> },
                 { name: ta('title'), path: '/dashboard/avisos', badge: unreadCount, icon: <path strokeLinecap="round" strokeLinejoin="round" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" /> },
+                { name: t('chat'), path: '/dashboard/messages', badge: totalUnreadChats || undefined, icon: <path strokeLinecap="round" strokeLinejoin="round" d="M12 20.25c4.97 0 9-3.694 9-8.25s-4.03-8.25-9-8.25S3 7.444 3 12c0 2.104.859 4.023 2.273 5.48.432.447.74 1.04.586 1.641a4.483 4.483 0 01-.923 1.785A5.969 5.969 0 006 21c1.282 0 2.47-.402 3.445-1.087.81.22 1.668.337 2.555.337z" /> },
             ],
         },
         {
@@ -149,7 +150,6 @@ export default function DashboardSidebar() {
                 { name: tpo('title'), path: '/dashboard/calificacion', icon: <path strokeLinecap="round" strokeLinejoin="round" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" /> },
                 { name: t('listaFinal'), path: '/dashboard/lista-final', icon: <path strokeLinecap="round" strokeLinejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" /> },
                 { name: t('opportunities'), path: '/dashboard/opportunities', icon: <path strokeLinecap="round" strokeLinejoin="round" d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9" /> },
-                { name: t('chat'), path: '/dashboard/messages', badge: totalUnreadChats || undefined, icon: <path strokeLinecap="round" strokeLinejoin="round" d="M12 20.25c4.97 0 9-3.694 9-8.25s-4.03-8.25-9-8.25S3 7.444 3 12c0 2.104.859 4.023 2.273 5.48.432.447.74 1.04.586 1.641a4.483 4.483 0 01-.923 1.785A5.969 5.969 0 006 21c1.282 0 2.47-.402 3.445-1.087.81.22 1.668.337 2.555.337z" /> },
             ],
         },
     ];
@@ -270,7 +270,7 @@ export default function DashboardSidebar() {
                                         </svg>
                                     )}
                                     <span className={`text-sm font-semibold whitespace-nowrap transition-opacity duration-300 ${isCollapsed ? 'opacity-0' : 'opacity-100'}`}>
-                                        {isTogglingProcess ? 'Procesando...' : isProcessStarted ? 'Detener proceso' : 'Empezar proceso'}
+                                        {isTogglingProcess ? t('processProcessing') : isProcessStarted ? t('processStop') : t('processStart')}
                                     </span>
                                 </button>
                             )}
@@ -305,14 +305,10 @@ export default function DashboardSidebar() {
             {/* Modal de confirmación para el proceso de selección */}
             <ConfirmModal
                 open={showConfirmModal}
-                title={isProcessStarted ? "Detener proceso de selección" : "Iniciar proceso de selección"}
-                description={
-                    isProcessStarted
-                        ? "¿Estás seguro de que quieres detener el proceso de selección de Erasmus? Esto detendrá todas las actividades relacionadas."
-                        : "¿Estás seguro de que quieres iniciar el proceso de selección de Erasmus? Esto notificará a todos los usuarios del sistema."
-                }
-                confirmLabel={isProcessStarted ? "Detener proceso" : "Iniciar proceso"}
-                cancelLabel="Cancelar"
+                title={isProcessStarted ? t('processStopTitle') : t('processStartTitle')}
+                description={isProcessStarted ? t('processStopDesc') : t('processStartDesc')}
+                confirmLabel={isProcessStarted ? t('processStop') : t('processStart')}
+                cancelLabel={t('processCancel')}
                 onConfirm={handleToggleProcess}
                 onClose={() => setShowConfirmModal(false)}
             />

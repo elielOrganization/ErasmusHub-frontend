@@ -15,12 +15,13 @@ interface UseApiResult<T> {
     refetch: () => Promise<void>;
 }
 
-export function useApi<T>(endpoint: string, options: UseApiOptions = { immediate: true }): UseApiResult<T> {
+export function useApi<T>(endpoint: string | null, options: UseApiOptions = { immediate: true }): UseApiResult<T> {
     const [data, setData] = useState<T | null>(null);
     const [error, setError] = useState<string | null>(null);
     const [loading, setLoading] = useState(false);
 
     const fetchData = useCallback(async () => {
+        if (!endpoint) return;
         setLoading(true);
         setError(null);
         try {

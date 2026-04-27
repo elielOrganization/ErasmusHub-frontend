@@ -4,6 +4,8 @@ import { useState, useEffect, useRef, useCallback, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { useTranslations } from 'next-intl';
 import { useAuth } from '@/context/AuthContext';
+import { useRoleTheme } from '@/hooks/useRoleTheme';
+import { useRouter } from '@/i18n/routing';
 import {
     fetchMyChats,
     fetchMessages,
@@ -30,8 +32,20 @@ function formatTime(iso: string): string {
 function MessagesContent() {
     const searchParams = useSearchParams();
     const chatIdParam = searchParams.get('chat');
-    const { user } = useAuth();
+    const { user, loading: authLoading } = useAuth();
     const t = useTranslations('dashboard');
+    const theme = useRoleTheme();
+    const router = useRouter();
+
+    const roleName = user?.role?.name?.toLowerCase() ?? '';
+    const isLector = !!user && !roleName.includes('admin') && !roleName.includes('student')
+        && !roleName.includes('teacher') && !roleName.includes('profesor')
+        && !roleName.includes('professor') && !roleName.includes('coordinator')
+        && !roleName.includes('coordinador');
+
+    useEffect(() => {
+        if (!authLoading && isLector) router.replace('/dashboard');
+    }, [authLoading, isLector]); // eslint-disable-line react-hooks/exhaustive-deps
 
     const [chats, setChats] = useState<Chat[]>([]);
     const [activeChat, setActiveChat] = useState<Chat | null>(null);
@@ -42,6 +56,7 @@ function MessagesContent() {
     const [loadingMessages, setLoadingMessages] = useState(false);
     const messagesEndRef = useRef<HTMLDivElement>(null);
     const textareaRef = useRef<HTMLTextAreaElement>(null);
+    const initRef = useRef(false);
 
     const loadChats = useCallback(async (): Promise<Chat[]> => {
         if (!user) return [];
@@ -68,8 +83,9 @@ function MessagesContent() {
         }
     }, []);
 
-    // Initial load + auto-open from ?chat= param
     useEffect(() => {
+        if (authLoading || initRef.current) return;
+        initRef.current = true;
         const init = async () => {
             setLoadingChats(true);
             const data = await loadChats();
@@ -80,7 +96,7 @@ function MessagesContent() {
             }
         };
         init();
-    }, []); // eslint-disable-line react-hooks/exhaustive-deps
+    }, [authLoading]); // eslint-disable-line react-hooks/exhaustive-deps
 
     // Poll chat list every 15s
     useEffect(() => {
@@ -100,12 +116,10 @@ function MessagesContent() {
         return () => clearInterval(id);
     }, [activeChat]);
 
-    // Scroll to bottom on new messages
     useEffect(() => {
         messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
     }, [messages]);
 
-    // Auto-resize textarea
     useEffect(() => {
         const el = textareaRef.current;
         if (!el) return;
@@ -136,10 +150,14 @@ function MessagesContent() {
     };
 
     const otherPartyName = activeChat
-        ? (user?.id === activeChat.student_id ? activeChat.teachers_names : activeChat.student_name)
+        ? (user?.id === activeChat.student_id
+            ? (activeChat.teachers_names || t('noTeacherAssigned'))
+            : activeChat.student_name)
         : '';
 
     const totalUnread = chats.reduce((acc, c) => acc + c.unread_count, 0);
+
+    const avatarStyle = { background: `linear-gradient(135deg, ${theme.avatarFrom}, ${theme.avatarTo})` };
 
     return (
         <div className="flex h-[calc(100vh-8rem)] bg-white dark:bg-gray-900 rounded-2xl shadow-sm border border-gray-200 dark:border-gray-800 overflow-hidden">
@@ -152,7 +170,7 @@ function MessagesContent() {
                     <div className="flex items-center justify-between">
                         <h1 className="text-base font-bold text-gray-800 dark:text-gray-100">{t('chat')}</h1>
                         {totalUnread > 0 && (
-                            <span className="px-2 py-0.5 bg-blue-500 text-white text-[10px] font-bold rounded-full">
+                            <span className={`px-2 py-0.5 ${theme.badgeBg} text-white text-[10px] font-bold rounded-full`}>
                                 {totalUnread > 99 ? '99+' : totalUnread}
                             </span>
                         )}
@@ -185,7 +203,9 @@ function MessagesContent() {
                 ) : (
                     <div className="flex-1 overflow-y-auto">
                         {chats.map(chat => {
-                            const name = user?.id === chat.student_id ? chat.teachers_names : chat.student_name;
+                            const name = user?.id === chat.student_id
+                                ? (chat.teachers_names || t('noTeacherAssigned'))
+                                : chat.student_name;
                             const isActive = activeChat?.id === chat.id;
                             const initial = name.charAt(0).toUpperCase();
                             return (
@@ -194,11 +214,14 @@ function MessagesContent() {
                                     onClick={() => openChat(chat)}
                                     className={`w-full px-4 py-3.5 flex items-start gap-3 transition-colors text-left border-b border-gray-50 dark:border-gray-800/60 last:border-0 ${
                                         isActive
-                                            ? 'bg-blue-50 dark:bg-blue-900/20'
-                                            : 'hover:bg-gray-50 dark:hover:bg-gray-800/40'
+                                            ? theme.accentBg
+                                            : `hover:bg-gray-50 dark:hover:bg-gray-800/40`
                                     }`}
                                 >
-                                    <div className="w-11 h-11 rounded-full bg-gradient-to-br from-blue-400 to-indigo-500 flex items-center justify-center shrink-0 text-white font-bold text-base shadow-sm">
+                                    <div
+                                        className="w-11 h-11 rounded-full flex items-center justify-center shrink-0 text-white font-bold text-base shadow-sm"
+                                        style={avatarStyle}
+                                    >
                                         {initial}
                                     </div>
                                     <div className="flex-1 min-w-0">
@@ -212,7 +235,7 @@ function MessagesContent() {
                                                 </span>
                                             )}
                                         </div>
-                                        <p className="text-[11px] text-blue-500 dark:text-blue-400 truncate font-medium mb-0.5">
+                                        <p className={`text-[11px] truncate font-medium mb-0.5 ${theme.accent}`}>
                                             {chat.opportunity_name}
                                         </p>
                                         {chat.last_message && (
@@ -222,7 +245,7 @@ function MessagesContent() {
                                         )}
                                     </div>
                                     {chat.unread_count > 0 && (
-                                        <span className="w-5 h-5 bg-blue-500 rounded-full text-[10px] text-white flex items-center justify-center shrink-0 font-bold mt-1">
+                                        <span className={`w-5 h-5 ${theme.badgeBg} rounded-full text-[10px] text-white flex items-center justify-center shrink-0 font-bold mt-1`}>
                                             {chat.unread_count > 9 ? '9+' : chat.unread_count}
                                         </span>
                                     )}
@@ -241,18 +264,21 @@ function MessagesContent() {
                     <div className="px-4 py-3 border-b border-gray-100 dark:border-gray-800 flex items-center gap-3 bg-white dark:bg-gray-900 shrink-0">
                         <button
                             onClick={() => setActiveChat(null)}
-                            className="md:hidden p-1.5 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 text-gray-500 transition-colors"
+                            className={`md:hidden p-1.5 rounded-lg ${theme.hoverBg} ${theme.hoverText} text-gray-500 transition-colors`}
                         >
                             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth="2">
                                 <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
                             </svg>
                         </button>
-                        <div className="w-10 h-10 rounded-full bg-gradient-to-br from-blue-400 to-indigo-500 flex items-center justify-center text-white font-bold text-base shadow-sm shrink-0">
+                        <div
+                            className="w-10 h-10 rounded-full flex items-center justify-center text-white font-bold text-base shadow-sm shrink-0"
+                            style={avatarStyle}
+                        >
                             {otherPartyName.charAt(0).toUpperCase()}
                         </div>
                         <div className="flex-1 min-w-0">
                             <p className="text-sm font-semibold text-gray-800 dark:text-gray-100 truncate">{otherPartyName}</p>
-                            <p className="text-xs text-blue-500 dark:text-blue-400 truncate">{activeChat.opportunity_name}</p>
+                            <p className={`text-xs truncate ${theme.accent}`}>{activeChat.opportunity_name}</p>
                         </div>
                     </div>
 
@@ -260,7 +286,7 @@ function MessagesContent() {
                     <div className="flex-1 overflow-y-auto px-4 py-4 space-y-1 bg-gray-50/60 dark:bg-gray-950/60">
                         {loadingMessages ? (
                             <div className="flex justify-center py-16">
-                                <div className="w-7 h-7 border-2 border-blue-500 border-t-transparent rounded-full animate-spin" />
+                                <div className={`w-7 h-7 border-2 rounded-full animate-spin border-gray-200 dark:border-gray-700 ${theme.spinnerTop}`} />
                             </div>
                         ) : messages.length === 0 ? (
                             <div className="flex flex-col items-center justify-center h-full py-16 text-center">
@@ -298,7 +324,10 @@ function MessagesContent() {
                                     rendered.push(
                                         <div key={msg.id} className={`flex ${isOwn ? 'justify-end' : 'justify-start'} ${sameGroup ? 'mt-0.5' : 'mt-3'}`}>
                                             {!isOwn && (
-                                                <div className={`w-7 h-7 rounded-full bg-gradient-to-br from-blue-400 to-indigo-500 flex items-center justify-center text-white font-bold text-xs mr-2 shrink-0 ${sameGroup ? 'invisible' : 'mt-0.5'}`}>
+                                                <div
+                                                    className={`w-7 h-7 rounded-full flex items-center justify-center text-white font-bold text-xs mr-2 shrink-0 ${sameGroup ? 'invisible' : 'mt-0.5'}`}
+                                                    style={avatarStyle}
+                                                >
                                                     {msg.sender_name.charAt(0).toUpperCase()}
                                                 </div>
                                             )}
@@ -308,7 +337,7 @@ function MessagesContent() {
                                                 )}
                                                 <div className={`px-4 py-2.5 text-sm leading-relaxed whitespace-pre-wrap break-words ${
                                                     isOwn
-                                                        ? 'bg-blue-500 text-white rounded-2xl rounded-br-sm shadow-sm'
+                                                        ? `${theme.btnPrimary} text-white rounded-2xl rounded-br-sm shadow-sm`
                                                         : 'bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-100 rounded-2xl rounded-bl-sm shadow-sm border border-gray-100 dark:border-gray-700'
                                                 }`}>
                                                     {msg.content}
@@ -336,12 +365,12 @@ function MessagesContent() {
                                 onKeyDown={handleKeyDown}
                                 placeholder={t('chatWritePlaceholder')}
                                 rows={1}
-                                className="flex-1 text-sm bg-gray-100 dark:bg-gray-800 text-gray-800 dark:text-gray-100 rounded-xl px-4 py-2.5 resize-none outline-none placeholder-gray-400 dark:placeholder-gray-500 focus:ring-2 focus:ring-blue-500/40 transition-shadow"
+                                className={`flex-1 text-sm bg-gray-100 dark:bg-gray-800 text-gray-800 dark:text-gray-100 rounded-xl px-4 py-2.5 resize-none outline-none placeholder-gray-400 dark:placeholder-gray-500 focus:ring-2 transition-shadow ${theme.focusRing}`}
                             />
                             <button
                                 onClick={handleSend}
                                 disabled={!input.trim() || sending}
-                                className="w-10 h-10 rounded-xl bg-blue-500 text-white flex items-center justify-center shrink-0 hover:bg-blue-600 active:scale-95 transition-all disabled:opacity-40 disabled:cursor-not-allowed shadow-sm"
+                                className={`w-10 h-10 rounded-xl ${theme.btnPrimary} ${theme.btnPrimaryHover} text-white flex items-center justify-center shrink-0 active:scale-95 transition-all disabled:opacity-40 disabled:cursor-not-allowed shadow-sm`}
                             >
                                 {sending ? (
                                     <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />

@@ -132,7 +132,16 @@
     "justNow": "ahora",
     "chatBeFirst": "Sé el primero en escribir un mensaje",
     "chatWritePlaceholder": "Escribe un mensaje...",
-    "chatEnterHint": "Enter para enviar · Shift+Enter para nueva línea"
+    "chatEnterHint": "Enter para enviar · Shift+Enter para nueva línea",
+    "noTeacherAssigned": "Sin profesor asignado",
+    "processStart": "Empezar proceso",
+    "processStop": "Detener proceso",
+    "processProcessing": "Procesando...",
+    "processStartTitle": "Iniciar proceso de selección",
+    "processStopTitle": "Detener proceso de selección",
+    "processStartDesc": "¿Estás seguro de que quieres iniciar el proceso de selección de Erasmus? Esto notificará a todos los usuarios del sistema.",
+    "processStopDesc": "¿Estás seguro de que quieres detener el proceso de selección de Erasmus? Esto detendrá todas las actividades relacionadas.",
+    "processCancel": "Cancelar"
   },
 
   "practicas": {
@@ -451,10 +460,12 @@
     "responsibleTeachers": "Profesores encargados",
     "noTeachersAssigned": "Sin profesores asignados",
     "chatWithTeacher": "Chatear",
+    "chatNoTeachers": "Aún no hay profesores asignados a esta oportunidad.",
     "removeTeacher": "Quitar profesor",
     "addTeacher": "Añadir profesor",
     "selectTeacher": "Seleccionar profesor",
     "allTeachersAssigned": "Todos los profesores ya están asignados",
+    "addTeacherError": "No se pudo asignar el profesor. Verifica que tengas permisos de administrador.",
     "loading": "Cargando..."
   },
 

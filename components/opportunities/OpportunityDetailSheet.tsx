@@ -137,32 +137,45 @@ export default function OpportunityDetailSheet({
     // ── Teacher & chat state ──────────────────────────────────
     const [assignedTeachers, setAssignedTeachers] = useState<TeacherInfo[]>([]);
     const [allTeachers, setAllTeachers] = useState<TeacherInfo[]>([]);
+    const [teachersLoaded, setTeachersLoaded] = useState(false);
     const [showTeacherPicker, setShowTeacherPicker] = useState(false);
     const [addLoading, setAddLoading] = useState(false);
+    const [addError, setAddError] = useState<string | null>(null);
     const [chatLoading, setChatLoading] = useState(false);
+    const [chatError, setChatError] = useState<string | null>(null);
 
     const router = useRouter();
     const isAdmin = roleName?.toLowerCase().includes('admin');
-    const isStudent = roleName?.toLowerCase() === 'student';
+    const isStudent = roleName?.toLowerCase().includes('student');
 
     useEffect(() => {
         if (!o) return;
+        setChatError(null);
         fetchOpportunityTeachers(o.id).then(setAssignedTeachers).catch(() => setAssignedTeachers([]));
     }, [o?.id]);
 
     useEffect(() => {
         if (!isAdmin || !showTeacherPicker) return;
-        fetchAllTeachers().then(setAllTeachers).catch(() => setAllTeachers([]));
+        setTeachersLoaded(false);
+        fetchAllTeachers().then(list => {
+            setAllTeachers(list);
+            setTeachersLoaded(true);
+        }).catch(() => {
+            setAllTeachers([]);
+            setTeachersLoaded(true);
+        });
     }, [isAdmin, showTeacherPicker]);
 
     const handleAddTeacher = async (teacherId: number) => {
         if (!o) return;
         setAddLoading(true);
+        setAddError(null);
         try {
             const info = await addOpportunityTeacher(o.id, teacherId);
             setAssignedTeachers(prev => [...prev, info]);
-        } catch { /* ignore */ }
-        finally { setAddLoading(false); }
+        } catch (err: any) {
+            setAddError(err?.message ?? t('addTeacherError'));
+        } finally { setAddLoading(false); }
     };
 
     const handleRemoveTeacher = async (teacherId: number) => {
@@ -170,17 +183,21 @@ export default function OpportunityDetailSheet({
         try {
             await removeOpportunityTeacher(o.id, teacherId);
             setAssignedTeachers(prev => prev.filter(t => t.id !== teacherId));
-        } catch { /* ignore */ }
+        } catch (err: any) {
+            console.error('Error removing teacher:', err?.message);
+        }
     };
 
     const handleOpenChat = async () => {
         if (!o) return;
         setChatLoading(true);
+        setChatError(null);
         try {
             const chat = await getOrCreateChat(o.id);
             router.push(`/dashboard/messages?chat=${chat.id}`);
-        } catch { /* ignore */ }
-        finally { setChatLoading(false); }
+        } catch (err: any) {
+            setChatError(t('chatNoTeachers'));
+        } finally { setChatLoading(false); }
     };
 
     const unassignedTeachers = allTeachers.filter(t => !assignedTeachers.some(a => a.id === t.id));
@@ -367,6 +384,9 @@ export default function OpportunityDetailSheet({
                                 </button>
                             )}
                         </div>
+                        {chatError && (
+                            <p className="text-xs text-red-500 dark:text-red-400">{chatError}</p>
+                        )}
 
                         {/* Assigned teachers list */}
                         {assignedTeachers.length === 0 ? (
@@ -407,7 +427,7 @@ export default function OpportunityDetailSheet({
                             <div className="pt-1">
                                 {!showTeacherPicker ? (
                                     <button
-                                        onClick={() => setShowTeacherPicker(true)}
+                                        onClick={() => { setShowTeacherPicker(true); setAddError(null); }}
                                         className="w-full flex items-center justify-center gap-1.5 py-1.5 border border-dashed border-gray-300 dark:border-gray-600 rounded-lg text-xs text-gray-400 hover:text-blue-500 hover:border-blue-400 transition-colors"
                                     >
                                         <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth="2">
@@ -419,11 +439,14 @@ export default function OpportunityDetailSheet({
                                     <div className="space-y-1.5">
                                         <div className="flex items-center justify-between">
                                             <p className="text-xs font-medium text-gray-500 dark:text-gray-400">{t("selectTeacher")}</p>
-                                            <button onClick={() => setShowTeacherPicker(false)} className="text-xs text-gray-400 hover:text-gray-600">{t("cancel")}</button>
+                                            <button onClick={() => { setShowTeacherPicker(false); setAddError(null); }} className="text-xs text-gray-400 hover:text-gray-600">{t("cancel")}</button>
                                         </div>
+                                        {addError && (
+                                            <p className="text-xs text-red-500 dark:text-red-400">{addError}</p>
+                                        )}
                                         {unassignedTeachers.length === 0 ? (
                                             <p className="text-xs text-gray-400 italic py-2">
-                                                {allTeachers.length === 0 ? t("loading") : t("allTeachersAssigned")}
+                                                {!teachersLoaded ? t("loading") : t("allTeachersAssigned")}
                                             </p>
                                         ) : (
                                             <div className="max-h-40 overflow-y-auto space-y-1 pr-1">

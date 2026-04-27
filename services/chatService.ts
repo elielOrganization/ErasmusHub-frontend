@@ -39,7 +39,7 @@ function authHeaders() {
 }
 
 export async function fetchMyChats(): Promise<Chat[]> {
-    const res = await fetch(`${API_URL}/chat/`, { headers: authHeaders() });
+    const res = await fetch(`${API_URL}/chat`, { headers: authHeaders() });
     if (!res.ok) throw new Error(`Error ${res.status}`);
     return res.json();
 }
