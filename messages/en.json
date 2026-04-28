@@ -150,7 +150,7 @@
     "resetChatsConfirm": "Yes, delete chats",
     "resetChatsSuccess": "All chats have been deleted",
     "resetErasmus": "Reset Erasmus",
-    "resetErasmusTitle": "⚠️ Full Erasmus Reset",
+    "resetErasmusTitle": "Full Erasmus Reset",
     "resetErasmusDesc": "This action will delete the ENTIRE Erasmus process: applications, documents, chats, internships, interviews, final list, teacher assignments and notifications. Users and opportunities will be kept. This action is IRREVERSIBLE.",
     "resetErasmusConfirmHint": "Type RESET to confirm",
     "resetErasmusConfirm": "Yes, reset everything",
