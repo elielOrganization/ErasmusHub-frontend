@@ -106,15 +106,15 @@ export default function AdminDangerZone() {
             {showResetModal && (
                 <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
                     <div className="bg-white dark:bg-gray-900 rounded-3xl shadow-2xl border border-gray-200 dark:border-gray-700 w-full max-w-md p-6 space-y-4">
-                        <div className="flex items-start gap-3">
-                            <div className="w-11 h-11 rounded-full bg-red-100 dark:bg-red-900/30 flex items-center justify-center shrink-0">
-                                <svg className="w-6 h-6 text-red-600 dark:text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth="2">
+
+                        {/* Header — single icon, no redundancy */}
+                        <div className="flex items-center justify-between">
+                            <h3 className="text-lg font-bold text-gray-900 dark:text-gray-100">{t('resetErasmusTitle')}</h3>
+                            <span className="w-8 h-8 rounded-full bg-red-100 dark:bg-red-900/30 flex items-center justify-center shrink-0">
+                                <svg className="w-4 h-4 text-red-600 dark:text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth="2">
                                     <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z" />
                                 </svg>
-                            </div>
-                            <div>
-                                <h3 className="text-lg font-bold text-gray-900 dark:text-gray-100">{t('resetErasmusTitle')}</h3>
-                            </div>
+                            </span>
                         </div>
 
                         <p className="text-sm text-gray-600 dark:text-gray-400 leading-relaxed">
