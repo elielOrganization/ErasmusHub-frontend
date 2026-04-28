@@ -10,6 +10,7 @@ import {
     fetchMyChats,
     fetchMessages,
     sendMessage,
+    getChatById,
     type Chat,
     type ChatMessage,
 } from '@/services/chatService';
@@ -90,9 +91,18 @@ function MessagesContent() {
             setLoadingChats(true);
             const data = await loadChats();
             setLoadingChats(false);
-            if (chatIdParam && data.length > 0) {
+            if (chatIdParam) {
                 const found = data.find(c => c.id === Number(chatIdParam));
-                if (found) openChat(found);
+                if (found) {
+                    openChat(found);
+                } else {
+                    // Admin accessing a chat not yet in their list → fetch it directly
+                    try {
+                        const chat = await getChatById(Number(chatIdParam));
+                        setChats(prev => [chat, ...prev]);
+                        openChat(chat);
+                    } catch { /* chat not accessible */ }
+                }
             }
         };
         init();

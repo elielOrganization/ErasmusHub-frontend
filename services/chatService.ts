@@ -44,6 +44,12 @@ export async function fetchMyChats(): Promise<Chat[]> {
     return res.json();
 }
 
+export async function getChatById(chatId: number): Promise<Chat> {
+    const res = await fetch(`${API_URL}/chat/${chatId}`, { headers: authHeaders() });
+    if (!res.ok) throw new Error(`Error ${res.status}`);
+    return res.json();
+}
+
 export async function getOrCreateChat(opportunityId: number): Promise<Chat> {
     const res = await fetch(`${API_URL}/chat/opportunity/${opportunityId}`, { headers: authHeaders() });
     if (!res.ok) throw new Error(`Error ${res.status}`);
