@@ -101,19 +101,14 @@
     "calendarToday": "Dnes",
     "myInternships": "Mé praxe",
     "myInternshipsDesc": "Zobrazit a spravovat vaše aktivní praxe",
-    "myTasks": "Mé úkoly",
-    "myTasksDesc": "Zkontrolujte své nevyřízené úkoly",
     "myNotices": "Mé upozornění",
     "myNoticesDesc": "Zkontrolujte svá upozornění a oznámení",
-    "requestExemption": "Žádost o výjimku",
-    "requestExemptionDesc": "Zahajte žádost o výjimku z praxe",
     "manageStudents": "Spravovat studenty",
     "manageStudentsDesc": "Spravujte registrované studenty",
     "manageDocuments": "Spravovat dokumenty",
     "manageDocumentsDesc": "Přístup k systémovým dokumentům",
     "adminPanel": "Panel administrátora",
     "adminPanelDesc": "Spravujte uživatele a nastavení systému",
-    "pendingTasks": "Nevyřízené úkoly",
     "unreadNotices": "Nepřečtená upozornění",
     "activeInternships": "Aktivní praxe",
     "revision": "Kontrola dokumentů",
@@ -247,30 +242,6 @@
     "dayModalClose": "Zavřít",
     "dayModalSaved": "Poznámka uložena",
     "dayModalError": "Chyba při ukládání. Zkuste to znovu."
-  },
-
-  "exenciones": {
-    "title": "Žádost o výjimku",
-    "description": "Můžete podat pouze jednu žádost o výjimku na zápis a akademický rok",
-    "reason": "Důvod žádosti",
-    "reasonPlaceholder": "Popište důvod vaší žádosti o výjimku...",
-    "documentsToProvide": "Dokumenty k dodání",
-    "socialSecurityCert": "Potvrzení o pracovní historii ze sociálního zabezpečení",
-    "activitiesCert": "Potvrzení o činnostech vykonávaných ve společnosti",
-    "selectFile": "Vybrat soubor",
-    "submit": "PODAT ŽÁDOST O VÝJIMKU",
-    "successMessage": "Žádost o výjimku byla úspěšně odeslána",
-    "submitError": "Chyba při odesílání žádosti"
-  },
-
-  "tareas": {
-    "title": "Mé nevyřízené úkoly",
-    "task": "Úkol",
-    "dueDate": "Termín",
-    "status": "Stav",
-    "markComplete": "Dokončit",
-    "completedStatus": "Dokončeno",
-    "pendingStatus": "Nevyřízeno"
   },
 
   "avisos": {

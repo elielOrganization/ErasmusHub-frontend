@@ -101,19 +101,14 @@
     "calendarToday": "Today",
     "myInternships": "My Internships",
     "myInternshipsDesc": "View and manage your active internships",
-    "myTasks": "My Tasks",
-    "myTasksDesc": "Review your pending tasks",
     "myNotices": "My Notices",
     "myNoticesDesc": "Check your notices and notifications",
-    "requestExemption": "Request Exemption",
-    "requestExemptionDesc": "Start an internship exemption request",
     "manageStudents": "Manage Students",
     "manageStudentsDesc": "Administer registered students",
     "manageDocuments": "Manage Documents",
     "manageDocumentsDesc": "Access system documents",
     "adminPanel": "Admin Panel",
     "adminPanelDesc": "Manage users and system settings",
-    "pendingTasks": "Pending tasks",
     "unreadNotices": "Unread notices",
     "activeInternships": "Active internships",
     "revision": "Document Review",
@@ -247,30 +242,6 @@
     "dayModalClose": "Close",
     "dayModalSaved": "Note saved",
     "dayModalError": "Error saving. Please try again."
-  },
-
-  "exenciones": {
-    "title": "Request Exemption",
-    "description": "You can only submit one exemption request per enrollment and academic year",
-    "reason": "Reason for request",
-    "reasonPlaceholder": "Describe the reason for your exemption request...",
-    "documentsToProvide": "Documents to provide",
-    "socialSecurityCert": "Social Security work history certificate",
-    "activitiesCert": "Certificate of activities performed at the company",
-    "selectFile": "Select file",
-    "submit": "REQUEST EXEMPTION",
-    "successMessage": "Exemption request submitted successfully",
-    "submitError": "Error sending request"
-  },
-
-  "tareas": {
-    "title": "My Pending Tasks",
-    "task": "Task",
-    "dueDate": "Due Date",
-    "status": "Status",
-    "markComplete": "Complete",
-    "completedStatus": "Completed",
-    "pendingStatus": "Pending"
   },
 
   "avisos": {

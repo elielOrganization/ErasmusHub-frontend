@@ -101,19 +101,14 @@
     "calendarToday": "Hoy",
     "myInternships": "Mis Prácticas",
     "myInternshipsDesc": "Consulta y gestiona tus prácticas activas",
-    "myTasks": "Mis Tareas",
-    "myTasksDesc": "Revisa tus tareas pendientes",
     "myNotices": "Mis Avisos",
     "myNoticesDesc": "Consulta tus avisos y notificaciones",
-    "requestExemption": "Solicitar Exención",
-    "requestExemptionDesc": "Inicia una solicitud de exención de prácticas",
     "manageStudents": "Gestionar Estudiantes",
     "manageStudentsDesc": "Administra los estudiantes registrados",
     "manageDocuments": "Gestionar Documentos",
     "manageDocumentsDesc": "Accede a los documentos del sistema",
     "adminPanel": "Panel de Administración",
     "adminPanelDesc": "Gestiona usuarios y configuración del sistema",
-    "pendingTasks": "Tareas pendientes",
     "unreadNotices": "Avisos sin leer",
     "activeInternships": "Prácticas activas",
     "revision": "Revisión de Documentos",
@@ -247,30 +242,6 @@
     "dayModalClose": "Cerrar",
     "dayModalSaved": "Nota guardada",
     "dayModalError": "Error al guardar. Inténtalo de nuevo."
-  },
-
-  "exenciones": {
-    "title": "Solicitar Exención",
-    "description": "Solo podrá realizar una solicitud de exención de prácticas por matrícula y año académico",
-    "reason": "Motivo de la solicitud",
-    "reasonPlaceholder": "Describe el motivo de tu solicitud de exención...",
-    "documentsToProvide": "Documentación a aportar",
-    "socialSecurityCert": "Certificado de vida laboral de la Seguridad social",
-    "activitiesCert": "Certificado de actividades realizadas en la empresa",
-    "selectFile": "Seleccionar archivo",
-    "submit": "SOLICITAR EXENCIÓN",
-    "successMessage": "Solicitud de exención enviada correctamente",
-    "submitError": "Error al enviar la solicitud"
-  },
-
-  "tareas": {
-    "title": "Mis Tareas Pendientes",
-    "task": "Tarea",
-    "dueDate": "Fecha Límite",
-    "status": "Estado",
-    "markComplete": "Completar",
-    "completedStatus": "Completada",
-    "pendingStatus": "Pendiente"
   },
 
   "avisos": {
