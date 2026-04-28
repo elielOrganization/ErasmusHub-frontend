@@ -422,7 +422,8 @@
     "ageLabel": "Edad",
     "youBadge": "Tú",
     "superAdminBadge": "Super Admin",
-    "roleLocked": "No se puede cambiar el rol de este usuario"
+    "roleLocked": "No se puede cambiar el rol de este usuario",
+    "chatNoApplications": "Este usuario no tiene solicitudes todavía"
   },
 
   "opportunitiesDashboard": {

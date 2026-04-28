@@ -898,9 +898,8 @@ export default function UserTable({ users, roles }: { users: User[]; roles: Role
         try {
             const chat = await adminOpenChatWithUser(userId);
             router.push(`/dashboard/messages?chat=${chat.id}`);
-        } catch (err: unknown) {
-            const msg = err instanceof Error ? err.message : 'Error';
-            setChatError(msg);
+        } catch {
+            setChatError(t('chatNoApplications'));
             setTimeout(() => setChatError(null), 3500);
         }
     };

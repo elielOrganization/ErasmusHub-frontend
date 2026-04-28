@@ -422,7 +422,8 @@
     "ageLabel": "Věk",
     "youBadge": "Ty",
     "superAdminBadge": "Super Admin",
-    "roleLocked": "Roli tohoto uživatele nelze změnit"
+    "roleLocked": "Roli tohoto uživatele nelze změnit",
+    "chatNoApplications": "Tento uživatel zatím nemá žádné přihlášky"
   },
 
   "opportunitiesDashboard": {
