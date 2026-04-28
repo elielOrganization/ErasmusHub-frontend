@@ -44,6 +44,15 @@ export async function fetchMyChats(): Promise<Chat[]> {
     return res.json();
 }
 
+export async function adminOpenChatWithUser(userId: number): Promise<Chat> {
+    const res = await fetch(`${API_URL}/chat/admin/open/${userId}`, { headers: authHeaders() });
+    if (!res.ok) {
+        const err = await res.json().catch(() => null);
+        throw new Error(err?.detail || `Error ${res.status}`);
+    }
+    return res.json();
+}
+
 export async function getChatById(chatId: number): Promise<Chat> {
     const res = await fetch(`${API_URL}/chat/${chatId}`, { headers: authHeaders() });
     if (!res.ok) throw new Error(`Error ${res.status}`);

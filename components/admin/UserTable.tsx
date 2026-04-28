@@ -11,6 +11,8 @@ import { useRoleTheme } from '@/hooks/useRoleTheme';
 import { translateRole } from '@/lib/translateRole';
 import type { User, Role } from '@/services/userService';
 import { useAuth } from '@/context/AuthContext';
+import { useRouter } from '@/i18n/routing';
+import { adminOpenChatWithUser } from '@/services/chatService';
 
 /* ── Parse Rodné číslo ─────────────────────────────────────── */
 
@@ -114,6 +116,15 @@ function PlusIcon() {
     );
 }
 
+function ChatIcon() {
+    return (
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="w-4 h-4">
+            <path d="M3.505 2.365A41.369 41.369 0 019 2c1.863 0 3.697.124 5.495.365 1.247.167 2.18 1.108 2.435 2.268a4.45 4.45 0 00-.577-.069 43.141 43.141 0 00-4.706 0C9.229 4.696 7.5 6.727 7.5 8.998v2.24c0 1.413.67 2.735 1.76 3.562l-2.98 2.98A.75.75 0 015 17.25v-3.443c-.501-.048-1-.106-1.495-.172C2.033 13.438 1 12.162 1 10.72V5.28c0-1.441 1.033-2.717 2.505-2.914z" />
+            <path d="M14 6c-.762 0-1.52.02-2.271.062C10.157 6.148 9 7.472 9 8.998v2.24c0 1.519 1.147 2.839 2.71 2.935.214.013.428.024.642.034.2.009.385.09.518.224l2.35 2.35a.75.75 0 001.28-.531v-2.07c1.453-.195 2.5-1.463 2.5-2.915V8.998c0-1.526-1.157-2.85-2.729-2.936A41.645 41.645 0 0014 6z" />
+        </svg>
+    );
+}
+
 /* ── Role pill helper ───────────────────────────────────────── */
 
 function getRolePillClasses(roleName: string): string {
@@ -126,16 +137,28 @@ function getRolePillClasses(roleName: string): string {
 
 /* ── Action buttons ─────────────────────────────────────────── */
 
-function ActionButtons({ onEdit, onDelete, isSelf, isSuperAdmin }: {
+function ActionButtons({ onEdit, onDelete, onChat, isSelf, isSuperAdmin, isAdmin }: {
     onEdit: () => void;
     onDelete: () => void;
+    onChat?: () => void;
     isSelf?: boolean;
     isSuperAdmin?: boolean;
+    isAdmin?: boolean;
 }) {
     const theme = useRoleTheme();
     const canDelete = !isSelf && !isSuperAdmin;
+    const showChat = !isSelf && !isAdmin && !!onChat;
     return (
         <div className="flex items-center gap-1">
+            {showChat && (
+                <button
+                    onClick={e => { e.stopPropagation(); onChat!(); }}
+                    title="Enviar mensaje"
+                    className="p-1.5 rounded-lg text-gray-400 hover:text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-900/20 transition-colors cursor-pointer"
+                >
+                    <ChatIcon />
+                </button>
+            )}
             <button
                 onClick={e => { e.stopPropagation(); onEdit(); }}
                 className={`p-1.5 rounded-lg text-gray-400 ${theme.hoverText} ${theme.hoverBg} transition-colors cursor-pointer`}
@@ -861,12 +884,26 @@ export default function UserTable({ users, roles }: { users: User[]; roles: Role
     const t = useTranslations('adminDashboard');
     const tRoles = useTranslations('roles');
     const { user: currentUser } = useAuth();
+    const router = useRouter();
     const [searchQuery, setSearchQuery] = useState('');
     const [viewUser, setViewUser] = useState<User | null>(null);
     const [editUser, setEditUser] = useState<User | null>(null);
     const [deleteUser, setDeleteUser] = useState<User | null>(null);
     const [showCreate, setShowCreate] = useState(false);
     const [page, setPage] = useState(1);
+    const [chatError, setChatError] = useState<string | null>(null);
+
+    const handleOpenChat = async (userId: number) => {
+        setChatError(null);
+        try {
+            const chat = await adminOpenChatWithUser(userId);
+            router.push(`/dashboard/messages?chat=${chat.id}`);
+        } catch (err: unknown) {
+            const msg = err instanceof Error ? err.message : 'Error';
+            setChatError(msg);
+            setTimeout(() => setChatError(null), 3500);
+        }
+    };
 
     // Filters
     const [roleFilter, setRoleFilter] = useState('');
@@ -1073,8 +1110,10 @@ export default function UserTable({ users, roles }: { users: User[]; roles: Role
                                                     <ActionButtons
                                                         onEdit={() => setEditUser(user)}
                                                         onDelete={() => setDeleteUser(user)}
+                                                        onChat={() => handleOpenChat(user.id!)}
                                                         isSelf={isSelf}
                                                         isSuperAdmin={isSuperAdmin}
+                                                        isAdmin={rawRole.includes('admin')}
                                                     />
                                                 </div>
                                             </td>
@@ -1163,8 +1202,10 @@ export default function UserTable({ users, roles }: { users: User[]; roles: Role
                                         <ActionButtons
                                             onEdit={() => setEditUser(user)}
                                             onDelete={() => setDeleteUser(user)}
+                                            onChat={() => handleOpenChat(user.id!)}
                                             isSelf={isSelf}
                                             isSuperAdmin={isSuperAdmin}
+                                            isAdmin={rawRole.includes('admin')}
                                         />
                                     </div>
                                 </div>
@@ -1180,6 +1221,13 @@ export default function UserTable({ users, roles }: { users: User[]; roles: Role
                         onPageChange={setPage}
                     />
                 </>
+            )}
+
+            {/* Chat error toast */}
+            {chatError && (
+                <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 bg-red-600 text-white text-sm font-medium px-5 py-2.5 rounded-2xl shadow-lg">
+                    {chatError}
+                </div>
             )}
 
             {/* Panels & Modals */}
