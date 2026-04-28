@@ -18,6 +18,7 @@ const ROLE_BUTTONS: {
     activeClass: string;
     inactiveClass: string;
     dotClass: string;
+    activeDotClass: string;
 }[] = [
     {
         id: null,
@@ -25,6 +26,7 @@ const ROLE_BUTTONS: {
         activeClass: 'bg-purple-600 text-white',
         inactiveClass: 'text-purple-600 dark:text-purple-400 hover:bg-purple-50 dark:hover:bg-purple-900/20',
         dotClass: 'bg-purple-500',
+        activeDotClass: 'bg-purple-600',
     },
     {
         id: 'student',
@@ -32,6 +34,7 @@ const ROLE_BUTTONS: {
         activeClass: 'bg-emerald-600 text-white',
         inactiveClass: 'text-emerald-600 dark:text-emerald-400 hover:bg-emerald-50 dark:hover:bg-emerald-900/20',
         dotClass: 'bg-emerald-500',
+        activeDotClass: 'bg-emerald-600',
     },
     {
         id: 'teacher',
@@ -39,6 +42,7 @@ const ROLE_BUTTONS: {
         activeClass: 'bg-blue-600 text-white',
         inactiveClass: 'text-blue-600 dark:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/20',
         dotClass: 'bg-blue-500',
+        activeDotClass: 'bg-blue-600',
     },
     {
         id: 'coordinator',
@@ -46,6 +50,7 @@ const ROLE_BUTTONS: {
         activeClass: 'bg-blue-500 text-white',
         inactiveClass: 'text-blue-500 dark:text-blue-300 hover:bg-blue-50 dark:hover:bg-blue-900/20',
         dotClass: 'bg-blue-400',
+        activeDotClass: 'bg-blue-500',
     },
     {
         id: 'lector',
@@ -53,6 +58,7 @@ const ROLE_BUTTONS: {
         activeClass: 'bg-gray-500 text-white',
         inactiveClass: 'text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800',
         dotClass: 'bg-gray-400',
+        activeDotClass: 'bg-gray-500',
     },
 ];
 
@@ -66,26 +72,54 @@ export default function DashboardHeader() {
     const realRoleName = user?.role?.name || '';
     const isAdminUser = realRoleName.toLowerCase().includes('admin');
 
+    const currentBtn = ROLE_BUTTONS.find(b => b.id === previewRole) ?? ROLE_BUTTONS[0];
+
+    const cycleRole = () => {
+        const ids = ROLE_BUTTONS.map(b => b.id);
+        const idx = ids.indexOf(previewRole);
+        setPreviewRole(ids[(idx + 1) % ids.length] as PreviewRole);
+    };
+
     return (
-        <header className="fixed top-0 left-0 w-full h-12 bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-800 flex items-center justify-between px-4 sm:px-6 z-30 shadow-sm">
-            {/* Left: mobile logo + role switcher (admin only) */}
-            <div className="flex items-center gap-3">
+        <header className="fixed top-0 left-0 w-full h-12 bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-800 flex items-center px-3 sm:px-6 z-30 shadow-sm gap-2">
+
+            {/* ── Left: sidebar toggle + desktop role pills ── */}
+            <div className="flex items-center gap-2 shrink-0">
+                {/* Mobile sidebar toggle — always visible */}
                 <button
                     onClick={toggleSidebar}
-                    className={`md:hidden cursor-pointer group transition-all duration-300 origin-left ${isCollapsed ? 'scale-100 opacity-100' : 'scale-0 opacity-0 pointer-events-none'}`}
+                    className="md:hidden cursor-pointer group"
+                    aria-label="Toggle menu"
+                >
+                    <div className={`w-8 h-8 rounded-xl flex items-center justify-center transition-colors ${theme.logoBg}`}>
+                        <Image
+                            src="/logoVector.svg"
+                            alt="ErasmusHub"
+                            width={20}
+                            height={20}
+                            className="w-5 h-5 transition-transform group-hover:scale-110 group-active:scale-95"
+                        />
+                    </div>
+                </button>
+
+                {/* Desktop: collapsed logo button */}
+                <button
+                    onClick={toggleSidebar}
+                    className={`hidden md:flex cursor-pointer group transition-all duration-300 ${isCollapsed ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}
+                    aria-label="Toggle sidebar"
                 >
                     <Image
                         src="/logoVector.svg"
                         alt="ErasmusHub"
                         width={32}
                         height={32}
-                        className="w-8 h-8 transition-transform duration-300 group-hover:scale-110 group-active:scale-95"
+                        className="w-8 h-8 transition-transform group-hover:scale-110"
                     />
                 </button>
 
-                {/* Role preview buttons — only for admins, desktop only */}
+                {/* Desktop: full role pills (admin only) */}
                 {isAdminUser && (
-                    <div className="hidden md:flex items-center gap-1">
+                    <div className="hidden lg:flex items-center gap-1">
                         {ROLE_BUTTONS.map(({ id, translationKey, activeClass, inactiveClass, dotClass }) => {
                             const isActive = previewRole === id;
                             const label = tRoles(translationKey);
@@ -105,40 +139,36 @@ export default function DashboardHeader() {
                         })}
                     </div>
                 )}
-
-                {/* Mobile: compact role dots (admin only) */}
-                {isAdminUser && (
-                    <div className="flex md:hidden items-center gap-1.5">
-                        {ROLE_BUTTONS.map(({ id, translationKey, dotClass, activeClass }) => {
-                            const isActive = previewRole === id;
-                            return (
-                                <button
-                                    key={id ?? 'admin'}
-                                    onClick={() => setPreviewRole(id)}
-                                    title={tRoles(translationKey)}
-                                    className={`w-6 h-6 rounded-full flex items-center justify-center transition-all duration-200 ${
-                                        isActive ? activeClass : 'bg-gray-100 dark:bg-gray-800'
-                                    }`}
-                                >
-                                    <span className={`w-2 h-2 rounded-full ${isActive ? 'bg-white' : dotClass}`} />
-                                </button>
-                            );
-                        })}
-                    </div>
-                )}
             </div>
 
-            {/* App title ABSOLUTELY CENTERED */}
-            <Link href="/dashboard" className={`absolute left-1/2 -translate-x-1/2 text-xl font-extrabold tracking-tight transition-colors ${theme.titleText} ${theme.titleHover}`}>
-                ErasmusHub
-            </Link>
+            {/* ── Center: title — flex-1 so it sits between sides without overlapping ── */}
+            <div className="flex-1 min-w-0 flex justify-center">
+                <Link
+                    href="/dashboard"
+                    className={`text-base sm:text-lg font-extrabold tracking-tight transition-colors whitespace-nowrap ${theme.titleText} ${theme.titleHover}`}
+                >
+                    ErasmusHub
+                </Link>
+            </div>
 
-            {/* Controls on the right */}
-            <div className="flex items-center gap-2">
+            {/* ── Right: actions + mobile/tablet role pill (admin) ── */}
+            <div className="flex items-center gap-1 sm:gap-2 shrink-0">
+                {/* Mobile + tablet: compact role cycling pill — only for admin */}
+                {isAdminUser && (
+                    <button
+                        onClick={cycleRole}
+                        title={tRoles(currentBtn.translationKey)}
+                        className={`lg:hidden inline-flex items-center gap-1 px-2 py-1 rounded-full text-[11px] font-semibold transition-all duration-200 ${currentBtn.activeClass}`}
+                    >
+                        <span className="w-1.5 h-1.5 rounded-full bg-white/80 shrink-0" />
+                        <span className="max-w-[56px] truncate">{tRoles(currentBtn.translationKey)}</span>
+                    </button>
+                )}
+
                 <ChatDropdown />
                 <NotificationDropdown />
-                <div className="h-6 w-px bg-gray-100 dark:bg-gray-700 mx-1 hidden md:block"></div>
-                <div className="hidden md:block">
+                <div className="hidden md:flex items-center gap-2 ml-1">
+                    <div className="h-6 w-px bg-gray-100 dark:bg-gray-700" />
                     <LanguageSwitcher />
                 </div>
                 <UserMenuDropdown />

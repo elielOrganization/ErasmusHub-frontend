@@ -193,6 +193,13 @@ export function useRoleTheme(): RoleTheme {
 
     if (roleName.includes('admin')) return adminTheme;
     if (roleName.includes('student')) return studentTheme;
-    if (roleName.includes('professor') || roleName.includes('coordinator')) return teacherTheme;
+    if (
+        roleName.includes('teacher') ||
+        roleName.includes('profesor') ||
+        roleName.includes('professor') ||
+        roleName.includes('coordinator') ||
+        roleName.includes('coordinador') ||
+        roleName.includes('tutor')
+    ) return teacherTheme;
     return defaultTheme;
 }

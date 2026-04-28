@@ -75,13 +75,14 @@ export default function DashboardSidebar() {
     const { isInstallable, installApp } = usePWA();
     const { user, loading } = useAuth();
     const theme = useRoleTheme();
-    const { effectiveRoleName } = useRolePreview();
+    const { effectiveRoleName, isRealAdmin } = useRolePreview();
 
     const roleName = effectiveRoleName || user?.role?.name || '';
     const isStudent = roleName.includes('Student');
+    // isAdmin uses effective role (for preview), but admin controls always use isRealAdmin
     const isAdmin = roleName.toLowerCase().includes('admin');
-    const isTeacher = roleName.toLowerCase().includes('teacher') || roleName.toLowerCase().includes('profesor') || roleName.toLowerCase().includes('professor') || roleName.toLowerCase().includes('coordinator') || roleName.toLowerCase().includes('coordinador');
-    const isLector = !isStudent && !isAdmin && !isTeacher;
+    const isTeacher = roleName.toLowerCase().includes('teacher') || roleName.toLowerCase().includes('profesor') || roleName.toLowerCase().includes('professor') || roleName.toLowerCase().includes('coordinator') || roleName.toLowerCase().includes('coordinador') || roleName.toLowerCase().includes('tutor');
+    const isLector = !isStudent && !isAdmin && !isTeacher && !isRealAdmin;
 
     const { data: chatsData } = useApi<{ id: number; unread_count: number }[]>(
         isLector ? null : '/chat',
@@ -270,7 +271,7 @@ export default function DashboardSidebar() {
                                 );
                             })}
 
-                            {isAdmin && (
+                            {isRealAdmin && (
                                 <div className="mt-6 space-y-1">
                                     {/* Toggle selection process */}
                                     <button
