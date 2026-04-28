@@ -134,6 +134,8 @@
     "chatWritePlaceholder": "Escribe un mensaje...",
     "chatEnterHint": "Enter para enviar · Shift+Enter para nueva línea",
     "noTeacherAssigned": "Sin profesor asignado",
+    "chatYou": "Tú",
+    "chatLastFrom": "Último mensaje de",
     "processStart": "Empezar proceso",
     "processStop": "Detener proceso",
     "processProcessing": "Procesando...",

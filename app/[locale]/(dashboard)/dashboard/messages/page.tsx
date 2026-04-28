@@ -159,11 +159,23 @@ function MessagesContent() {
         }
     };
 
-    const otherPartyName = activeChat
+    // Base contact name (teacher for students, student for teachers/admin)
+    const baseContactName = activeChat
         ? (user?.id === activeChat.student_id
             ? (activeChat.teachers_names || t('noTeacherAssigned'))
             : activeChat.student_name)
         : '';
+
+    // If the last received message is from someone other than the base contact
+    // (e.g. admin jumped in), show that person's name instead so it's clear who wrote
+    const lastMsg = messages.length > 0 ? messages[messages.length - 1] : null;
+    const lastSenderIsThirdParty = lastMsg &&
+        lastMsg.sender_id !== user?.id &&
+        lastMsg.sender_name !== baseContactName;
+
+    const otherPartyName = lastSenderIsThirdParty
+        ? lastMsg!.sender_name
+        : baseContactName;
 
     const totalUnread = chats.reduce((acc, c) => acc + c.unread_count, 0);
 
@@ -213,9 +225,13 @@ function MessagesContent() {
                 ) : (
                     <div className="flex-1 overflow-y-auto">
                         {chats.map(chat => {
-                            const name = user?.id === chat.student_id
+                            const baseN = user?.id === chat.student_id
                                 ? (chat.teachers_names || t('noTeacherAssigned'))
                                 : chat.student_name;
+                            // If last message is from a third party (e.g. admin), use their name
+                            const lm = chat.last_message;
+                            const lmIsThird = lm && lm.sender_id !== user?.id && lm.sender_name !== baseN;
+                            const name = lmIsThird ? lm!.sender_name : baseN;
                             const isActive = activeChat?.id === chat.id;
                             const initial = name.charAt(0).toUpperCase();
                             return (
@@ -248,15 +264,12 @@ function MessagesContent() {
                                         <p className={`text-[11px] truncate font-medium mb-0.5 ${theme.accent}`}>
                                             {chat.opportunity_name}
                                         </p>
-                                        {chat.last_message && (
+                                        {lm && (
                                             <p className={`text-xs truncate ${chat.unread_count > 0 ? 'text-gray-700 dark:text-gray-300 font-medium' : 'text-gray-400 dark:text-gray-500'}`}>
-                                                {chat.last_message.sender_id === user?.id
-                                                    ? <span className="text-gray-400 dark:text-gray-500">Tú: </span>
-                                                    : chat.last_message.sender_name !== name
-                                                        ? <span className="font-semibold">{chat.last_message.sender_name}: </span>
-                                                        : null
-                                                }
-                                                {chat.last_message.content}
+                                                {lm.sender_id === user?.id && (
+                                                    <span className="text-gray-400 dark:text-gray-500">{t('chatYou')}: </span>
+                                                )}
+                                                {lm.content}
                                             </p>
                                         )}
                                     </div>
@@ -296,11 +309,8 @@ function MessagesContent() {
                             <p className="text-sm font-semibold text-gray-800 dark:text-gray-100 truncate">{otherPartyName}</p>
                             <p className={`text-xs truncate ${theme.accent}`}>
                                 {activeChat.opportunity_name}
-                                {messages.length > 0 && messages[messages.length - 1].sender_id !== user?.id &&
-                                 messages[messages.length - 1].sender_name !== otherPartyName && (
-                                    <span className="text-gray-400 dark:text-gray-500 ml-1">
-                                        · último mensaje de <span className="font-medium">{messages[messages.length - 1].sender_name}</span>
-                                    </span>
+                                {lastSenderIsThirdParty && (
+                                    <span className="text-gray-400 dark:text-gray-500 ml-1">· {baseContactName}</span>
                                 )}
                             </p>
                         </div>

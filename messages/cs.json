@@ -134,6 +134,8 @@
     "chatWritePlaceholder": "Napište zprávu...",
     "chatEnterHint": "Enter pro odeslání · Shift+Enter pro nový řádek",
     "noTeacherAssigned": "Žádný přiřazený učitel",
+    "chatYou": "Ty",
+    "chatLastFrom": "Poslední zpráva od",
     "processStart": "Zahájit proces",
     "processStop": "Zastavit proces",
     "processProcessing": "Zpracovávám...",
