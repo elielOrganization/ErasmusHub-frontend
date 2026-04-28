@@ -250,6 +250,12 @@ function MessagesContent() {
                                         </p>
                                         {chat.last_message && (
                                             <p className={`text-xs truncate ${chat.unread_count > 0 ? 'text-gray-700 dark:text-gray-300 font-medium' : 'text-gray-400 dark:text-gray-500'}`}>
+                                                {chat.last_message.sender_id === user?.id
+                                                    ? <span className="text-gray-400 dark:text-gray-500">Tú: </span>
+                                                    : chat.last_message.sender_name !== name
+                                                        ? <span className="font-semibold">{chat.last_message.sender_name}: </span>
+                                                        : null
+                                                }
                                                 {chat.last_message.content}
                                             </p>
                                         )}
@@ -288,7 +294,15 @@ function MessagesContent() {
                         </div>
                         <div className="flex-1 min-w-0">
                             <p className="text-sm font-semibold text-gray-800 dark:text-gray-100 truncate">{otherPartyName}</p>
-                            <p className={`text-xs truncate ${theme.accent}`}>{activeChat.opportunity_name}</p>
+                            <p className={`text-xs truncate ${theme.accent}`}>
+                                {activeChat.opportunity_name}
+                                {messages.length > 0 && messages[messages.length - 1].sender_id !== user?.id &&
+                                 messages[messages.length - 1].sender_name !== otherPartyName && (
+                                    <span className="text-gray-400 dark:text-gray-500 ml-1">
+                                        · último mensaje de <span className="font-medium">{messages[messages.length - 1].sender_name}</span>
+                                    </span>
+                                )}
+                            </p>
                         </div>
                     </div>
 
