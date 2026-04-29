@@ -88,8 +88,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
                 setUser(userData);
                 // Keep roleName in sync with the validated value from the backend
                 setRoleName(userData?.role?.name ?? role);
+            } else if (response.status === 401) {
+                // Token expired — show blocking overlay instead of silent redirect
+                Cookies.remove('auth_token');
+                setUser(null);
+                setRoleName(null);
+                window.dispatchEvent(new CustomEvent('session-expired'));
             } else {
-                // If backend returns 401 (token expired), clear everything
                 logout();
             }
         } catch (error) {

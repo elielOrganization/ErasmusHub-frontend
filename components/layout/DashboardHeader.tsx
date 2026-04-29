@@ -1,5 +1,6 @@
 "use client"
 import Image from 'next/image';
+import { useEffect, useRef, useState } from 'react';
 import { useTranslations } from 'next-intl';
 import LanguageSwitcher from "../dropdowns/LanguageSwitcher";
 import UserMenuDropdown from "../dropdowns/UserMenuDropdown";
@@ -74,11 +75,19 @@ export default function DashboardHeader() {
 
     const currentBtn = ROLE_BUTTONS.find(b => b.id === previewRole) ?? ROLE_BUTTONS[0];
 
-    const cycleRole = () => {
-        const ids = ROLE_BUTTONS.map(b => b.id);
-        const idx = ids.indexOf(previewRole);
-        setPreviewRole(ids[(idx + 1) % ids.length] as PreviewRole);
-    };
+    const [roleDropdownOpen, setRoleDropdownOpen] = useState(false);
+    const roleDropdownRef = useRef<HTMLDivElement>(null);
+
+    useEffect(() => {
+        if (!roleDropdownOpen) return;
+        const handler = (e: MouseEvent) => {
+            if (roleDropdownRef.current && !roleDropdownRef.current.contains(e.target as Node)) {
+                setRoleDropdownOpen(false);
+            }
+        };
+        document.addEventListener('mousedown', handler);
+        return () => document.removeEventListener('mousedown', handler);
+    }, [roleDropdownOpen]);
 
     return (
         <header className="fixed top-0 left-0 w-full h-12 bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-800 flex items-center px-3 sm:px-6 z-30 shadow-sm gap-2">
@@ -153,16 +162,43 @@ export default function DashboardHeader() {
 
             {/* ── Right: actions + mobile/tablet role pill (admin) ── */}
             <div className="flex items-center gap-1 sm:gap-2 shrink-0">
-                {/* Mobile + tablet: compact role cycling pill — only for admin */}
+                {/* Mobile + tablet: role dropdown — only for admin */}
                 {isAdminUser && (
-                    <button
-                        onClick={cycleRole}
-                        title={tRoles(currentBtn.translationKey)}
-                        className={`lg:hidden inline-flex items-center gap-1 px-2 py-1 rounded-full text-[11px] font-semibold transition-all duration-200 ${currentBtn.activeClass}`}
-                    >
-                        <span className="w-1.5 h-1.5 rounded-full bg-white/80 shrink-0" />
-                        <span className="max-w-[56px] truncate">{tRoles(currentBtn.translationKey)}</span>
-                    </button>
+                    <div className="lg:hidden relative" ref={roleDropdownRef}>
+                        <button
+                            onClick={() => setRoleDropdownOpen(o => !o)}
+                            className={`inline-flex items-center gap-1 px-2 py-1 rounded-full text-[11px] font-semibold transition-all duration-200 ${currentBtn.activeClass}`}
+                        >
+                            <span className="w-1.5 h-1.5 rounded-full bg-white/80 shrink-0" />
+                            <span className="max-w-[56px] truncate">{tRoles(currentBtn.translationKey)}</span>
+                            <svg className={`w-3 h-3 shrink-0 transition-transform duration-200 ${roleDropdownOpen ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth="2.5">
+                                <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
+                            </svg>
+                        </button>
+
+                        {roleDropdownOpen && (
+                            <div className="absolute right-0 top-full mt-2 w-44 bg-white dark:bg-gray-900 rounded-2xl border border-gray-200 dark:border-gray-700 shadow-lg overflow-hidden z-50">
+                                {ROLE_BUTTONS.map(({ id, translationKey, activeClass, inactiveClass, dotClass }) => {
+                                    const isActive = previewRole === id;
+                                    const label = tRoles(translationKey);
+                                    return (
+                                        <button
+                                            key={id ?? 'admin'}
+                                            onClick={() => { setPreviewRole(id); setRoleDropdownOpen(false); }}
+                                            className={`w-full flex items-center gap-2.5 px-4 py-2.5 text-sm font-medium transition-colors cursor-pointer ${
+                                                isActive
+                                                    ? activeClass
+                                                    : `text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-800`
+                                            }`}
+                                        >
+                                            <span className={`w-2 h-2 rounded-full shrink-0 ${isActive ? 'bg-white/80' : dotClass}`} />
+                                            {label}
+                                        </button>
+                                    );
+                                })}
+                            </div>
+                        )}
+                    </div>
                 )}
 
                 <ChatDropdown />

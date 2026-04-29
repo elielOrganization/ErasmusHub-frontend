@@ -116,10 +116,10 @@ export default async function AdminDashboardPage({ params }: { params: Promise<{
             )}
 
             {/* ── Users section ── */}
-            <div className="bg-white dark:bg-gray-900 rounded-3xl p-4 sm:p-8 border border-gray-100 dark:border-gray-800 shadow-sm">
-                <div className="flex justify-between items-center mb-6">
-                    <h2 className="text-xl sm:text-2xl font-bold text-gray-800 dark:text-gray-100">{t('userManagement')}</h2>
-                    <span className="bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-300 px-3 py-1 rounded-full text-sm font-medium">
+            <div className="bg-white dark:bg-gray-900 rounded-3xl p-4 sm:p-6 lg:p-8 border border-gray-100 dark:border-gray-800 shadow-sm overflow-hidden">
+                <div className="flex flex-wrap items-center justify-between gap-2 mb-6">
+                    <h2 className="text-lg sm:text-2xl font-bold text-gray-800 dark:text-gray-100">{t('userManagement')}</h2>
+                    <span className="bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-300 px-3 py-1 rounded-full text-sm font-medium shrink-0">
                         {totalUsers} {t('totalUsers')}
                     </span>
                 </div>

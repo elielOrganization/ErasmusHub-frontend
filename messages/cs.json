@@ -59,7 +59,6 @@
       "generic": "Něco se pokazilo. Zkuste to prosím znovu."
     }
   },
-  
   "common": {
     "loading": "Načítání...",
     "unknownError": "Neznámá chyba",
@@ -69,7 +68,6 @@
     "clearFilters": "Vymazat filtry",
     "applyFilters": "Použít filtry"
   },
-
   "dashboard": {
     "home": "Domů",
     "admin": "Panel administrátora",
@@ -162,7 +160,6 @@
     "chatManagementDesc": "Smazat všechny konverzace a zprávy ze systému.",
     "erasmusResetDesc": "Vrátí systém do počátečního stavu, jako by proces Erasmus nikdy nezačal."
   },
-
   "practicas": {
     "title": "Mé praxe",
     "entity": "Subjekt",
@@ -243,7 +240,6 @@
     "dayModalSaved": "Poznámka uložena",
     "dayModalError": "Chyba při ukládání. Zkuste to znovu."
   },
-
   "avisos": {
     "title": "Mé upozornění",
     "notice": "Upozornění",
@@ -285,7 +281,6 @@
       "interview_readmitted": "Byli jste readmitováni do výběrového řízení"
     }
   },
-
   "table": {
     "show": "Zobrazit",
     "records": "záznamů",
@@ -297,7 +292,6 @@
     "noResults": "V této tabulce nejsou k dispozici žádná data",
     "showing": "Zobrazeno {from} až {to} z {total} záznamů"
   },
-
   "userProfile": {
     "title": "Můj profil",
     "personalInfo": "Osobní údaje",
@@ -317,7 +311,6 @@
     "yes": "Ano",
     "no": "Ne"
   },
-
   "adminDashboard": {
     "totalUsers": "Celkem uživatelů",
     "admins": "Administrátoři",
@@ -362,7 +355,7 @@
     "fieldEmail": "E-mail",
     "fieldEmailPlaceholder": "Např.: uzivatel@email.com",
     "fieldPhone": "Telefon",
-    "fieldPhonePlaceholder": "Např.: +420 600 000 000",
+    "fieldPhonePlaceholder": "Např.: +420 601 234 567",
     "fieldRole": "Role",
     "selectRolePlaceholder": "Vyberte roli",
     "fieldGender": "Pohlaví",
@@ -396,7 +389,6 @@
     "roleLocked": "Roli tohoto uživatele nelze změnit",
     "chatNoApplications": "Tento uživatel zatím nemá žádné přihlášky"
   },
-
   "opportunitiesDashboard": {
     "title": "Příležitosti",
     "totalOpportunities": "Celkem příležitostí",
@@ -464,7 +456,6 @@
     "addTeacherError": "Nepodařilo se přiřadit učitele. Zkontrolujte, zda máte oprávnění správce.",
     "loading": "Načítání..."
   },
-
   "studentsDashboard": {
     "title": "Správa studentů",
     "eligibleStudents": "Způsobilí studenti",
@@ -504,7 +495,6 @@
     "selectCourse": "Všechny kurzy",
     "errorLoad": "Chyba při načítání závěrečného seznamu"
   },
-
   "documents": {
     "title": "Knihovna dokumentů",
     "subtitle": "Spravujte své požadované dokumenty",
@@ -602,7 +592,6 @@
     "docType_parental": "Rodičovský souhlas",
     "parentalAuthDesc": "Dokument souhlasu podepsaný rodičem nebo zákonným zástupcem"
   },
-
   "settings": {
     "title": "Nastavení",
     "subtitle": "Spravujte svůj účet a předvolby",
@@ -664,13 +653,11 @@
     "dangerZoneDesc": "Trvalé akce, které nelze vrátit zpět. Postupujte opatrně.",
     "requestDataDeletion": "Požádat o smazání účtu"
   },
-
   "offline": {
     "title": "Jste offline",
     "description": "Zkontrolujte prosím připojení k internetu a zkuste to znovu.",
     "retry": "Zkusit znovu"
   },
-
   "errors": {
     "notFoundTitle": "Stránka nenalezena",
     "notFoundDescription": "Stránka, kterou hledáte, neexistuje nebo byla přesunuta.",
@@ -680,7 +667,6 @@
     "errorRetry": "Zkusit znovu",
     "errorGoHome": "Na úvod"
   },
-
   "roles": {
     "admin": "Administrátor",
     "administrator": "Administrátor",
@@ -696,7 +682,6 @@
     "co-tutor": "Kotutor",
     "noRole": "Bez role"
   },
-
   "calificacion": {
     "title": "Hodnotící tabulka",
     "subtitle": "Váhy výběrových kritérií pro přihlášky Erasmus",
@@ -720,13 +705,11 @@
       "disability_certificate": "Certifikát zdravotního postižení"
     }
   },
-
   "accessDenied": {
     "title": "Přístup odepřen",
     "message": "Nemáte oprávnění k zobrazení této stránky. Pokud si myslíte, že jde o chybu, kontaktujte svého administrátora.",
     "backLabel": "Zpět na hlavní panel"
   },
-
   "revision": {
     "title": "Revize",
     "pageTitle": "Revize dokumentů",
@@ -828,7 +811,6 @@
     "interviewStatusLabel": "Pohovor:",
     "docSummaryLabel": "Dokumenty:"
   },
-
   "listaFinal": {
     "pageTitle": "Konečný seznam",
     "subtitle": "Přehled výběrového procesu Erasmus",
@@ -854,9 +836,9 @@
     "errorLoad": "Data se nepodařilo načíst",
     "notAvailable": "Výsledková listina zatím není k dispozici",
     "publishBtn": "Zveřejnit pro uživatele",
-    "unpublishBtn": "Skrýt pro uživatele"
+    "unpublishBtn": "Skrýt pro uživatele",
+    "generalListTotal": "studentů celkem"
   },
-
   "studentProfile": {
     "back": "Zpět",
     "notFound": "Student nebyl nalezen.",
@@ -877,5 +859,10 @@
     "noDocs": "Žádné dokumenty nebyly nahrány.",
     "courseYear": "Ročník / Rok",
     "finalGrade": "Výsledná známka"
+  },
+  "sessionExpired": {
+    "title": "Relace vypršela",
+    "body": "Vaše relace vypršela. Přihlaste se prosím znovu.",
+    "btn": "Přihlásit se znovu"
   }
 }

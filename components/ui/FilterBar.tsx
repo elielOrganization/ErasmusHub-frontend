@@ -264,7 +264,7 @@ export default function FilterBar({
         <div className="flex flex-wrap items-center gap-3 mb-5">
             {/* Search input */}
             {searchValue !== undefined && searchValue !== null && (
-                <div className="relative flex-1 min-w-[200px] max-w-xs">
+                <div className="relative flex-1 min-w-[140px] sm:min-w-[200px] max-w-xs">
                     <SearchIcon />
                     <input
                         type="text"
