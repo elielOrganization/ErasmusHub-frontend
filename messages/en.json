@@ -59,7 +59,6 @@
       "generic": "Something went wrong. Please try again."
     }
   },
-
   "common": {
     "loading": "Loading...",
     "unknownError": "Unknown error",
@@ -69,7 +68,6 @@
     "clearFilters": "Clear filters",
     "applyFilters": "Apply filters"
   },
-
   "dashboard": {
     "home": "Home",
     "admin": "Admin Panel",
@@ -162,7 +160,6 @@
     "chatManagementDesc": "Delete all conversations and messages from the system.",
     "erasmusResetDesc": "Returns the system to its initial state, as if the Erasmus process had never begun."
   },
-
   "practicas": {
     "title": "My Internships",
     "entity": "Entity",
@@ -243,7 +240,6 @@
     "dayModalSaved": "Note saved",
     "dayModalError": "Error saving. Please try again."
   },
-
   "avisos": {
     "title": "My Notices",
     "notice": "Notice",
@@ -285,7 +281,6 @@
       "interview_readmitted": "You have been readmitted to the selection process"
     }
   },
-
   "table": {
     "show": "Show",
     "records": "records",
@@ -297,7 +292,6 @@
     "noResults": "No data available in this table",
     "showing": "Showing {from} to {to} of {total} records"
   },
-
   "userProfile": {
     "title": "My Profile",
     "personalInfo": "Personal Information",
@@ -317,7 +311,6 @@
     "yes": "Yes",
     "no": "No"
   },
-
   "adminDashboard": {
     "totalUsers": "Total Users",
     "admins": "Admins",
@@ -362,7 +355,7 @@
     "fieldEmail": "Email",
     "fieldEmailPlaceholder": "E.g.: user@email.com",
     "fieldPhone": "Phone",
-    "fieldPhonePlaceholder": "E.g.: +34 600 000 000",
+    "fieldPhonePlaceholder": "E.g.: +420 601 234 567",
     "fieldRole": "Role",
     "selectRolePlaceholder": "Select a role",
     "fieldGender": "Gender",
@@ -396,7 +389,6 @@
     "roleLocked": "This user's role cannot be changed",
     "chatNoApplications": "This user has no applications yet"
   },
-
   "opportunitiesDashboard": {
     "title": "Opportunities",
     "totalOpportunities": "Total Opportunities",
@@ -464,7 +456,6 @@
     "addTeacherError": "Could not assign teacher. Check that you have admin permissions.",
     "loading": "Loading..."
   },
-
   "studentsDashboard": {
     "title": "Student Management",
     "eligibleStudents": "Eligible Students",
@@ -504,7 +495,6 @@
     "selectCourse": "All courses",
     "errorLoad": "Error loading the final list"
   },
-
   "documents": {
     "title": "Document Library",
     "subtitle": "Manage your required documents",
@@ -602,7 +592,6 @@
     "docType_parental": "Parental Authorization",
     "parentalAuthDesc": "Authorization document signed by parent or legal guardian"
   },
-
   "settings": {
     "title": "Settings",
     "subtitle": "Manage your account and preferences",
@@ -664,13 +653,11 @@
     "dangerZoneDesc": "Permanent actions that cannot be undone. Proceed with caution.",
     "requestDataDeletion": "Request account deletion"
   },
-
   "offline": {
     "title": "You are offline",
     "description": "Please check your internet connection and try again.",
     "retry": "Try again"
   },
-
   "errors": {
     "notFoundTitle": "Page not found",
     "notFoundDescription": "The page you are looking for does not exist or has been moved.",
@@ -680,7 +667,6 @@
     "errorRetry": "Try again",
     "errorGoHome": "Go home"
   },
-
   "roles": {
     "admin": "Administrator",
     "administrator": "Administrator",
@@ -696,7 +682,6 @@
     "co-tutor": "Co-tutor",
     "noRole": "No role"
   },
-
   "calificacion": {
     "title": "Grading Table",
     "subtitle": "Selection criteria weights for Erasmus applications",
@@ -720,13 +705,11 @@
       "disability_certificate": "Disability certificate"
     }
   },
-
   "accessDenied": {
     "title": "Access Denied",
     "message": "You don't have permission to view this page. If you believe this is an error, please contact your administrator.",
     "backLabel": "Back to dashboard"
   },
-
   "revision": {
     "title": "Review",
     "pageTitle": "Document Review",
@@ -828,7 +811,6 @@
     "interviewStatusLabel": "Interview:",
     "docSummaryLabel": "Documents:"
   },
-
   "listaFinal": {
     "pageTitle": "Final List",
     "subtitle": "Summary of the Erasmus selection process",
@@ -854,9 +836,9 @@
     "errorLoad": "Could not load data",
     "notAvailable": "The final list is not yet available",
     "publishBtn": "Publish for users",
-    "unpublishBtn": "Hide from users"
+    "unpublishBtn": "Hide from users",
+    "generalListTotal": "students total"
   },
-
   "studentProfile": {
     "back": "Back",
     "notFound": "Student not found.",
@@ -877,5 +859,10 @@
     "noDocs": "No documents submitted.",
     "courseYear": "Course / Year",
     "finalGrade": "Final Grade"
+  },
+  "sessionExpired": {
+    "title": "Session expired",
+    "body": "Your session has expired. Please sign in again to continue.",
+    "btn": "Sign in again"
   }
 }

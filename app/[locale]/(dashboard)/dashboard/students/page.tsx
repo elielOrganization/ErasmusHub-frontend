@@ -332,7 +332,8 @@ export default function StudentsPage() {
                     </div>
                 ) : (
                     <>
-                        <div className="overflow-x-auto">
+                        {/* ── Desktop table ── */}
+                        <div className="hidden md:block overflow-x-auto">
                             <table className="w-full">
                                 <thead>
                                     <tr className="bg-gray-50 dark:bg-gray-800/60">
@@ -357,11 +358,10 @@ export default function StudentsPage() {
                                 <tbody className="divide-y divide-gray-50 dark:divide-gray-800">
                                     {paginated.map(s => {
                                         const position = filtered.indexOf(s) + 1;
-                                        const isTop3 = position <= 3;
                                         const appInfo = assignmentMap.get(`${s.first_name} ${s.last_name}`);
                                         const assignedOpp = appInfo?.oppName;
                                         return (
-                                            <tr key={s.id} onClick={() => router.push(`/${locale}/dashboard/students/${s.user_id}`)} className={`group transition-colors hover:bg-gray-50 dark:hover:bg-gray-800/40 cursor-pointer ${isTop3 ? "bg-gradient-to-r from-transparent to-transparent" : ""}`}>
+                                            <tr key={s.id} onClick={() => router.push(`/${locale}/dashboard/students/${s.user_id}`)} className="group transition-colors hover:bg-gray-50 dark:hover:bg-gray-800/40 cursor-pointer">
                                                 <td className="px-4 py-3.5 text-center">
                                                     <span className={`inline-flex items-center justify-center w-7 h-7 rounded-full text-xs font-bold ${
                                                         position === 1 ? "bg-yellow-100 dark:bg-yellow-900/30 text-yellow-700 dark:text-yellow-400 ring-1 ring-yellow-200 dark:ring-yellow-700/50" :
@@ -417,6 +417,70 @@ export default function StudentsPage() {
                                     })}
                                 </tbody>
                             </table>
+                        </div>
+
+                        {/* ── Mobile cards ── */}
+                        <div className="md:hidden divide-y divide-gray-50 dark:divide-gray-800">
+                            {paginated.map(s => {
+                                const position = filtered.indexOf(s) + 1;
+                                const appInfo = assignmentMap.get(`${s.first_name} ${s.last_name}`);
+                                const assignedOpp = appInfo?.oppName;
+                                return (
+                                    <div
+                                        key={s.id}
+                                        onClick={() => router.push(`/${locale}/dashboard/students/${s.user_id}`)}
+                                        className="px-4 py-4 cursor-pointer active:bg-gray-50 dark:active:bg-gray-800/40 transition-colors"
+                                    >
+                                        {/* Top row: position + name + grade */}
+                                        <div className="flex items-center gap-3">
+                                            <span className={`inline-flex items-center justify-center w-7 h-7 shrink-0 rounded-full text-xs font-bold ${
+                                                position === 1 ? "bg-yellow-100 dark:bg-yellow-900/30 text-yellow-700 dark:text-yellow-400 ring-1 ring-yellow-200 dark:ring-yellow-700/50" :
+                                                position === 2 ? "bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 ring-1 ring-gray-200 dark:ring-gray-600" :
+                                                position === 3 ? "bg-orange-100 dark:bg-orange-900/30 text-orange-600 dark:text-orange-400 ring-1 ring-orange-200 dark:ring-orange-700/50" :
+                                                "text-gray-400 dark:text-gray-500"
+                                            }`}>
+                                                {position}
+                                            </span>
+                                            <div className="flex-1 min-w-0">
+                                                <p className="text-sm font-semibold text-gray-800 dark:text-gray-100 truncate">{fullName(s)}</p>
+                                                <span className="inline-flex items-center gap-1 text-xs font-medium px-2 py-0.5 rounded-lg bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400 mt-1">
+                                                    <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 14l9-5-9-5-9 5 9 5z" />
+                                                    </svg>
+                                                    {courseLabel(s.year)}
+                                                </span>
+                                            </div>
+                                            {s.final_grade != null ? (
+                                                <span className={`shrink-0 inline-flex items-center justify-center px-3 py-1 rounded-full text-sm font-bold ${theme.accentBg} ${theme.accentText}`}>
+                                                    {s.final_grade}
+                                                </span>
+                                            ) : (
+                                                <span className="text-gray-300 dark:text-gray-600 text-sm shrink-0">—</span>
+                                            )}
+                                        </div>
+
+                                        {/* Bottom row: assignment + button */}
+                                        <div className="mt-2.5 flex items-center justify-between gap-2 pl-10" onClick={e => e.stopPropagation()}>
+                                            {assignedOpp ? (
+                                                <span className="inline-flex items-center gap-1 text-xs font-medium px-2.5 py-1 rounded-lg bg-emerald-50 dark:bg-emerald-900/20 text-emerald-700 dark:text-emerald-400 border border-emerald-100 dark:border-emerald-800 truncate max-w-[55%]">
+                                                    <svg className="w-3 h-3 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" />
+                                                    </svg>
+                                                    <span className="truncate">{assignedOpp}</span>
+                                                </span>
+                                            ) : (
+                                                <span className="text-gray-300 dark:text-gray-600 text-xs">—</span>
+                                            )}
+                                            <button
+                                                onClick={() => setAssignStudent(s)}
+                                                className={`shrink-0 px-3 py-1.5 rounded-lg text-xs font-semibold transition-colors cursor-pointer ${theme.accentText} ${theme.accentBg} ${theme.softHover}`}
+                                            >
+                                                {assignedOpp ? t("changeOpportunity") : t("assignBtn")}
+                                            </button>
+                                        </div>
+                                    </div>
+                                );
+                            })}
                         </div>
 
                         {totalPages > 1 && (
