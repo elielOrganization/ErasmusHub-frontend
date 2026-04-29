@@ -40,6 +40,16 @@ type InterviewMode = "grade" | "reject" | null;
 type SortCol = "pending" | "approved" | "rejected" | "total" | null;
 type StatusFilter = "all" | "pending" | "reviewed" | "excluded";
 
+interface OtroSubField { label: string; weight: number; }
+interface OtrosData    { weight: number; subfields: OtroSubField[]; }
+interface CalificacionData { otros: OtrosData | null; }
+
+const RUBRIC_OPTIONS = [
+    { label: "Adecuado",  value: 5   },
+    { label: "Notable",   value: 7.5 },
+    { label: "Excelente", value: 10  },
+] as const;
+
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const ti = (t: ReturnType<typeof useTranslations>, key: string, params?: Record<string, string>) =>
     (t as unknown as (k: string, p?: Record<string, string>) => string)(key, params);
@@ -71,6 +81,8 @@ export default function RevisionPage() {
 
     const { data, loading, error, refetch } = useApi<StudentDocSummary[]>("/documents/pending");
     const { data: usersData } = useApi<UserPublicMin[]>("/users");
+    const { data: calificacionData } = useApi<CalificacionData>("/calificacion");
+    const othersConfig = calificacionData?.otros ?? null;
 
     // Map: userId → final_grade (calculated by backend)
     const [finalGrades, setFinalGrades] = useState<Map<number, number | null>>(new Map());
@@ -117,6 +129,23 @@ export default function RevisionPage() {
     const [interviewGrade, setInterviewGrade] = useState("");
     const [interviewReason, setInterviewReason] = useState("");
     const [interviewReasonError, setInterviewReasonError] = useState(false);
+    const [othersRubric, setOthersRubric] = useState<Record<string, number | null>>({});
+
+    // Weighted average of rubric selections → suggested grade for "Otros"
+    const rubricGrade: number | null = (() => {
+        if (!othersConfig || othersConfig.subfields.length === 0) return null;
+        let total = 0;
+        let weightSum = 0;
+        for (const sf of othersConfig.subfields) {
+            const val = othersRubric[sf.label];
+            if (val == null) return null; // not all rated yet
+            total += val * (sf.weight / 100);
+            weightSum += sf.weight;
+        }
+        if (weightSum === 0) return null;
+        return Math.round(total / weightSum * 100 * 10) / 10;
+    })();
+
     const [submittingInterview, setSubmittingInterview] = useState(false);
     const [interviewFeedback, setInterviewFeedback] = useState<{
         userId: number;
@@ -131,6 +160,7 @@ export default function RevisionPage() {
         setInterviewReason("");
         setInterviewReasonError(false);
         setInterviewFeedback(null);
+        setOthersRubric({});
     }
 
     function cancelInterview() {
@@ -139,6 +169,7 @@ export default function RevisionPage() {
         setInterviewGrade("");
         setInterviewReason("");
         setInterviewReasonError(false);
+        setOthersRubric({});
     }
 
     async function handleInterviewSubmit(userId: number) {
@@ -560,6 +591,7 @@ export default function RevisionPage() {
                                         <div className="mt-3 border border-gray-100 dark:border-gray-700 rounded-xl bg-gray-50 dark:bg-gray-800/40 px-4 py-3 space-y-3">
                                             {interviewMode === "grade" && (
                                                 <>
+                                                    {/* Manual grade input */}
                                                     <div>
                                                         <label className="block text-xs font-medium text-gray-600 dark:text-gray-400 mb-1">
                                                             {ti(t, "interview_gradeLabel")}
@@ -575,7 +607,58 @@ export default function RevisionPage() {
                                                             className="w-36 text-sm border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-1.5 bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-green-500"
                                                         />
                                                     </div>
-                                                    <div className="flex items-center gap-2">
+
+                                                    {/* Otros rubric — only shown if admin configured subcampos */}
+                                                    {othersConfig && othersConfig.subfields.length > 0 && (
+                                                        <div className="mt-2 space-y-2">
+                                                            <p className="text-xs font-semibold text-gray-600 dark:text-gray-300 uppercase tracking-wide">
+                                                                Rúbrica — Otros ({othersConfig.weight}%)
+                                                            </p>
+                                                            {othersConfig.subfields.map(sf => (
+                                                                <div key={sf.label} className="flex items-center gap-3 flex-wrap">
+                                                                    <span className="text-xs text-gray-700 dark:text-gray-300 w-36 shrink-0">
+                                                                        {sf.label}
+                                                                        <span className="ml-1 text-gray-400">({sf.weight}%)</span>
+                                                                    </span>
+                                                                    <div className="flex items-center gap-1.5">
+                                                                        {RUBRIC_OPTIONS.map(opt => (
+                                                                            <button
+                                                                                key={opt.label}
+                                                                                type="button"
+                                                                                onClick={() =>
+                                                                                    setOthersRubric(prev => ({
+                                                                                        ...prev,
+                                                                                        [sf.label]: prev[sf.label] === opt.value ? null : opt.value,
+                                                                                    }))
+                                                                                }
+                                                                                className={`px-2.5 py-1 rounded-lg text-xs font-medium transition-colors border ${
+                                                                                    othersRubric[sf.label] === opt.value
+                                                                                        ? "bg-blue-600 border-blue-600 text-white"
+                                                                                        : "bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600 text-gray-600 dark:text-gray-300 hover:border-blue-400"
+                                                                                }`}
+                                                                            >
+                                                                                {opt.label} <span className="opacity-70">({opt.value})</span>
+                                                                            </button>
+                                                                        ))}
+                                                                    </div>
+                                                                </div>
+                                                            ))}
+                                                            {rubricGrade !== null && (
+                                                                <p className="text-xs text-blue-600 dark:text-blue-400 font-medium pt-1">
+                                                                    Nota sugerida por rúbrica: <span className="font-bold">{rubricGrade}</span>
+                                                                    <button
+                                                                        type="button"
+                                                                        onClick={() => setInterviewGrade(String(rubricGrade))}
+                                                                        className="ml-2 underline hover:no-underline"
+                                                                    >
+                                                                        Usar esta nota
+                                                                    </button>
+                                                                </p>
+                                                            )}
+                                                        </div>
+                                                    )}
+
+                                                    <div className="flex items-center gap-2 pt-1">
                                                         <button onClick={() => handleInterviewSubmit(s.user_id)} disabled={submittingInterview} className={`px-4 py-1.5 rounded-lg text-xs font-semibold text-white ${theme.btnPrimary} ${theme.btnPrimaryHover} disabled:opacity-50 transition-colors`}>
                                                             {ti(t, "interview_saveGrade")}
                                                         </button>
