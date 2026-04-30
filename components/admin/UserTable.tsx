@@ -7,6 +7,7 @@ import { API_URL } from '@/lib/api';
 import FilterBar from '@/components/ui/FilterBar';
 import Pagination from '@/components/ui/Pagination';
 import Modal from '@/components/ui/Modal';
+import FormInput from '@/components/form/FormInput';
 import { useRoleTheme } from '@/hooks/useRoleTheme';
 import { translateRole } from '@/lib/translateRole';
 import type { User, Role } from '@/services/userService';
@@ -321,296 +322,279 @@ function UserProfilePanel({ user, open, onClose, onEdit, onDelete, currentUserId
 
 /* ── Create user modal ─────────────────────────────────────── */
 
-function CreateUserModal({ open, onClose, onCreated }: { open: boolean; onClose: () => void; onCreated: () => void }) {
+function CreateUserModal({ open, onClose, onCreated, roles }: {
+    open: boolean; onClose: () => void; onCreated: () => void; roles: Role[];
+}) {
     const t = useTranslations('adminDashboard');
     const tAuth = useTranslations('auth');
+    const tRoles = useTranslations('roles');
     const theme = useRoleTheme();
 
     const [step, setStep] = useState(1);
     const totalSteps = 3;
 
-    const [form, setForm] = useState({
-        first_name: '', last_name: '', gender: '' as '' | 'male' | 'female',
-        rodne_cislo: '', email: '', address: '', phone: '',
-        password: '', confirmPassword: '',
-    });
+    const emptyForm = { first_name: '', last_name: '', rodne_cislo: '', email: '', address: '', phone: '', password: '', confirmPassword: '', role_id: '' };
+    const [form, setForm] = useState(emptyForm);
     const [errors, setErrors] = useState<Record<string, string>>({});
     const [creating, setCreating] = useState(false);
     const [msg, setMsg] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
+    const [selectFocused, setSelectFocused] = useState(false);
 
     const updateField = (key: string, value: string) => {
         setForm(f => ({ ...f, [key]: value }));
         if (errors[key]) setErrors(prev => { const n = { ...prev }; delete n[key]; return n; });
     };
 
+    /* Gender + birth date are derived from rodné číslo — no manual entry needed */
     const rcParsed = useMemo(() => {
-        if (!form.rodne_cislo || !form.gender) return null;
-        const result = parseRodneCislo(form.rodne_cislo, form.gender);
+        if (!form.rodne_cislo) return null;
+        const result = parseRodneCislo(form.rodne_cislo, '');
         if ('error' in result) return null;
         return result;
-    }, [form.rodne_cislo, form.gender]);
+    }, [form.rodne_cislo]);
 
-    const formatBirthDate = (dateStr: string) => {
-        const [y, m, d] = dateStr.split('-');
-        return `${d}/${m}/${y}`;
-    };
+    const formatBirthDate = (d: string) => { const [y, m, dd] = d.split('-'); return `${dd}/${m}/${y}`; };
 
     const validateStep = (s: number): boolean => {
-        const newErrors: Record<string, string> = {};
+        const e: Record<string, string> = {};
         if (s === 1) {
-            if (!form.first_name.trim()) newErrors.first_name = tAuth('errors.firstNameRequired');
-            if (!form.last_name.trim()) newErrors.last_name = tAuth('errors.lastNameRequired');
-            if (!form.gender) newErrors.gender = tAuth('errors.genderRequired');
+            if (!form.first_name.trim()) e.first_name = tAuth('errors.firstNameRequired');
+            if (!form.last_name.trim())  e.last_name  = tAuth('errors.lastNameRequired');
             if (!form.rodne_cislo.trim()) {
-                newErrors.rodne_cislo = tAuth('errors.rodneCisloRequired');
+                e.rodne_cislo = tAuth('errors.rodneCisloRequired');
             } else {
-                const result = parseRodneCislo(form.rodne_cislo, form.gender);
-                if ('error' in result) {
-                    const errorKey = result.error;
-                    const errorMap: Record<string, string> = {
-                        invalidRcFormat: tAuth('errors.invalidRcFormat'),
-                        invalidRcChecksum: tAuth('errors.invalidRcChecksum'),
-                        rcGenderMismatch: tAuth('errors.rcGenderMismatch'),
-                    };
-                    newErrors.rodne_cislo = errorMap[errorKey] || tAuth('errors.invalidRcFormat');
-                }
+                const r = parseRodneCislo(form.rodne_cislo, '');
+                if ('error' in r) e.rodne_cislo = {
+                    invalidRcFormat:   tAuth('errors.invalidRcFormat'),
+                    invalidRcChecksum: tAuth('errors.invalidRcChecksum'),
+                    rcGenderMismatch:  tAuth('errors.rcGenderMismatch'),
+                }[r.error] ?? tAuth('errors.invalidRcFormat');
             }
         }
         if (s === 2) {
-            if (!form.email.trim()) newErrors.email = tAuth('errors.emailRequired');
-            else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email)) newErrors.email = tAuth('errors.invalidEmail');
-            if (!form.address.trim()) newErrors.address = tAuth('errors.addressRequired');
-            if (!form.phone.trim()) newErrors.phone = tAuth('errors.phoneRequired');
-            else if (!/^\+?\d[\d\s]{7,}$/.test(form.phone.trim())) newErrors.phone = tAuth('errors.invalidPhone');
+            if (!form.email.trim()) e.email = tAuth('errors.emailRequired');
+            else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email)) e.email = tAuth('errors.invalidEmail');
+            if (!form.address.trim()) e.address = tAuth('errors.addressRequired');
+            if (!form.phone.trim()) e.phone = tAuth('errors.phoneRequired');
+            else if (!/^\+?\d[\d\s]{7,}$/.test(form.phone.trim())) e.phone = tAuth('errors.invalidPhone');
         }
         if (s === 3) {
-            if (!form.password) newErrors.password = tAuth('errors.passwordRequired');
-            else if (form.password.length < 8) newErrors.password = tAuth('errors.passwordTooShort');
-            if (!form.confirmPassword) newErrors.confirmPassword = tAuth('errors.confirmPasswordRequired');
-            else if (form.password !== form.confirmPassword) newErrors.confirmPassword = tAuth('errors.passwordsMatch');
+            if (!form.password) e.password = tAuth('errors.passwordRequired');
+            else if (form.password.length < 8) e.password = tAuth('errors.passwordTooShort');
+            if (!form.confirmPassword) e.confirmPassword = tAuth('errors.confirmPasswordRequired');
+            else if (form.password !== form.confirmPassword) e.confirmPassword = tAuth('errors.passwordsMatch');
         }
-        setErrors(newErrors);
-        return Object.keys(newErrors).length === 0;
+        setErrors(e);
+        return Object.keys(e).length === 0;
     };
 
-    const nextStep = () => { if (validateStep(step) && step < totalSteps) setStep(step + 1); };
-    const prevStep = () => { if (step > 1) setStep(step - 1); };
+    const nextStep   = () => { if (validateStep(step) && step < totalSteps) setStep(step + 1); };
+    const prevStep   = () => { if (step > 1) setStep(step - 1); };
 
     const handleCreate = async () => {
         if (!validateStep(step)) return;
-        const result = parseRodneCislo(form.rodne_cislo, form.gender);
+        const result = parseRodneCislo(form.rodne_cislo, '');
         if ('error' in result) return;
-
-        setCreating(true);
-        setMsg(null);
+        setCreating(true); setMsg(null);
         try {
             const token = Cookies.get('auth_token');
-            const body: Record<string, unknown> = {
-                first_name: form.first_name,
-                last_name: form.last_name,
-                email: form.email,
-                password: form.password,
-                rodne_cislo: form.rodne_cislo,
-                birth_date: result.birthDate,
-                is_minor: result.isMinor,
-                address: form.address || null,
-                phone: form.phone || null,
-            };
             const res = await fetch(`${API_URL}/users/`, {
                 method: 'POST',
-                headers: {
-                    'Authorization': `Bearer ${token}`,
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(body),
+                headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    first_name: form.first_name, last_name: form.last_name,
+                    email: form.email, password: form.password,
+                    rodne_cislo: form.rodne_cislo, birth_date: result.birthDate,
+                    is_minor: result.isMinor, address: form.address || null,
+                    phone: form.phone || null,
+                    role_id: form.role_id ? parseInt(form.role_id) : null,
+                }),
             });
             if (res.ok) {
                 setMsg({ type: 'success', text: t('createSuccess') });
-                setTimeout(() => { onCreated(); onClose(); setStep(1); setForm({ first_name: '', last_name: '', gender: '', rodne_cislo: '', email: '', address: '', phone: '', password: '', confirmPassword: '' }); setErrors({}); setMsg(null); }, 1000);
+                setTimeout(() => { onCreated(); handleClose(); }, 1000);
             } else {
                 const err = await res.json().catch(() => null);
                 setMsg({ type: 'error', text: err?.detail || t('createError') });
             }
-        } catch {
-            setMsg({ type: 'error', text: t('createError') });
-        } finally {
-            setCreating(false);
-        }
+        } catch { setMsg({ type: 'error', text: t('createError') }); }
+        finally  { setCreating(false); }
     };
 
-    const handleClose = () => {
-        onClose();
-        setStep(1);
-        setForm({ first_name: '', last_name: '', gender: '', rodne_cislo: '', email: '', address: '', phone: '', password: '', confirmPassword: '' });
-        setErrors({});
-        setMsg(null);
-    };
+    const handleClose = () => { onClose(); setStep(1); setForm(emptyForm); setErrors({}); setMsg(null); };
 
     if (!open) return null;
 
-    const inputClass = (field?: string) =>
-        `w-full rounded-xl border px-3 py-2 text-sm text-gray-700 dark:text-gray-200 bg-white dark:bg-gray-800 focus:outline-none focus:ring-2 ${theme.focusRing} transition-colors ${field && errors[field] ? 'border-red-300 bg-red-50 dark:bg-red-900/20' : 'border-gray-200 dark:border-gray-700'}`;
+    /* ── Icons (same style as registration page) ── */
+    const userIcon     = (c: string) => <><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2" stroke={c} strokeLinecap="round"/><circle cx="12" cy="7" r="4" stroke={c} strokeLinecap="round"/></>;
+    const idIcon       = (c: string) => <rect x="3" y="7" width="18" height="10" rx="2" stroke={c} strokeWidth="2" fill="none"/>;
+    const calendarIcon = (c: string) => <path d="M4 7h16M4 11h16M6 4v4M18 4v4M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" stroke={c} strokeWidth="2" fill="none" strokeLinecap="round"/>;
+    const emailIcon    = (c: string) => <path d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" stroke={c} strokeLinecap="round" strokeLinejoin="round"/>;
+    const mapIcon      = (c: string) => <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z" stroke={c} strokeWidth="2" fill="none"/>;
+    const phoneIcon    = (c: string) => <path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07 19.5 19.5 0 01-6-6 19.79 19.79 0 01-3.07-8.67A2 2 0 014.11 2h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L8.09 9.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 16.92z" stroke={c} strokeWidth="2" fill="none"/>;
+    const lockIcon     = (c: string) => <><rect x="3" y="11" width="18" height="11" rx="2" stroke={c} strokeLinecap="round"/><path d="M7 11V7a5 5 0 0110 0v4" stroke={c} strokeLinecap="round"/></>;
+    const checkIcon    = (c: string) => <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" stroke={c} strokeLinecap="round" strokeLinejoin="round"/>;
+    const roleIcon     = (c: string) => <><path d="M12 11c2.21 0 4-1.79 4-4S14.21 3 12 3s-4 1.79-4 4 1.79 4 4 4z" stroke={c} strokeWidth="2" fill="none"/><path d="M3 20c0-3.31 4.03-6 9-6s9 2.69 9 6" stroke={c} strokeWidth="2" strokeLinecap="round" fill="none"/><path d="M17 8l2 2 4-4" stroke={c} strokeWidth="2" strokeLinecap="round" fill="none"/></>;
+    const genderIcon   = (c: string) => <><circle cx="9" cy="9" r="4" stroke={c} strokeWidth="2" fill="none"/><path d="M16 3l5 0M21 3l0 5M21 3l-5.5 5.5" stroke={c} strokeWidth="2" strokeLinecap="round" fill="none"/><path d="M9 13l0 8M6 18l6 0" stroke={c} strokeWidth="2" strokeLinecap="round" fill="none"/></>;
 
-    const errorMsg = (field: string) => errors[field] ? (
-        <p className="mt-1 text-xs text-red-600">{errors[field]}</p>
-    ) : null;
+    const genderLabel  = rcParsed?.gender === 'male' ? t('genderMale') : rcParsed?.gender === 'female' ? t('genderFemale') : '';
+    const stepLabels   = [t('stepPersonal'), t('stepContact'), t('stepSecurity')];
 
-    const stepLabels = [t('stepPersonal'), t('stepContact'), t('stepSecurity')];
+    /* Shared select container style matching FormInput */
+    const selectStyle = (focused: boolean, hasError?: boolean) => ({
+        borderColor: hasError ? '#dc2626' : focused ? '#2563eb' : 'var(--input-border)',
+        background:  hasError ? 'var(--input-error-bg)' : focused ? 'var(--input-focus-bg)' : 'var(--input-bg)',
+        boxShadow:   hasError ? 'var(--input-shadow-error)' : focused ? 'var(--input-shadow-focus)' : 'none',
+    });
+    const iconColor = (focused: boolean, hasError?: boolean) =>
+        hasError ? '#dc2626' : focused ? '#2563eb' : '#93c5fd';
 
     return (
         <Modal open={open} onClose={handleClose}>
             {/* Header */}
-            <div className="flex items-center justify-between">
+            <div className="flex items-center justify-between mb-1">
                 <h3 className="text-lg font-bold text-gray-800 dark:text-gray-100">{t('addTitle')}</h3>
                 <button onClick={handleClose} className="p-1 rounded-lg text-gray-400 hover:text-gray-600 hover:bg-gray-100 dark:hover:bg-gray-800 dark:hover:text-gray-300 transition-colors cursor-pointer">
                     <XMarkIcon />
                 </button>
             </div>
 
-            {/* Step indicator */}
-            <div className="space-y-2">
-                <p className="text-xs text-gray-400 text-center">
-                    {stepLabels[step - 1]} ({step}/{totalSteps})
+            {/* Step indicator — matches register page */}
+            <div>
+                <p className="text-sm text-gray-500 dark:text-gray-400 text-center">
+                    {stepLabels[step - 1]} &mdash; {step}/{totalSteps}
                 </p>
-                <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-1.5">
-                    <div className={`h-1.5 rounded-full transition-all ${theme.btnPrimary}`} style={{ width: `${(step / totalSteps) * 100}%` }} />
+                <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-1.5 mt-3">
+                    <div className={`h-1.5 rounded-full transition-all duration-300 ${theme.btnPrimary}`} style={{ width: `${(step / totalSteps) * 100}%` }} />
                 </div>
             </div>
 
-            {/* Step 1: Personal Data */}
+            {/* ── Step 1: Personal Data ── */}
             {step === 1 && (
-                <div className="space-y-3">
+                <div className="space-y-4 animate-fade-in">
                     <div className="grid grid-cols-2 gap-3">
-                        <div>
-                            <label className="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">{t('firstName')} *</label>
-                            <input type="text" value={form.first_name} onChange={e => updateField('first_name', e.target.value)}
-                                className={inputClass('first_name')} />
-                            {errorMsg('first_name')}
-                        </div>
-                        <div>
-                            <label className="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">{t('lastName')} *</label>
-                            <input type="text" value={form.last_name} onChange={e => updateField('last_name', e.target.value)}
-                                className={inputClass('last_name')} />
-                            {errorMsg('last_name')}
-                        </div>
+                        <FormInput label={t('firstName')} type="text" name="first_name" value={form.first_name}
+                            onChange={e => updateField('first_name', e.target.value)}
+                            placeholder="Ana" icon={userIcon} error={errors.first_name} required />
+                        <FormInput label={t('lastName')} type="text" name="last_name" value={form.last_name}
+                            onChange={e => updateField('last_name', e.target.value)}
+                            placeholder="García" icon={userIcon} error={errors.last_name} required />
                     </div>
+
+                    <FormInput label={t('fieldRodneCislo')} type="text" name="rodne_cislo" value={form.rodne_cislo}
+                        onChange={e => updateField('rodne_cislo', e.target.value)}
+                        placeholder={t('fieldRodneCisloPlaceholder')} icon={idIcon} error={errors.rodne_cislo} required />
+
+                    {/* Gender — auto-filled from rodné číslo, read-only */}
                     <div>
-                        <label className="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">{t('fieldGender')} *</label>
-                        <div className="relative">
-                            <select value={form.gender} onChange={e => updateField('gender', e.target.value)}
-                                className={`${inputClass('gender')} appearance-none pr-8 bg-white dark:bg-gray-800 cursor-pointer`}>
-                                <option value="">{t('genderPlaceholder')}</option>
-                                <option value="male">{t('genderMale')}</option>
-                                <option value="female">{t('genderFemale')}</option>
-                            </select>
-                            <div className="absolute inset-y-0 right-2 flex items-center text-gray-400 pointer-events-none">
-                                <ChevronDownIcon />
-                            </div>
+                        <label className="block text-gray-600 dark:text-gray-400 text-xs font-semibold mb-2 tracking-wide uppercase">
+                            {t('fieldGender')}
+                        </label>
+                        <div className="flex items-center gap-3 rounded-xl px-4 py-3.5 border-2 transition-all duration-200 opacity-60 cursor-not-allowed"
+                            style={{ borderColor: 'var(--input-border)', background: 'var(--input-bg)' }}>
+                            <svg width="16" height="16" fill="none" stroke="#93c5fd" strokeWidth="2" viewBox="0 0 24 24">
+                                {genderIcon('#93c5fd')}
+                            </svg>
+                            <span className="flex-1 text-sm text-gray-500 dark:text-gray-400">
+                                {genderLabel || t('genderPlaceholder')}
+                            </span>
                         </div>
-                        {errorMsg('gender')}
                     </div>
-                    <div>
-                        <label className="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">{t('fieldRodneCislo')} *</label>
-                        <input type="text" value={form.rodne_cislo} onChange={e => updateField('rodne_cislo', e.target.value)}
-                            placeholder={t('fieldRodneCisloPlaceholder')}
-                            className={inputClass('rodne_cislo')} />
-                        {errorMsg('rodne_cislo')}
-                    </div>
-                    <div>
-                        <label className="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">{t('fieldBirthDate')}</label>
-                        <input type="text" readOnly tabIndex={-1}
-                            value={rcParsed ? formatBirthDate(rcParsed.birthDate) : ''}
-                            placeholder={t('fieldBirthDatePlaceholder')}
-                            className="w-full rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 px-3 py-2 text-sm text-gray-500 dark:text-gray-400 cursor-not-allowed" />
-                    </div>
+
+                    {/* Birth date — auto-filled from rodné číslo, read-only */}
+                    <FormInput label={t('fieldBirthDate')} type="text" name="birth_date"
+                        value={rcParsed ? formatBirthDate(rcParsed.birthDate) : ''}
+                        placeholder={t('fieldBirthDatePlaceholder')} icon={calendarIcon} readOnly />
+
                     {rcParsed?.isMinor && (
-                        <p className="text-xs text-amber-700 bg-amber-50 rounded-lg px-3 py-2 border border-amber-200">
+                        <p className="text-xs text-amber-700 dark:text-amber-300 bg-amber-50 dark:bg-amber-900/20 rounded-lg px-3 py-2 border border-amber-200 dark:border-amber-800">
                             {t('isMinorInfo')}
                         </p>
                     )}
                 </div>
             )}
 
-            {/* Step 2: Contact Data */}
+            {/* ── Step 2: Contact Data ── */}
             {step === 2 && (
-                <div className="space-y-3">
+                <div className="space-y-4 animate-fade-in">
+                    <FormInput label={t('fieldEmail')} type="email" name="email" value={form.email}
+                        onChange={e => updateField('email', e.target.value)}
+                        placeholder={t('fieldEmailPlaceholder')} icon={emailIcon} error={errors.email} required />
+                    <FormInput label={t('fieldAddress')} type="text" name="address" value={form.address}
+                        onChange={e => updateField('address', e.target.value)}
+                        placeholder={t('fieldAddressPlaceholder')} icon={mapIcon} error={errors.address} required />
+                    <FormInput label={t('fieldPhone')} type="text" name="phone" value={form.phone}
+                        onChange={e => updateField('phone', e.target.value)}
+                        placeholder={t('fieldPhonePlaceholder')} icon={phoneIcon} error={errors.phone} required />
+
+                    {/* Role selector */}
                     <div>
-                        <label className="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">{t('fieldEmail')} *</label>
-                        <input type="email" value={form.email} onChange={e => updateField('email', e.target.value)}
-                            placeholder={t('fieldEmailPlaceholder')}
-                            className={inputClass('email')} />
-                        {errorMsg('email')}
-                    </div>
-                    <div>
-                        <label className="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">{t('fieldAddress')} *</label>
-                        <input type="text" value={form.address} onChange={e => updateField('address', e.target.value)}
-                            placeholder={t('fieldAddressPlaceholder')}
-                            className={inputClass('address')} />
-                        {errorMsg('address')}
-                    </div>
-                    <div>
-                        <label className="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">{t('fieldPhone')} *</label>
-                        <input type="tel" value={form.phone} onChange={e => updateField('phone', e.target.value)}
-                            placeholder={t('fieldPhonePlaceholder')}
-                            className={inputClass('phone')} />
-                        {errorMsg('phone')}
+                        <label className="block text-gray-600 dark:text-gray-400 text-xs font-semibold mb-2 tracking-wide uppercase">
+                            {t('fieldRole')}
+                        </label>
+                        <div className="flex items-center gap-3 rounded-xl px-4 py-3.5 border-2 transition-all duration-200"
+                            style={selectStyle(selectFocused)}>
+                            <svg width="16" height="16" fill="none" stroke={iconColor(selectFocused)} strokeWidth="2" viewBox="0 0 24 24">
+                                {roleIcon(iconColor(selectFocused))}
+                            </svg>
+                            <select
+                                value={form.role_id}
+                                onChange={e => updateField('role_id', e.target.value)}
+                                onFocus={() => setSelectFocused(true)}
+                                onBlur={() => setSelectFocused(false)}
+                                className="flex-1 bg-transparent text-gray-800 dark:text-gray-100 text-sm outline-none min-w-0 appearance-none cursor-pointer"
+                            >
+                                <option value="">{t('selectRolePlaceholder')}</option>
+                                {roles.map(r => (
+                                    <option key={r.id} value={r.id.toString()}>{translateRole(r.name, tRoles)}</option>
+                                ))}
+                            </select>
+                            <ChevronDownIcon />
+                        </div>
                     </div>
                 </div>
             )}
 
-            {/* Step 3: Security */}
+            {/* ── Step 3: Security ── */}
             {step === 3 && (
-                <div className="space-y-3">
-                    <div>
-                        <label className="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">{t('fieldPassword')} *</label>
-                        <input type="password" value={form.password} onChange={e => updateField('password', e.target.value)}
-                            placeholder={t('fieldPasswordPlaceholder')}
-                            className={inputClass('password')} />
-                        {errorMsg('password')}
-                    </div>
-                    <div>
-                        <label className="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">{t('fieldConfirmPassword')} *</label>
-                        <input type="password" value={form.confirmPassword} onChange={e => updateField('confirmPassword', e.target.value)}
-                            placeholder={t('fieldConfirmPasswordPlaceholder')}
-                            className={inputClass('confirmPassword')} />
-                        {errorMsg('confirmPassword')}
-                    </div>
+                <div className="space-y-4 animate-fade-in">
+                    <FormInput label={t('fieldPassword')} type="password" name="password" value={form.password}
+                        onChange={e => updateField('password', e.target.value)}
+                        placeholder={t('fieldPasswordPlaceholder')} icon={lockIcon} error={errors.password} required />
+                    <FormInput label={t('fieldConfirmPassword')} type="password" name="confirmPassword" value={form.confirmPassword}
+                        onChange={e => updateField('confirmPassword', e.target.value)}
+                        placeholder={t('fieldConfirmPasswordPlaceholder')} icon={checkIcon} error={errors.confirmPassword} required />
                 </div>
             )}
 
             {msg && (
-                <div className={`rounded-xl border p-3 text-sm font-medium ${msg.type === 'success' ? 'bg-emerald-50 border-emerald-100 text-emerald-700' : 'bg-red-50 border-red-100 text-red-700'}`}>
+                <div className={`rounded-xl border p-3 text-sm font-medium flex items-center gap-2 ${msg.type === 'success' ? 'bg-emerald-50 dark:bg-emerald-900/20 border-emerald-100 dark:border-emerald-800 text-emerald-700 dark:text-emerald-300' : 'bg-red-50 dark:bg-red-900/20 border-red-100 dark:border-red-800 text-red-700 dark:text-red-300'}`}>
+                    <svg className="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d={msg.type === 'success' ? 'M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z' : 'M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z'} />
+                    </svg>
                     {msg.text}
                 </div>
             )}
 
-            {/* Navigation buttons */}
-            <div className="flex justify-between gap-2 pt-2">
-                <div>
-                    {step > 1 && (
-                        <button onClick={prevStep} disabled={creating || msg?.type === 'success'}
-                            className={`px-4 py-2 rounded-xl text-sm font-medium transition-colors ${msg?.type === 'success' ? 'text-gray-300 cursor-not-allowed' : 'text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 cursor-pointer'}`}>
-                            {t('previous')}
-                        </button>
-                    )}
-                </div>
-                <div className="flex gap-2">
-                    <button onClick={handleClose} disabled={creating || msg?.type === 'success'}
-                        className={`px-4 py-2 rounded-xl text-sm font-medium transition-colors ${msg?.type === 'success' ? 'text-gray-300 cursor-not-allowed' : 'text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 cursor-pointer'}`}>
-                        {t('cancel')}
+            {/* Navigation — matches register page layout */}
+            <div className="flex gap-3 pt-1">
+                {step > 1 && (
+                    <button onClick={prevStep} disabled={creating || msg?.type === 'success'}
+                        className="w-full py-2.5 border border-gray-300 dark:border-gray-600 rounded-xl text-gray-700 dark:text-gray-300 text-sm font-medium hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed">
+                        {t('previous')}
                     </button>
-                    {step < totalSteps ? (
-                        <button onClick={nextStep}
-                            className={`px-4 py-2 rounded-xl text-sm font-medium text-white ${theme.btnPrimary} ${theme.btnPrimaryHover} transition-colors cursor-pointer`}>
-                            {t('next')}
-                        </button>
-                    ) : (
-                        <button onClick={handleCreate} disabled={creating || msg?.type === 'success'}
-                            className={`px-4 py-2 rounded-xl text-sm font-medium text-white transition-colors ${creating || msg?.type === 'success' ? `${theme.btnDisabled} cursor-not-allowed opacity-60` : `${theme.btnPrimary} ${theme.btnPrimaryHover} cursor-pointer`}`}>
-                            {creating ? t('creating') : t('save')}
-                        </button>
-                    )}
-                </div>
+                )}
+                {step < totalSteps ? (
+                    <button onClick={nextStep}
+                        className={`w-full py-2.5 rounded-xl text-white text-sm font-medium transition-colors cursor-pointer ${theme.btnPrimary} ${theme.btnPrimaryHover}`}>
+                        {t('next')}
+                    </button>
+                ) : (
+                    <button onClick={handleCreate} disabled={creating || msg?.type === 'success'}
+                        className={`w-full py-2.5 rounded-xl text-white text-sm font-medium transition-colors ${creating || msg?.type === 'success' ? `${theme.btnDisabled} cursor-not-allowed opacity-60` : `${theme.btnPrimary} ${theme.btnPrimaryHover} cursor-pointer`}`}>
+                        {creating ? t('creating') : t('save')}
+                    </button>
+                )}
             </div>
         </Modal>
     );
@@ -1123,32 +1107,8 @@ export default function UserTable({ users, roles }: { users: User[]; roles: Role
                         </table>
                     </div>
 
-                    {/* Mobile sort + cards */}
-                    <div className="lg:hidden flex items-center justify-end gap-1 mb-2">
-                        <button
-                            onClick={() => { setSortKey('user'); setSortDir('asc'); }}
-                            className={`p-1.5 rounded-lg transition-colors ${sortKey === 'user' && sortDir === 'asc' ? 'text-gray-700 dark:text-gray-200 bg-gray-200 dark:bg-gray-700' : 'text-gray-400 hover:text-gray-600 hover:bg-gray-100'}`}>
-                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="w-4 h-4">
-                                <path fillRule="evenodd" d="M2 3.75A.75.75 0 012.75 3h11.5a.75.75 0 010 1.5H2.75A.75.75 0 012 3.75zM2 7.5a.75.75 0 01.75-.75h8.5a.75.75 0 010 1.5h-8.5A.75.75 0 012 7.5zM2 11.25a.75.75 0 01.75-.75h5.5a.75.75 0 010 1.5h-5.5a.75.75 0 01-.75-.75z" clipRule="evenodd" />
-                            </svg>
-                        </button>
-                        <button
-                            onClick={() => { setSortKey('user'); setSortDir('desc'); }}
-                            className={`p-1.5 rounded-lg transition-colors ${sortKey === 'user' && sortDir === 'desc' ? 'text-gray-700 dark:text-gray-200 bg-gray-200 dark:bg-gray-700' : 'text-gray-400 hover:text-gray-600 hover:bg-gray-100'}`}>
-                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="w-4 h-4">
-                                <path fillRule="evenodd" d="M2 3.75A.75.75 0 012.75 3h5.5a.75.75 0 010 1.5h-5.5A.75.75 0 012 3.75zM2 7.5a.75.75 0 01.75-.75h8.5a.75.75 0 010 1.5h-8.5A.75.75 0 012 7.5zM2 11.25a.75.75 0 01.75-.75h11.5a.75.75 0 010 1.5H2.75a.75.75 0 01-.75-.75z" clipRule="evenodd" />
-                            </svg>
-                        </button>
-                        {sortKey && (
-                            <button onClick={clearSort}
-                                className="p-1.5 rounded-lg text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors">
-                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="currentColor" className="w-3.5 h-3.5">
-                                    <path d="M5.28 4.22a.75.75 0 00-1.06 1.06L6.94 8l-2.72 2.72a.75.75 0 101.06 1.06L8 9.06l2.72 2.72a.75.75 0 101.06-1.06L9.06 8l2.72-2.72a.75.75 0 00-1.06-1.06L8 6.94 5.28 4.22z" />
-                                </svg>
-                            </button>
-                        )}
-                    </div>
-                    <div className="lg:hidden space-y-3">
+                    {/* Mobile cards */}
+                    <div className="lg:hidden space-y-2.5">
                         {paginatedUsers.map((user) => {
                             const rawRole = user.role?.name ?? '';
                             const displayRole = rawRole ? translateRole(rawRole, tRoles) : t('unknown');
@@ -1162,50 +1122,62 @@ export default function UserTable({ users, roles }: { users: User[]; roles: Role
                                 <div
                                     key={user.id}
                                     onClick={() => setViewUser(user)}
-                                    className={`rounded-2xl p-4 space-y-3 cursor-pointer transition-colors ${
+                                    className={`rounded-2xl cursor-pointer transition-colors ${
                                         isSuperAdmin
-                                            ? 'border border-amber-100 dark:border-amber-900/40 bg-amber-50/40 dark:bg-amber-950/10 hover:bg-amber-50/80 dark:hover:bg-amber-950/20'
+                                            ? 'border border-amber-100 dark:border-amber-900/40 bg-amber-50/40 dark:bg-amber-950/10 active:bg-amber-50/80 dark:active:bg-amber-950/20'
                                             : isSelf
-                                                ? 'border border-violet-100 dark:border-violet-900/40 bg-violet-50/40 dark:bg-violet-950/10 hover:bg-violet-50/80 dark:hover:bg-violet-950/20'
-                                                : 'border border-gray-100 dark:border-gray-800 hover:bg-gray-50 dark:hover:bg-gray-800/50'
+                                                ? 'border border-violet-100 dark:border-violet-900/40 bg-violet-50/40 dark:bg-violet-950/10 active:bg-violet-50/80 dark:active:bg-violet-950/20'
+                                                : 'border border-gray-100 dark:border-gray-800 active:bg-gray-50 dark:active:bg-gray-800/50'
                                     }`}
                                 >
-                                    <div className="flex items-center justify-between">
-                                        <div className="flex items-center gap-3 min-w-0">
-                                            <div
-                                                className="w-9 h-9 rounded-xl flex items-center justify-center text-white text-xs font-bold shrink-0"
-                                                style={{ background: `linear-gradient(135deg, ${avFrom}, ${avTo})` }}
-                                            >
-                                                {initials}
-                                            </div>
-                                            <div className="min-w-0">
-                                                <p className="font-semibold text-gray-800 dark:text-gray-100 truncate">
-                                                    {user.first_name} {user.last_name}
-                                                </p>
-                                                <p className="text-xs text-gray-400 truncate">{user.email}</p>
-                                            </div>
+                                    {/* Main row */}
+                                    <div className="flex items-center gap-3 px-4 pt-3.5 pb-3">
+                                        {/* Avatar */}
+                                        <div
+                                            className="w-9 h-9 rounded-xl flex items-center justify-center text-white text-xs font-bold shrink-0"
+                                            style={{ background: `linear-gradient(135deg, ${avFrom}, ${avTo})` }}
+                                        >
+                                            {initials}
                                         </div>
-                                        <div className="flex items-center gap-2 shrink-0 ml-2">
-                                            {user.is_minor && (
-                                                <span className="px-2 py-0.5 rounded-lg text-xs font-semibold bg-amber-100 text-amber-700">
-                                                    {t('minor')}
-                                                </span>
-                                            )}
-                                            <span className={`px-2 py-0.5 rounded-lg text-xs font-semibold ${pillClasses}`}>
-                                                {displayRole}
-                                            </span>
+
+                                        {/* Name + email */}
+                                        <div className="flex-1 min-w-0">
+                                            <p className="font-semibold text-sm text-gray-800 dark:text-gray-100 truncate leading-tight">
+                                                {user.first_name} {user.last_name}
+                                            </p>
+                                            <p className="text-xs text-gray-400 dark:text-gray-500 truncate mt-0.5">
+                                                {user.email}
+                                            </p>
+                                        </div>
+
+                                        {/* Actions — stop propagation so they don't open the panel */}
+                                        <div className="shrink-0" onClick={e => e.stopPropagation()}>
+                                            <ActionButtons
+                                                onEdit={() => setEditUser(user)}
+                                                onDelete={() => setDeleteUser(user)}
+                                                onChat={() => handleOpenChat(user.id!)}
+                                                isSelf={isSelf}
+                                                isSuperAdmin={isSuperAdmin}
+                                                isAdmin={rawRole.includes('admin')}
+                                            />
                                         </div>
                                     </div>
-                                    <div className="flex items-center justify-between border-t border-gray-50 dark:border-gray-800 pt-2">
-                                        <p className="text-sm text-gray-500 dark:text-gray-400">{user.phone || '—'}</p>
-                                        <ActionButtons
-                                            onEdit={() => setEditUser(user)}
-                                            onDelete={() => setDeleteUser(user)}
-                                            onChat={() => handleOpenChat(user.id!)}
-                                            isSelf={isSelf}
-                                            isSuperAdmin={isSuperAdmin}
-                                            isAdmin={rawRole.includes('admin')}
-                                        />
+
+                                    {/* Footer row: role pill + optional badges + phone */}
+                                    <div className="flex items-center gap-2 px-4 pb-3 border-t border-gray-50 dark:border-gray-800 pt-2.5 flex-wrap">
+                                        <span className={`px-2 py-0.5 rounded-lg text-xs font-semibold ${pillClasses}`}>
+                                            {displayRole}
+                                        </span>
+                                        {user.is_minor && (
+                                            <span className="px-2 py-0.5 rounded-lg text-xs font-semibold bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-400">
+                                                {t('minor')}
+                                            </span>
+                                        )}
+                                        {user.phone && (
+                                            <span className="ml-auto text-xs text-gray-400 dark:text-gray-500 truncate">
+                                                {user.phone}
+                                            </span>
+                                        )}
                                     </div>
                                 </div>
                             );
@@ -1238,7 +1210,7 @@ export default function UserTable({ users, roles }: { users: User[]; roles: Role
                 onDelete={() => setDeleteUser(viewUser)}
                 currentUserId={currentUser?.id}
             />
-            <CreateUserModal open={showCreate} onClose={() => setShowCreate(false)} onCreated={() => window.location.reload()} />
+            <CreateUserModal open={showCreate} onClose={() => setShowCreate(false)} onCreated={() => window.location.reload()} roles={roles} />
             <EditModal user={editUser} roles={roles} open={!!editUser} onClose={() => setEditUser(null)} onUpdated={() => window.location.reload()} currentUserId={currentUser?.id} />
             <DeleteModal user={deleteUser} open={!!deleteUser} onClose={() => setDeleteUser(null)} onDeleted={() => window.location.reload()} />
         </>

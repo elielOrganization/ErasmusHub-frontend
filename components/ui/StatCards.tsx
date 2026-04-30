@@ -4,75 +4,61 @@ export interface StatCardItem {
     label: string;
     value: number | string;
     color?: string;          // Tailwind text color for the value, e.g. "text-purple-600"
-    icon?: ReactNode;
+    icon?: ReactNode;        // kept for API compatibility, not rendered
 }
 
-/* Maps a text color class to a soft background for the icon circle */
-function colorToBg(color?: string): string {
-    if (!color) return 'bg-gray-100 dark:bg-gray-800';
-    if (color.includes('purple')) return 'bg-purple-100 dark:bg-purple-900/30';
-    if (color.includes('amber'))  return 'bg-amber-100 dark:bg-amber-900/30';
-    if (color.includes('emerald')) return 'bg-emerald-100 dark:bg-emerald-900/30';
-    if (color.includes('blue'))   return 'bg-blue-100 dark:bg-blue-900/30';
-    if (color.includes('red'))    return 'bg-red-100 dark:bg-red-900/30';
-    return 'bg-gray-100 dark:bg-gray-800';
-}
+const accentHex: Record<string, string> = {
+    'text-purple-600': '#9333ea',
+    'text-purple-500': '#a855f7',
+    'text-blue-600':   '#2563eb',
+    'text-blue-500':   '#3b82f6',
+    'text-green-600':  '#16a34a',
+    'text-green-500':  '#22c55e',
+    'text-rose-600':   '#e11d48',
+    'text-rose-500':   '#f43f5e',
+    'text-amber-600':  '#d97706',
+    'text-amber-500':  '#f59e0b',
+    'text-sky-600':    '#0284c7',
+    'text-sky-500':    '#0ea5e9',
+    'text-indigo-600': '#4f46e5',
+    'text-indigo-500': '#6366f1',
+    'text-teal-600':   '#0d9488',
+    'text-teal-500':   '#14b8a6',
+};
 
-/**
- * Responsive stat cards grid.
- * - Mobile: compact horizontal row.
- * - Desktop: cards with colored icon badge.
- */
 export default function StatCards({ items }: { items: StatCardItem[] }) {
-    return (
-        <>
-            {/* ── Mobile: compact horizontal strip ── */}
-            <div className="flex sm:hidden gap-2 overflow-x-auto pb-1 -mx-1 px-1">
-                {items.map((item, i) => (
-                    <div
-                        key={i}
-                        className="flex items-center gap-2.5 bg-white dark:bg-gray-900 rounded-xl px-4 py-3 border border-gray-100 dark:border-gray-800 shadow-sm min-w-0 flex-1"
-                    >
-                        {item.icon && (
-                            <span className={`shrink-0 ${item.color || 'text-gray-600'}`}>
-                                {item.icon}
-                            </span>
-                        )}
-                        <div className="min-w-0">
-                            <p className={`text-xl font-bold leading-none ${item.color || 'text-gray-800 dark:text-gray-100'}`}>
-                                {item.value}
-                            </p>
-                            <p className="text-[11px] text-gray-400 font-medium mt-0.5 truncate">
-                                {item.label}
-                            </p>
-                        </div>
-                    </div>
-                ))}
-            </div>
+    const n = items.length;
+    const cols =
+        n <= 2 ? 'grid-cols-2' :
+        n === 4 ? 'grid-cols-2 sm:grid-cols-4' :
+        n === 6 ? 'grid-cols-3' :
+        'grid-cols-3';
 
-            {/* ── Desktop ── */}
-            <div className={`hidden sm:grid gap-4 ${
-                items.length === 2 ? 'grid-cols-2' : items.length === 3 ? 'grid-cols-3' : 'grid-cols-4'
-            }`}>
-                {items.map((item, i) => (
+    return (
+        <div className={`grid ${cols} gap-3 sm:gap-4`}>
+            {items.map((item, i) => {
+                const hex = item.color ? (accentHex[item.color] ?? '#6b7280') : '#6b7280';
+
+                return (
                     <div
                         key={i}
-                        className="group bg-white dark:bg-gray-900 rounded-2xl p-5 border border-gray-100 dark:border-gray-800 shadow-sm hover:shadow-md transition-shadow flex items-center gap-4"
+                        className="rounded-2xl px-4 py-4 sm:px-5 sm:py-5 flex flex-col gap-1 bg-white dark:bg-gray-900"
+                        style={{
+                            boxShadow: `0 0 0 1px ${hex}22, 0 2px 8px ${hex}14`,
+                        }}
                     >
-                        {item.icon && (
-                            <div className={`shrink-0 w-11 h-11 rounded-xl flex items-center justify-center ${colorToBg(item.color)}`}>
-                                <span className={item.color || 'text-gray-600'}>{item.icon}</span>
-                            </div>
-                        )}
-                        <div>
-                            <p className={`text-2xl font-bold leading-none ${item.color || 'text-gray-800 dark:text-gray-100'}`}>
-                                {item.value}
-                            </p>
-                            <p className="text-sm text-gray-400 font-medium mt-1">{item.label}</p>
-                        </div>
+                        <span className="text-[10px] sm:text-[11px] font-semibold uppercase tracking-widest text-gray-400 dark:text-gray-500 leading-none">
+                            {item.label}
+                        </span>
+                        <span
+                            className="text-2xl sm:text-3xl font-bold tabular-nums leading-tight"
+                            style={{ color: hex }}
+                        >
+                            {item.value ?? 0}
+                        </span>
                     </div>
-                ))}
-            </div>
-        </>
+                );
+            })}
+        </div>
     );
 }

@@ -32,6 +32,10 @@ export function useApi<T>(endpoint: string | null, options: UseApiOptions = { im
                     'Content-Type': 'application/json',
                 },
             });
+            if (res.status === 401) {
+                window.dispatchEvent(new CustomEvent('session-expired'));
+                return;
+            }
             if (!res.ok) {
                 throw new Error(`Error ${res.status}`);
             }

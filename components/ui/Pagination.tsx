@@ -39,11 +39,12 @@ export default function Pagination({ page, totalPages, totalItems, pageSize, onP
     }
 
     return (
-        <div className="flex flex-col sm:flex-row items-center justify-between gap-3 pt-4">
-            <span className="text-sm text-gray-400">
+        <div className="flex flex-col items-center gap-2 pt-4 sm:flex-row sm:justify-between">
+            <span className="text-xs sm:text-sm text-gray-400 order-2 sm:order-1">
                 {t('showing', { from, to, total: totalItems })}
             </span>
-            <div className="flex items-center gap-1">
+
+            <div className="flex items-center gap-1 order-1 sm:order-2 flex-wrap justify-center">
                 {/* First */}
                 <button
                     onClick={() => onPageChange(1)}
@@ -70,7 +71,7 @@ export default function Pagination({ page, totalPages, totalItems, pageSize, onP
                 {/* Page numbers */}
                 {result.map((item, i) =>
                     item === 'ellipsis' ? (
-                        <span key={`e-${i}`} className="w-8 text-center text-gray-300 text-sm">...</span>
+                        <span key={`e-${i}`} className="w-7 text-center text-gray-300 text-sm select-none">…</span>
                     ) : (
                         <button
                             key={item}

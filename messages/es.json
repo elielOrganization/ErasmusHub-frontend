@@ -59,7 +59,6 @@
       "generic": "Algo salió mal. Inténtalo de nuevo."
     }
   },
-
   "common": {
     "loading": "Cargando...",
     "unknownError": "Error desconocido",
@@ -69,7 +68,6 @@
     "clearFilters": "Limpiar filtros",
     "applyFilters": "Aplicar filtros"
   },
-
   "dashboard": {
     "home": "Inicio",
     "admin": "Panel Admin",
@@ -162,7 +160,6 @@
     "chatManagementDesc": "Elimina todas las conversaciones y mensajes del sistema.",
     "erasmusResetDesc": "Vuelve el sistema al estado inicial, como si el proceso Erasmus nunca hubiera comenzado."
   },
-
   "practicas": {
     "title": "Mis Prácticas",
     "entity": "Entidad",
@@ -243,7 +240,6 @@
     "dayModalSaved": "Nota guardada",
     "dayModalError": "Error al guardar. Inténtalo de nuevo."
   },
-
   "avisos": {
     "title": "Mis Avisos",
     "notice": "Aviso",
@@ -285,7 +281,6 @@
       "interview_readmitted": "Has sido readmitido al proceso de selección"
     }
   },
-
   "table": {
     "show": "Mostrar",
     "records": "registros",
@@ -297,7 +292,6 @@
     "noResults": "Ningún dato disponible en esta tabla",
     "showing": "Mostrando {from} a {to} de {total} registros"
   },
-
   "userProfile": {
     "title": "Mi Perfil",
     "personalInfo": "Información Personal",
@@ -317,7 +311,6 @@
     "yes": "Sí",
     "no": "No"
   },
-
   "adminDashboard": {
     "totalUsers": "Usuarios Totales",
     "admins": "Administradores",
@@ -362,7 +355,7 @@
     "fieldEmail": "Correo electrónico",
     "fieldEmailPlaceholder": "Ej: usuario@email.com",
     "fieldPhone": "Teléfono",
-    "fieldPhonePlaceholder": "Ej: +34 600 000 000",
+    "fieldPhonePlaceholder": "Ej: +420 601 234 567",
     "fieldRole": "Rol",
     "selectRolePlaceholder": "Selecciona un rol",
     "fieldGender": "Género",
@@ -396,7 +389,6 @@
     "roleLocked": "No se puede cambiar el rol de este usuario",
     "chatNoApplications": "Este usuario no tiene solicitudes todavía"
   },
-
   "opportunitiesDashboard": {
     "title": "Oportunidades",
     "totalOpportunities": "Total Oportunidades",
@@ -464,7 +456,6 @@
     "addTeacherError": "No se pudo asignar el profesor. Verifica que tengas permisos de administrador.",
     "loading": "Cargando..."
   },
-
   "studentsDashboard": {
     "title": "Gestión de Estudiantes",
     "eligibleStudents": "Estudiantes Elegibles",
@@ -504,7 +495,6 @@
     "selectCourse": "Todos los cursos",
     "errorLoad": "Error al cargar la lista final"
   },
-
   "documents": {
     "title": "Biblioteca de Documentos",
     "subtitle": "Gestiona tu documentación requerida",
@@ -602,7 +592,6 @@
     "docType_parental": "Autorización Parental",
     "parentalAuthDesc": "Documento de autorización firmado por padre, madre o tutor legal"
   },
-
   "settings": {
     "title": "Ajustes",
     "subtitle": "Gestiona tu cuenta y preferencias",
@@ -664,13 +653,11 @@
     "dangerZoneDesc": "Acciones permanentes que no se pueden deshacer. Procede con precaución.",
     "requestDataDeletion": "Solicitar eliminación de cuenta"
   },
-
   "offline": {
     "title": "Sin conexión",
     "description": "Comprueba tu conexión a internet e inténtalo de nuevo.",
     "retry": "Reintentar"
   },
-
   "errors": {
     "notFoundTitle": "Página no encontrada",
     "notFoundDescription": "La página que buscas no existe o ha sido movida.",
@@ -680,7 +667,6 @@
     "errorRetry": "Reintentar",
     "errorGoHome": "Ir al inicio"
   },
-
   "roles": {
     "admin": "Administrador",
     "administrator": "Administrador",
@@ -696,7 +682,6 @@
     "co-tutor": "Cotutor",
     "noRole": "Sin rol"
   },
-
   "calificacion": {
     "title": "Tabla de Calificación",
     "subtitle": "Criterios de calificación y sus porcentajes para las solicitudes Erasmus",
@@ -720,13 +705,11 @@
       "disability_certificate": "Certificado de discapacidad"
     }
   },
-
   "accessDenied": {
     "title": "Acceso denegado",
     "message": "No tienes permisos para ver esta página. Si crees que es un error, contacta con tu administrador.",
     "backLabel": "Volver al inicio"
   },
-
   "revision": {
     "title": "Revisión",
     "pageTitle": "Revisión de Documentos",
@@ -828,7 +811,6 @@
     "interviewStatusLabel": "Entrevista:",
     "docSummaryLabel": "Documentos:"
   },
-
   "listaFinal": {
     "pageTitle": "Lista Final",
     "subtitle": "Resumen del proceso de selección Erasmus",
@@ -854,9 +836,9 @@
     "errorLoad": "No se pudieron cargar los datos",
     "notAvailable": "La lista final aún no está disponible",
     "publishBtn": "Publicar para usuarios",
-    "unpublishBtn": "Ocultar para usuarios"
+    "unpublishBtn": "Ocultar para usuarios",
+    "generalListTotal": "estudiantes en total"
   },
-
   "studentProfile": {
     "back": "Volver",
     "notFound": "Estudiante no encontrado.",
@@ -877,5 +859,10 @@
     "noDocs": "No hay documentos subidos.",
     "courseYear": "Curso / Año",
     "finalGrade": "Nota final"
+  },
+  "sessionExpired": {
+    "title": "Sesión expirada",
+    "body": "Tu sesión ha expirado. Por favor, inicia sesión de nuevo para continuar.",
+    "btn": "Iniciar sesión de nuevo"
   }
 }
