@@ -142,7 +142,7 @@
     "resetChatsDesc": "Všechny zprávy a konverzace v systému budou trvale smazány. Tuto akci nelze vrátit zpět.",
     "resetChatsConfirm": "Ano, smazat chaty",
     "resetChatsSuccess": "Všechny chaty byly smazány",
-    "resetErasmus": "Reset Erasmus",
+    "resetErasmus": "Resetovat Erasmus",
     "resetErasmusTitle": "Úplný reset Erasmu",
     "resetErasmusDesc": "Tato akce smaže CELÝ proces Erasmus: žádosti, dokumenty, chaty, praxe, pohovory, konečný seznam, přiřazení učitelů a oznámení. Uživatelé a příležitosti budou zachovány. Tato akce je NEVRATNÁ.",
     "resetErasmusConfirmHint": "Napište RESET pro potvrzení",
@@ -387,7 +387,11 @@
     "youBadge": "Ty",
     "superAdminBadge": "Super Admin",
     "roleLocked": "Roli tohoto uživatele nelze změnit",
-    "chatNoApplications": "Tento uživatel zatím nemá žádné přihlášky"
+    "chatNoApplications": "Tento uživatel zatím nemá žádné přihlášky",
+    "students": "Studenti",
+    "sendMessage": "Poslat zprávu",
+    "lockedSuperAdmin": "🔒 Super Admin",
+    "lockedCannotDeleteSelf": "🔒 Nemůžeš smazat vlastní účet"
   },
   "opportunitiesDashboard": {
     "title": "Příležitosti",
@@ -809,7 +813,13 @@
     "docProgress": "{approved} z {total} schváleno",
     "refresh": "Obnovit",
     "interviewStatusLabel": "Pohovor:",
-    "docSummaryLabel": "Dokumenty:"
+    "docSummaryLabel": "Dokumenty:",
+    "rubricLabel": "Rubrika — Ostatní ({weight}%)",
+    "rubricSuggestedGrade": "Navrhovaná známka dle rubriky:",
+    "rubricUseGrade": "Použít tuto známku",
+    "rubricAdequate": "Přiměřený",
+    "rubricNotable": "Dobrý",
+    "rubricExcellent": "Výborný"
   },
   "listaFinal": {
     "pageTitle": "Konečný seznam",

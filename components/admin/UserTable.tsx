@@ -147,6 +147,7 @@ function ActionButtons({ onEdit, onDelete, onChat, isSelf, isSuperAdmin, isAdmin
     isAdmin?: boolean;
 }) {
     const theme = useRoleTheme();
+    const t = useTranslations('adminDashboard');
     const canDelete = !isSelf && !isSuperAdmin;
     const showChat = !isSelf && !isAdmin && !!onChat;
     return (
@@ -154,7 +155,7 @@ function ActionButtons({ onEdit, onDelete, onChat, isSelf, isSuperAdmin, isAdmin
             {showChat && (
                 <button
                     onClick={e => { e.stopPropagation(); onChat!(); }}
-                    title="Enviar mensaje"
+                    title={t('sendMessage')}
                     className="p-1.5 rounded-lg text-gray-400 hover:text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-900/20 transition-colors cursor-pointer"
                 >
                     <ChatIcon />
@@ -169,7 +170,7 @@ function ActionButtons({ onEdit, onDelete, onChat, isSelf, isSuperAdmin, isAdmin
             <button
                 onClick={canDelete ? e => { e.stopPropagation(); onDelete(); } : undefined}
                 disabled={!canDelete}
-                title={isSuperAdmin ? '🔒 Super Admin' : isSelf ? '🔒 No puedes eliminarte' : undefined}
+                title={isSuperAdmin ? t('lockedSuperAdmin') : isSelf ? t('lockedCannotDeleteSelf') : undefined}
                 className={`p-1.5 rounded-lg transition-colors ${!canDelete ? 'text-gray-200 dark:text-gray-700 cursor-not-allowed' : 'text-gray-400 hover:text-red-600 hover:bg-red-50 cursor-pointer'}`}
             >
                 <TrashIcon />
@@ -304,7 +305,7 @@ function UserProfilePanel({ user, open, onClose, onEdit, onDelete, currentUserId
                     <button
                         onClick={canDelete ? () => { onClose(); onDelete(); } : undefined}
                         disabled={!canDelete}
-                        title={isSuperAdmin ? '🔒 Super Admin' : isSelf ? '🔒 No puedes eliminarte' : undefined}
+                        title={isSuperAdmin ? t('lockedSuperAdmin') : isSelf ? t('lockedCannotDeleteSelf') : undefined}
                         className={`flex-1 flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl text-sm font-medium transition-colors ${
                             !canDelete
                                 ? 'bg-gray-50 dark:bg-gray-800/50 text-gray-300 dark:text-gray-600 cursor-not-allowed'

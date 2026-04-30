@@ -45,9 +45,9 @@ interface OtrosData    { weight: number; subfields: OtroSubField[]; }
 interface CalificacionData { otros: OtrosData | null; }
 
 const RUBRIC_OPTIONS = [
-    { label: "Adecuado",  value: 5   },
-    { label: "Notable",   value: 7.5 },
-    { label: "Excelente", value: 10  },
+    { labelKey: "rubricAdequate",  value: 5   },
+    { labelKey: "rubricNotable",   value: 7.5 },
+    { labelKey: "rubricExcellent", value: 10  },
 ] as const;
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -679,7 +679,7 @@ export default function RevisionPage() {
                                                     {othersConfig && othersConfig.subfields.length > 0 && (
                                                         <div className="mt-2 space-y-2">
                                                             <p className="text-xs font-semibold text-gray-600 dark:text-gray-300 uppercase tracking-wide">
-                                                                Rúbrica — Otros ({othersConfig.weight}%)
+                                                                {ti(t, "rubricLabel", { weight: String(othersConfig.weight) })}
                                                             </p>
                                                             {othersConfig.subfields.map(sf => (
                                                                 <div key={sf.label} className="flex items-center gap-3 flex-wrap">
@@ -690,7 +690,7 @@ export default function RevisionPage() {
                                                                     <div className="flex items-center gap-1.5">
                                                                         {RUBRIC_OPTIONS.map(opt => (
                                                                             <button
-                                                                                key={opt.label}
+                                                                                key={opt.labelKey}
                                                                                 type="button"
                                                                                 onClick={() =>
                                                                                     setOthersRubric(prev => ({
@@ -704,7 +704,7 @@ export default function RevisionPage() {
                                                                                         : "bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600 text-gray-600 dark:text-gray-300 hover:border-blue-400"
                                                                                 }`}
                                                                             >
-                                                                                {opt.label} <span className="opacity-70">({opt.value})</span>
+                                                                                {ti(t, opt.labelKey)} <span className="opacity-70">({opt.value})</span>
                                                                             </button>
                                                                         ))}
                                                                     </div>
@@ -712,13 +712,13 @@ export default function RevisionPage() {
                                                             ))}
                                                             {rubricGrade !== null && (
                                                                 <p className="text-xs text-blue-600 dark:text-blue-400 font-medium pt-1">
-                                                                    Nota sugerida por rúbrica: <span className="font-bold">{rubricGrade}</span>
+                                                                    {ti(t, "rubricSuggestedGrade")} <span className="font-bold">{rubricGrade}</span>
                                                                     <button
                                                                         type="button"
                                                                         onClick={() => setInterviewGrade(String(rubricGrade))}
                                                                         className="ml-2 underline hover:no-underline"
                                                                     >
-                                                                        Usar esta nota
+                                                                        {ti(t, "rubricUseGrade")}
                                                                     </button>
                                                                 </p>
                                                             )}

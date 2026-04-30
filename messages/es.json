@@ -142,8 +142,8 @@
     "resetChatsDesc": "Se eliminarán todos los mensajes y conversaciones del sistema. Esta acción no se puede deshacer.",
     "resetChatsConfirm": "Sí, borrar chats",
     "resetChatsSuccess": "Todos los chats han sido eliminados",
-    "resetErasmus": "Reset Erasmus",
-    "resetErasmusTitle": "Reset total del Erasmus",
+    "resetErasmus": "Restablecer Erasmus",
+    "resetErasmusTitle": "Restablecimiento total del Erasmus",
     "resetErasmusDesc": "Esta acción eliminará TODO el proceso Erasmus: solicitudes, documentos, chats, prácticas, entrevistas, lista final, asignaciones de profesores y notificaciones. Los usuarios y oportunidades se conservarán. Esta acción es IRREVERSIBLE.",
     "resetErasmusConfirmHint": "Escribe RESET para confirmar",
     "resetErasmusConfirm": "Sí, resetear todo",
@@ -387,7 +387,11 @@
     "youBadge": "Tú",
     "superAdminBadge": "Super Admin",
     "roleLocked": "No se puede cambiar el rol de este usuario",
-    "chatNoApplications": "Este usuario no tiene solicitudes todavía"
+    "chatNoApplications": "Este usuario no tiene solicitudes todavía",
+    "students": "Estudiantes",
+    "sendMessage": "Enviar mensaje",
+    "lockedSuperAdmin": "🔒 Super Admin",
+    "lockedCannotDeleteSelf": "🔒 No puedes eliminarte"
   },
   "opportunitiesDashboard": {
     "title": "Oportunidades",
@@ -809,7 +813,13 @@
     "docProgress": "{approved} de {total} aprobados",
     "refresh": "Actualizar",
     "interviewStatusLabel": "Entrevista:",
-    "docSummaryLabel": "Documentos:"
+    "docSummaryLabel": "Documentos:",
+    "rubricLabel": "Rúbrica — Otros ({weight}%)",
+    "rubricSuggestedGrade": "Nota sugerida por rúbrica:",
+    "rubricUseGrade": "Usar esta nota",
+    "rubricAdequate": "Adecuado",
+    "rubricNotable": "Notable",
+    "rubricExcellent": "Excelente"
   },
   "listaFinal": {
     "pageTitle": "Lista Final",

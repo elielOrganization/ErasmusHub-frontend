@@ -387,7 +387,11 @@
     "youBadge": "You",
     "superAdminBadge": "Super Admin",
     "roleLocked": "This user's role cannot be changed",
-    "chatNoApplications": "This user has no applications yet"
+    "chatNoApplications": "This user has no applications yet",
+    "students": "Students",
+    "sendMessage": "Send message",
+    "lockedSuperAdmin": "🔒 Super Admin",
+    "lockedCannotDeleteSelf": "🔒 Cannot delete yourself"
   },
   "opportunitiesDashboard": {
     "title": "Opportunities",
@@ -809,7 +813,13 @@
     "docProgress": "{approved} of {total} approved",
     "refresh": "Refresh",
     "interviewStatusLabel": "Interview:",
-    "docSummaryLabel": "Documents:"
+    "docSummaryLabel": "Documents:",
+    "rubricLabel": "Rubric — Other ({weight}%)",
+    "rubricSuggestedGrade": "Rubric suggested grade:",
+    "rubricUseGrade": "Use this grade",
+    "rubricAdequate": "Adequate",
+    "rubricNotable": "Good",
+    "rubricExcellent": "Excellent"
   },
   "listaFinal": {
     "pageTitle": "Final List",
