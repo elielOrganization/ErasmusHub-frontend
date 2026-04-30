@@ -14,49 +14,7 @@ import type { User, Role } from '@/services/userService';
 import { useAuth } from '@/context/AuthContext';
 import { useRouter } from '@/i18n/routing';
 import { adminOpenChatWithUser } from '@/services/chatService';
-
-/* ── Parse Rodné číslo ─────────────────────────────────────── */
-
-function parseRodneCislo(rc: string, gender: 'male' | 'female' | ''): { error: string } | { birthDate: string; isMinor: boolean; gender: 'male' | 'female' } {
-    const cleaned = rc.replace(/\//g, '').replace(/\s/g, '');
-    if (!/^\d{9,10}$/.test(cleaned)) return { error: 'invalidRcFormat' as const };
-
-    const yy = parseInt(cleaned.substring(0, 2), 10);
-    let mm = parseInt(cleaned.substring(2, 4), 10);
-    const dd = parseInt(cleaned.substring(4, 6), 10);
-
-    if (cleaned.length === 10) {
-        const num = parseInt(cleaned, 10);
-        if (num % 11 !== 0) return { error: 'invalidRcChecksum' as const };
-    }
-
-    let rcGender: 'male' | 'female';
-    if (mm > 70) { rcGender = 'female'; mm -= 70; }
-    else if (mm > 50) { rcGender = 'female'; mm -= 50; }
-    else if (mm > 20) { rcGender = 'male'; mm -= 20; }
-    else { rcGender = 'male'; }
-
-    if (gender && rcGender !== gender) return { error: 'rcGenderMismatch' as const };
-    if (mm < 1 || mm > 12) return { error: 'invalidRcFormat' as const };
-
-    const isOldFormat = cleaned.length === 9;
-    let year: number;
-    if (isOldFormat) year = 1900 + yy;
-    else if (yy >= 54) year = 1900 + yy;
-    else year = 2000 + yy;
-
-    const maxDay = new Date(year, mm, 0).getDate();
-    if (dd < 1 || dd > maxDay) return { error: 'invalidRcFormat' as const };
-
-    const birthDate = `${year}-${String(mm).padStart(2, '0')}-${String(dd).padStart(2, '0')}`;
-    const today = new Date();
-    const birth = new Date(year, mm - 1, dd);
-    let age = today.getFullYear() - birth.getFullYear();
-    const monthDiff = today.getMonth() - birth.getMonth();
-    if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birth.getDate())) age--;
-
-    return { birthDate, isMinor: age < 18, gender: rcGender };
-}
+import { parseRodneCislo } from '@/lib/validateRodneCislo';
 
 const PAGE_SIZE = 10;
 
@@ -1066,7 +1024,7 @@ export default function UserTable({ users, roles }: { users: User[]; roles: Role
                                             }`}
                                         >
                                             <td className="py-4 font-medium text-gray-700 dark:text-gray-200">
-                                                <div className="flex items-center gap-2">
+                                                <div className="flex items-center gap-2 flex-wrap">
                                                     {user.first_name} {user.last_name}
                                                     {isSuperAdmin && (
                                                         <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-[10px] font-medium tracking-widest uppercase border border-amber-300/60 dark:border-amber-600/50 text-amber-600 dark:text-amber-400">
@@ -1085,9 +1043,16 @@ export default function UserTable({ users, roles }: { users: User[]; roles: Role
                                             <td className="py-4 text-gray-500 dark:text-gray-400">{user.email}</td>
                                             <td className="py-4 text-gray-500 dark:text-gray-400">{user.phone || '—'}</td>
                                             <td className="py-4">
-                                                <span className={`px-2 py-1 rounded-lg text-xs font-semibold ${pillClasses}`}>
-                                                    {displayRole}
-                                                </span>
+                                                <div className="flex items-center gap-1.5 flex-wrap">
+                                                    <span className={`px-2 py-1 rounded-lg text-xs font-semibold ${pillClasses}`}>
+                                                        {displayRole}
+                                                    </span>
+                                                    {user.is_minor && (
+                                                        <span className="px-2 py-0.5 rounded-lg text-[10px] font-semibold bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-400">
+                                                            {t('minor')}
+                                                        </span>
+                                                    )}
+                                                </div>
                                             </td>
                                             <td className="py-4">
                                                 <div className={isSelf || isSuperAdmin ? '' : 'opacity-0 group-hover:opacity-100 transition-opacity'}>
