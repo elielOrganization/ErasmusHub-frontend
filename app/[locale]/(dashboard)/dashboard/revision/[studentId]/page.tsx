@@ -324,26 +324,26 @@ export default function StudentRevisionPage() {
     return (
         <div className="space-y-6">
             {/* Back + Header */}
-            <div className="flex items-start justify-between gap-4">
-                <div className="flex items-start gap-4">
+            <div className="space-y-3">
+                <div className="flex items-start gap-3">
                     <Link
                         href="/dashboard/revision"
-                        className="mt-1 text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 transition-colors"
+                        className="mt-1 shrink-0 text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 transition-colors"
                     >
                         <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 19l-7-7 7-7" />
                         </svg>
                     </Link>
-                    <div>
-                        <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
+                    <div className="flex-1 min-w-0">
+                        <h1 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white truncate">
                             {(t as (k: string, p: Record<string, string>) => string)("studentDocs", { name: studentName })}
                         </h1>
                         <div className="flex items-center gap-3 mt-0.5 flex-wrap">
                             {studentData && (
-                                <p className="text-sm text-gray-500 dark:text-gray-400">{studentData.email}</p>
+                                <p className="text-sm text-gray-500 dark:text-gray-400 truncate">{studentData.email}</p>
                             )}
                             {studentCourse && (
-                                <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400">
+                                <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 shrink-0">
                                     <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 14l9-5-9-5-9 5 9 5z" /></svg>
                                     {studentCourse}
                                 </span>
@@ -371,26 +371,28 @@ export default function StudentRevisionPage() {
                         )}
                     </div>
                 </div>
-                <div className="flex items-center gap-2 shrink-0">
+
+                {/* Action buttons — full width on mobile, inline on desktop */}
+                <div className="flex flex-wrap gap-2 pl-8">
                     <button
                         onClick={handleReadmit}
                         disabled={readmitSubmitting}
-                        className="px-4 py-2 rounded-xl text-sm font-semibold bg-green-50 hover:bg-green-100 dark:bg-green-900/20 dark:hover:bg-green-900/30 text-green-600 dark:text-green-400 border border-green-200 dark:border-green-700/40 disabled:opacity-50 transition-colors"
+                        className="flex-1 sm:flex-none px-4 py-2 rounded-xl text-sm font-semibold bg-green-50 hover:bg-green-100 dark:bg-green-900/20 dark:hover:bg-green-900/30 text-green-600 dark:text-green-400 border border-green-200 dark:border-green-700/40 disabled:opacity-50 transition-colors"
                     >
                         {t("readmitStudent")}
                     </button>
                     <button
                         onClick={() => { setExcludeModalOpen(true); setExcludeReason(""); setExcludeReasonError(false); setExcludeFeedback(null); }}
-                        className="px-4 py-2 rounded-xl text-sm font-semibold bg-red-50 hover:bg-red-100 dark:bg-red-900/20 dark:hover:bg-red-900/30 text-red-600 dark:text-red-400 border border-red-200 dark:border-red-700/40 transition-colors"
+                        className="flex-1 sm:flex-none px-4 py-2 rounded-xl text-sm font-semibold bg-red-50 hover:bg-red-100 dark:bg-red-900/20 dark:hover:bg-red-900/30 text-red-600 dark:text-red-400 border border-red-200 dark:border-red-700/40 transition-colors"
                     >
                         {t("excludeFromProcess")}
                     </button>
+                    {readmitFeedback && (
+                        <p className={`w-full text-xs font-medium ${readmitFeedback.type === "success" ? "text-green-600 dark:text-green-400" : "text-red-600 dark:text-red-400"}`}>
+                            {readmitFeedback.msg}
+                        </p>
+                    )}
                 </div>
-                {readmitFeedback && (
-                    <p className={`text-xs font-medium ${readmitFeedback.type === "success" ? "text-green-600 dark:text-green-400" : "text-red-600 dark:text-red-400"}`}>
-                        {readmitFeedback.msg}
-                    </p>
-                )}
             </div>
 
             {/* Exclude modal */}
@@ -480,33 +482,39 @@ export default function StudentRevisionPage() {
                                 }`}
                             >
                                 {/* Document row */}
-                                <div className="flex items-center gap-4 px-5 py-4">
-                                    {/* Icon */}
-                                    <div className={`w-10 h-10 rounded-xl flex items-center justify-center shrink-0 ${
-                                        isApproved ? "bg-green-100 dark:bg-green-900/30" :
-                                        isRejected ? "bg-red-100 dark:bg-red-900/30" :
-                                        "bg-gray-100 dark:bg-gray-800"
-                                    }`}>
-                                        {docTypeIcon(doc.document_type)}
+                                <div className="flex flex-col gap-0 px-5 py-4">
+                                    {/* Top row: icon + info + state badge (desktop also shows buttons here) */}
+                                    <div className="flex items-center gap-4">
+                                        {/* Icon */}
+                                        <div className={`w-10 h-10 rounded-xl flex items-center justify-center shrink-0 ${
+                                            isApproved ? "bg-green-100 dark:bg-green-900/30" :
+                                            isRejected ? "bg-red-100 dark:bg-red-900/30" :
+                                            "bg-gray-100 dark:bg-gray-800"
+                                        }`}>
+                                            {docTypeIcon(doc.document_type)}
+                                        </div>
+
+                                        {/* Info */}
+                                        <div className="flex-1 min-w-0">
+                                            <p className="text-sm font-semibold text-gray-800 dark:text-gray-200 truncate">
+                                                {docTypeLabel(doc.document_type)}
+                                            </p>
+                                            <p className="text-sm text-gray-600 dark:text-gray-300 font-medium truncate mt-0.5">{doc.name}</p>
+                                            <p className="text-xs text-gray-400 dark:text-gray-500 mt-0.5">
+                                                {(t as (k: string, p: Record<string, string>) => string)("uploadedAt", {
+                                                    date: new Date(doc.uploaded_at).toLocaleDateString(),
+                                                })}
+                                            </p>
+                                        </div>
+
+                                        {/* State badge — always visible on the right */}
+                                        <div className="shrink-0">
+                                            <StateBadge state={doc.state} />
+                                        </div>
                                     </div>
 
-                                    {/* Info */}
-                                    <div className="flex-1 min-w-0">
-                                        <p className="text-sm font-semibold text-gray-800 dark:text-gray-200 truncate">
-                                            {docTypeLabel(doc.document_type)}
-                                        </p>
-                                        <p className="text-sm text-gray-600 dark:text-gray-300 font-medium truncate mt-0.5">{doc.name}</p>
-                                        <p className="text-xs text-gray-400 dark:text-gray-500 mt-0.5">
-                                            {(t as (k: string, p: Record<string, string>) => string)("uploadedAt", {
-                                                date: new Date(doc.uploaded_at).toLocaleDateString(),
-                                            })}
-                                        </p>
-                                    </div>
-
-                                    {/* State badge */}
-                                    <div className="shrink-0 flex items-center gap-3">
-                                        <StateBadge state={doc.state} />
-
+                                    {/* Action buttons row — wraps below info on all sizes */}
+                                    <div className="flex items-center gap-2 flex-wrap mt-3 pl-14">
                                         {/* View doc button */}
                                         <button
                                             onClick={() => openDocPreview(doc)}
@@ -521,20 +529,20 @@ export default function StudentRevisionPage() {
 
                                         {/* Review buttons */}
                                         {isPending && !isActive && (
-                                            <div className="flex items-center gap-2">
+                                            <>
                                                 <button
                                                     onClick={() => openAction(doc.id, "approve")}
-                                                    className="px-3 py-1.5 rounded-lg text-xs font-semibold bg-green-500 hover:bg-green-600 text-white transition-colors"
+                                                    className="px-3 py-1.5 rounded-lg text-xs font-semibold bg-green-500 hover:bg-green-600 text-white transition-colors cursor-pointer"
                                                 >
                                                     {t("approveBtn")}
                                                 </button>
                                                 <button
                                                     onClick={() => openAction(doc.id, "reject")}
-                                                    className="px-3 py-1.5 rounded-lg text-xs font-semibold bg-red-500 hover:bg-red-600 text-white transition-colors"
+                                                    className="px-3 py-1.5 rounded-lg text-xs font-semibold bg-red-500 hover:bg-red-600 text-white transition-colors cursor-pointer"
                                                 >
                                                     {t("rejectBtn")}
                                                 </button>
-                                            </div>
+                                            </>
                                         )}
                                         {/* Change decision for reviewed docs */}
                                         {!isPending && !isActive && (

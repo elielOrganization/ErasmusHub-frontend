@@ -338,7 +338,7 @@ export default function RevisionPage() {
             {/* Table card */}
             <div className="bg-white dark:bg-gray-900 rounded-3xl border border-gray-100 dark:border-gray-800 shadow-sm overflow-hidden">
                 {/* Tabs + controls */}
-                <div className="flex items-center gap-1 p-4 border-b border-gray-100 dark:border-gray-800 flex-wrap gap-y-2">
+                <div className="flex flex-wrap items-center gap-1 gap-y-2 p-4 border-b border-gray-100 dark:border-gray-800">
                     {(["documentos", "entrevista", "resultados"] as TabType[]).map((t_key) => (
                         <button
                             key={t_key}
@@ -354,7 +354,7 @@ export default function RevisionPage() {
                     ))}
 
                     {tab === "documentos" && (
-                        <div className="ml-auto flex items-center gap-2">
+                        <div className="w-full sm:w-auto sm:ml-auto flex flex-wrap items-center gap-2 mt-1 sm:mt-0">
                             {/* Resultado count */}
                             {(search || statusFilter !== "all") && (
                                 <span className="text-xs text-gray-400 dark:text-gray-500 whitespace-nowrap">
@@ -365,7 +365,7 @@ export default function RevisionPage() {
                             <select
                                 value={statusFilter}
                                 onChange={e => setStatusFilter(e.target.value as StatusFilter)}
-                                className="text-sm border border-gray-200 dark:border-gray-700 rounded-lg px-2 py-1.5 bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-400"
+                                className="flex-1 sm:flex-none text-sm border border-gray-200 dark:border-gray-700 rounded-lg px-2 py-1.5 bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-400"
                             >
                                 <option value="all">{ti(t, "filterAll")}</option>
                                 <option value="pending">{ti(t, "filterWithPending")}</option>
@@ -378,7 +378,7 @@ export default function RevisionPage() {
                                 value={search}
                                 onChange={e => setSearch(e.target.value)}
                                 placeholder={ti(t, "searchPlaceholder")}
-                                className="text-sm border border-gray-200 dark:border-gray-700 rounded-lg px-3 py-1.5 bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-200 placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-400 w-48"
+                                className="flex-1 sm:flex-none text-sm border border-gray-200 dark:border-gray-700 rounded-lg px-3 py-1.5 bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-200 placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-400 sm:w-48"
                             />
                         </div>
                     )}
@@ -416,111 +416,178 @@ export default function RevisionPage() {
 
                 {/* ── Tab Documentos ─────────────────────────────────────────── */}
                 {!error && filtered.length > 0 && tab === "documentos" && (
-                    <div className="overflow-x-auto">
-                        <table className="w-full">
-                            <thead>
-                                <tr className="bg-gray-50 dark:bg-gray-800">
-                                    <th className="text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider px-5 py-3">
-                                        {t("colStudent")}
-                                    </th>
-                                    {(["pending", "approved", "rejected", "total"] as SortCol[]).map(col => (
-                                        <th
-                                            key={col}
-                                            onClick={() => toggleSort(col)}
-                                            className="text-center text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider px-5 py-3 cursor-pointer select-none hover:text-gray-700 dark:hover:text-gray-200 transition-colors"
-                                        >
-                                            {ti(t, col === "pending" ? "colPending" : col === "approved" ? "colApproved" : col === "rejected" ? "colRejected" : "colTotal")}
-                                            <SortIcon col={col} />
-                                        </th>
-                                    ))}
-                                    <th className="px-5 py-3" />
-                                </tr>
-                            </thead>
-                            <tbody className="divide-y divide-gray-100 dark:divide-gray-800">
-                                {filtered.map((s) => {
-                                    const pct = s.total > 0 ? Math.round(s.approved / s.total * 100) : 0;
-                                    return (
-                                        <tr key={s.user_id} className={`hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors ${rowBgClass(s)}`}>
-                                            <td className="px-5 py-4">
-                                                <div className="flex items-center gap-2">
-                                                    <p className="text-sm font-medium text-gray-800 dark:text-gray-200">{s.user_name}</p>
-                                                    {s.all_approved ? (
-                                                        <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400">
-                                                            {ti(t, "badge_all_approved")}
-                                                        </span>
-                                                    ) : (
-                                                        <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-400">
-                                                            {ti(t, "badge_pending_docs")}
-                                                        </span>
-                                                    )}
-                                                </div>
-                                                <p className="text-xs text-gray-400 dark:text-gray-500">{s.email}</p>
+                    <>
+                        {/* Mobile cards */}
+                        <div className="md:hidden divide-y divide-gray-100 dark:divide-gray-800">
+                            {filtered.map((s) => {
+                                const pct = s.total > 0 ? Math.round(s.approved / s.total * 100) : 0;
+                                return (
+                                    <div key={s.user_id} className={`px-4 py-4 space-y-3 ${rowBgClass(s)}`}>
+                                        {/* Name + badge */}
+                                        <div className="flex items-start justify-between gap-2">
+                                            <div className="min-w-0">
+                                                <p className="text-sm font-semibold text-gray-800 dark:text-gray-200 truncate">{s.user_name}</p>
+                                                <p className="text-xs text-gray-400 dark:text-gray-500 truncate">{s.email}</p>
                                                 {courseLabel(s.user_id) && (
                                                     <p className="text-xs text-blue-500 dark:text-blue-400 font-medium mt-0.5 flex items-center gap-1">
-                                                        <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 14l9-5-9-5-9 5 9 5z" /></svg>
+                                                        <svg className="w-3 h-3 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 14l9-5-9-5-9 5 9 5z" /></svg>
                                                         {courseLabel(s.user_id)}
                                                     </p>
                                                 )}
-                                                {/* Progress bar */}
-                                                {s.total > 0 && (
-                                                    <div className="flex items-center gap-2 mt-1.5">
-                                                        <div className="flex-1 max-w-24 bg-gray-100 dark:bg-gray-800 rounded-full h-1.5">
-                                                            <div
-                                                                className="bg-green-500 h-1.5 rounded-full transition-all"
-                                                                style={{ width: `${pct}%` }}
-                                                            />
-                                                        </div>
-                                                        <span className="text-xs text-gray-400 dark:text-gray-500">{s.approved}/{s.total}</span>
+                                            </div>
+                                            <div className="shrink-0">
+                                                {s.all_approved ? (
+                                                    <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400">
+                                                        {ti(t, "badge_all_approved")}
+                                                    </span>
+                                                ) : (
+                                                    <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-400">
+                                                        {ti(t, "badge_pending_docs")}
+                                                    </span>
+                                                )}
+                                            </div>
+                                        </div>
+
+                                        {/* Progress bar */}
+                                        {s.total > 0 && (
+                                            <div className="flex items-center gap-2">
+                                                <div className="flex-1 bg-gray-100 dark:bg-gray-800 rounded-full h-1.5">
+                                                    <div className="bg-green-500 h-1.5 rounded-full transition-all" style={{ width: `${pct}%` }} />
+                                                </div>
+                                                <span className="text-xs text-gray-400 dark:text-gray-500 shrink-0">{s.approved}/{s.total}</span>
+                                            </div>
+                                        )}
+
+                                        {/* Doc counts row */}
+                                        <div className="flex items-center gap-3 text-xs">
+                                            <span className="flex items-center gap-1 text-amber-600 dark:text-amber-400">
+                                                <span className="font-bold">{s.pending}</span>
+                                                <span className="text-gray-400">{ti(t, "colPending")}</span>
+                                            </span>
+                                            <span className="text-gray-200 dark:text-gray-700">·</span>
+                                            <span className="flex items-center gap-1 text-green-600 dark:text-green-400">
+                                                <span className="font-bold">{s.approved}</span>
+                                                <span className="text-gray-400">{ti(t, "colApproved")}</span>
+                                            </span>
+                                            <span className="text-gray-200 dark:text-gray-700">·</span>
+                                            <span className="flex items-center gap-1 text-red-500 dark:text-red-400">
+                                                <span className="font-bold">{s.rejected}</span>
+                                                <span className="text-gray-400">{ti(t, "colRejected")}</span>
+                                            </span>
+                                        </div>
+
+                                        {/* Button */}
+                                        <Link
+                                            href={`/dashboard/revision/${s.user_id}`}
+                                            className={`flex items-center justify-center gap-1.5 w-full py-2 rounded-xl text-xs font-semibold text-white ${theme.btnPrimary} ${theme.btnPrimaryHover} transition-colors`}
+                                        >
+                                            {t("viewLibrary")}
+                                            <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5l7 7-7 7" />
+                                            </svg>
+                                        </Link>
+                                    </div>
+                                );
+                            })}
+                        </div>
+
+                        {/* Desktop table */}
+                        <div className="hidden md:block overflow-x-auto">
+                            <table className="w-full">
+                                <thead>
+                                    <tr className="bg-gray-50 dark:bg-gray-800">
+                                        <th className="text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider px-5 py-3">
+                                            {t("colStudent")}
+                                        </th>
+                                        {(["pending", "approved", "rejected", "total"] as SortCol[]).map(col => (
+                                            <th
+                                                key={col}
+                                                onClick={() => toggleSort(col)}
+                                                className="text-center text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider px-5 py-3 cursor-pointer select-none hover:text-gray-700 dark:hover:text-gray-200 transition-colors"
+                                            >
+                                                {ti(t, col === "pending" ? "colPending" : col === "approved" ? "colApproved" : col === "rejected" ? "colRejected" : "colTotal")}
+                                                <SortIcon col={col} />
+                                            </th>
+                                        ))}
+                                        <th className="px-5 py-3" />
+                                    </tr>
+                                </thead>
+                                <tbody className="divide-y divide-gray-100 dark:divide-gray-800">
+                                    {filtered.map((s) => {
+                                        const pct = s.total > 0 ? Math.round(s.approved / s.total * 100) : 0;
+                                        return (
+                                            <tr key={s.user_id} className={`hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors ${rowBgClass(s)}`}>
+                                                <td className="px-5 py-4">
+                                                    <div className="flex items-center gap-2">
+                                                        <p className="text-sm font-medium text-gray-800 dark:text-gray-200">{s.user_name}</p>
+                                                        {s.all_approved ? (
+                                                            <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400">
+                                                                {ti(t, "badge_all_approved")}
+                                                            </span>
+                                                        ) : (
+                                                            <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-400">
+                                                                {ti(t, "badge_pending_docs")}
+                                                            </span>
+                                                        )}
                                                     </div>
-                                                )}
-                                            </td>
-                                            <td className="px-5 py-4 text-center">
-                                                {s.pending > 0 ? (
-                                                    <span className="inline-flex items-center justify-center w-6 h-6 rounded-full bg-amber-100 dark:bg-amber-900/30 text-amber-600 dark:text-amber-400 text-xs font-bold">
-                                                        {s.pending}
-                                                    </span>
-                                                ) : (
-                                                    <span className="text-gray-300 dark:text-gray-600">—</span>
-                                                )}
-                                            </td>
-                                            <td className="px-5 py-4 text-center">
-                                                {s.approved > 0 ? (
-                                                    <span className="inline-flex items-center justify-center w-6 h-6 rounded-full bg-green-100 dark:bg-green-900/30 text-green-600 dark:text-green-400 text-xs font-bold">
-                                                        {s.approved}
-                                                    </span>
-                                                ) : (
-                                                    <span className="text-gray-300 dark:text-gray-600">—</span>
-                                                )}
-                                            </td>
-                                            <td className="px-5 py-4 text-center">
-                                                {s.rejected > 0 ? (
-                                                    <span className="inline-flex items-center justify-center w-6 h-6 rounded-full bg-red-100 dark:bg-red-900/30 text-red-600 dark:text-red-400 text-xs font-bold">
-                                                        {s.rejected}
-                                                    </span>
-                                                ) : (
-                                                    <span className="text-gray-300 dark:text-gray-600">—</span>
-                                                )}
-                                            </td>
-                                            <td className="px-5 py-4 text-center">
-                                                <span className="text-xs font-semibold text-gray-600 dark:text-gray-400">{s.total}</span>
-                                            </td>
-                                            <td className="px-5 py-4 text-right">
-                                                <Link
-                                                    href={`/dashboard/revision/${s.user_id}`}
-                                                    className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold text-white ${theme.btnPrimary} ${theme.btnPrimaryHover} transition-colors`}
-                                                >
-                                                    {t("viewLibrary")}
-                                                    <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5l7 7-7 7" />
-                                                    </svg>
-                                                </Link>
-                                            </td>
-                                        </tr>
-                                    );
-                                })}
-                            </tbody>
-                        </table>
-                    </div>
+                                                    <p className="text-xs text-gray-400 dark:text-gray-500">{s.email}</p>
+                                                    {courseLabel(s.user_id) && (
+                                                        <p className="text-xs text-blue-500 dark:text-blue-400 font-medium mt-0.5 flex items-center gap-1">
+                                                            <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 14l9-5-9-5-9 5 9 5z" /></svg>
+                                                            {courseLabel(s.user_id)}
+                                                        </p>
+                                                    )}
+                                                    {s.total > 0 && (
+                                                        <div className="flex items-center gap-2 mt-1.5">
+                                                            <div className="flex-1 max-w-24 bg-gray-100 dark:bg-gray-800 rounded-full h-1.5">
+                                                                <div className="bg-green-500 h-1.5 rounded-full transition-all" style={{ width: `${pct}%` }} />
+                                                            </div>
+                                                            <span className="text-xs text-gray-400 dark:text-gray-500">{s.approved}/{s.total}</span>
+                                                        </div>
+                                                    )}
+                                                </td>
+                                                <td className="px-5 py-4 text-center">
+                                                    {s.pending > 0 ? (
+                                                        <span className="inline-flex items-center justify-center w-6 h-6 rounded-full bg-amber-100 dark:bg-amber-900/30 text-amber-600 dark:text-amber-400 text-xs font-bold">{s.pending}</span>
+                                                    ) : (
+                                                        <span className="text-gray-300 dark:text-gray-600">—</span>
+                                                    )}
+                                                </td>
+                                                <td className="px-5 py-4 text-center">
+                                                    {s.approved > 0 ? (
+                                                        <span className="inline-flex items-center justify-center w-6 h-6 rounded-full bg-green-100 dark:bg-green-900/30 text-green-600 dark:text-green-400 text-xs font-bold">{s.approved}</span>
+                                                    ) : (
+                                                        <span className="text-gray-300 dark:text-gray-600">—</span>
+                                                    )}
+                                                </td>
+                                                <td className="px-5 py-4 text-center">
+                                                    {s.rejected > 0 ? (
+                                                        <span className="inline-flex items-center justify-center w-6 h-6 rounded-full bg-red-100 dark:bg-red-900/30 text-red-600 dark:text-red-400 text-xs font-bold">{s.rejected}</span>
+                                                    ) : (
+                                                        <span className="text-gray-300 dark:text-gray-600">—</span>
+                                                    )}
+                                                </td>
+                                                <td className="px-5 py-4 text-center">
+                                                    <span className="text-xs font-semibold text-gray-600 dark:text-gray-400">{s.total}</span>
+                                                </td>
+                                                <td className="px-5 py-4 text-right">
+                                                    <Link
+                                                        href={`/dashboard/revision/${s.user_id}`}
+                                                        className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold text-white ${theme.btnPrimary} ${theme.btnPrimaryHover} transition-colors`}
+                                                    >
+                                                        {t("viewLibrary")}
+                                                        <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5l7 7-7 7" />
+                                                        </svg>
+                                                    </Link>
+                                                </td>
+                                            </tr>
+                                        );
+                                    })}
+                                </tbody>
+                            </table>
+                        </div>
+                    </>
                 )}
 
                 {/* ── Tab Entrevista ─────────────────────────────────────────── */}
@@ -532,8 +599,8 @@ export default function RevisionPage() {
 
                             return (
                                 <div key={s.user_id} className="px-5 py-4">
-                                    <div className="flex items-center justify-between gap-4">
-                                        <div>
+                                    <div className="flex flex-wrap items-start justify-between gap-3">
+                                        <div className="min-w-0">
                                             <p className="text-sm font-semibold text-gray-800 dark:text-gray-200">{s.user_name}</p>
                                             <p className="text-xs text-gray-400 dark:text-gray-500">{s.email}</p>
                                             {courseLabel(s.user_id) && (
@@ -544,7 +611,7 @@ export default function RevisionPage() {
                                             )}
                                         </div>
 
-                                        <div className="flex items-center gap-3 shrink-0">
+                                        <div className="flex items-center gap-2 flex-wrap shrink-0">
                                             {s.interview_status === "passed" && (
                                                 <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400">
                                                     <span className="w-1.5 h-1.5 rounded-full bg-green-500 shrink-0" />
@@ -563,7 +630,7 @@ export default function RevisionPage() {
                                             )}
 
                                             {s.interview_status === "pending" && !isActive && (
-                                                <div className="flex items-center gap-2">
+                                                <>
                                                     <button
                                                         onClick={() => openInterview(s.user_id, "grade")}
                                                         className={`px-3 py-1.5 rounded-lg text-xs font-semibold text-white ${theme.btnPrimary} ${theme.btnPrimaryHover} transition-colors`}
@@ -576,7 +643,7 @@ export default function RevisionPage() {
                                                     >
                                                         {ti(t, "interview_rejectBtn")}
                                                     </button>
-                                                </div>
+                                                </>
                                             )}
                                         </div>
                                     </div>
