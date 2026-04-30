@@ -1,6 +1,6 @@
 import type { DocState } from "./types";
 
-export const ACCEPTED_TYPES = ["image/png", "image/jpeg", "application/pdf"];
+export const ACCEPTED_TYPES = ["image/png", "image/jpeg", "image/jpg", "application/pdf"];
 
 /** Visual config for each document state returned by the API */
 export const DOC_STATE_CONFIG: Record<

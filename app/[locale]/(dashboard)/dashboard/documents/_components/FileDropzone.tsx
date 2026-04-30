@@ -80,7 +80,7 @@ export default function FileDropzone({ fileState, onFileChange, onRemove }: File
                 </div>
             </div>
             {fileState.error && <p className="mt-1.5 text-xs text-red-600 dark:text-red-400">{fileState.error}</p>}
-            <input ref={inputRef} type="file" accept=".png,.jpg,.jpeg,.pdf" className="hidden" onChange={handleInput} />
+            <input ref={inputRef} type="file" accept=".png,.jpg,.jpeg,.pdf,image/png,image/jpeg,image/jpg,application/pdf" className="hidden" onChange={handleInput} />
         </div>
     );
 }
