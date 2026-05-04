@@ -21,7 +21,7 @@ interface PonderacionData {
     motivation_letter: number;
     language_certificate: number;
     disability_certificate: number;
-    others: OtrosData | null;
+    otros: OtrosData | null;
     updated_at: string;
     updated_by: number | null;
 }
@@ -88,11 +88,11 @@ export default function CalificacionPage() {
                 language_certificate: data.language_certificate > 0 ? String(data.language_certificate) : "",
                 disability_certificate: data.disability_certificate > 0 ? String(data.disability_certificate) : "",
             });
-            if (data.others) {
+            if (data.otros) {
                 setOtros({
-                    weight: String(data.others.weight),
-                    open: data.others.subfields.length > 0,
-                    subfields: data.others.subfields.map(sf => ({ label: sf.label, weight: String(sf.weight) })),
+                    weight: String(data.otros.weight),
+                    open: data.otros.subfields.length > 0,
+                    subfields: data.otros.subfields.map(sf => ({ label: sf.label, weight: String(sf.weight) })),
                 });
             } else {
                 setOtros({ weight: "", open: false, subfields: [] });
@@ -174,12 +174,19 @@ export default function CalificacionPage() {
                     motivation_letter: parseFloat(form.motivation_letter),
                     language_certificate: parseFloat(form.language_certificate),
                     disability_certificate: parseFloat(form.disability_certificate),
-                    others: otrosPayload,
+                    otros: otrosPayload,
                 }),
             });
             if (!res.ok) {
                 const body = await res.json().catch(() => ({}));
-                throw new Error(body?.detail || `Error ${res.status}`);
+                // Pydantic devuelve detail como array de objetos; extraemos el primer mensaje legible
+                let msg: string;
+                if (Array.isArray(body?.detail)) {
+                    msg = body.detail.map((e: { msg?: string }) => e.msg ?? JSON.stringify(e)).join(" | ");
+                } else {
+                    msg = body?.detail ?? `Error ${res.status}`;
+                }
+                throw new Error(msg);
             }
             await refetch();
             setSuccess(true);
