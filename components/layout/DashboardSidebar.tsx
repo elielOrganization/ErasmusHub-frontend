@@ -345,10 +345,10 @@ export default function DashboardSidebar() {
                                     {!isCollapsed && (isScheduled || (isProcessStarted && scheduledEnd)) && (
                                         <div className="px-3 py-1.5 text-[11px] text-gray-400 dark:text-gray-500 space-y-0.5">
                                             {scheduledStart && (
-                                                <p>{t('processScheduledStart')}: <span className="font-medium text-amber-600 dark:text-amber-400">{new Date(scheduledStart).toLocaleString()}</span></p>
+                                                <p>{t('processScheduledStart')}: <span className="font-medium text-amber-600 dark:text-amber-400">{new Date(scheduledStart + 'Z').toLocaleString()}</span></p>
                                             )}
                                             {scheduledEnd && (
-                                                <p>{t('processScheduledEnd')}: <span className="font-medium text-amber-600 dark:text-amber-400">{new Date(scheduledEnd).toLocaleString()}</span></p>
+                                                <p>{t('processScheduledEnd')}: <span className="font-medium text-amber-600 dark:text-amber-400">{new Date(scheduledEnd + 'Z').toLocaleString()}</span></p>
                                             )}
                                         </div>
                                     )}

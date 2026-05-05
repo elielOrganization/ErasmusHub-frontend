@@ -24,8 +24,10 @@ interface ScheduleProcessModalProps {
 
 function toLocalInputValue(isoString: string | null): string {
     if (!isoString) return "";
-    // The backend stores naive local datetimes — display as-is
-    return isoString.slice(0, 16);
+    // Backend stores UTC — convert to local for the datetime-local input
+    const d = new Date(isoString + 'Z');
+    const pad = (n: number) => String(n).padStart(2, '0');
+    return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`;
 }
 
 function localNowPlus5(): string {
@@ -101,7 +103,7 @@ export default function ScheduleProcessModal({
                 if (resolvedEnd) {
                     // Also set the scheduled end
                     const schedData = await apiPost<ProcessStatus>("/selection-process/schedule", {
-                        scheduled_end: toLocalISOString(resolvedEnd),
+                        scheduled_end: resolvedEnd.toISOString(),
                     });
                     onScheduled(schedData);
                 } else {
@@ -110,8 +112,8 @@ export default function ScheduleProcessModal({
                 onStartedNow();
             } else {
                 const body: Record<string, string> = {};
-                if (resolvedStart) body.scheduled_start = toLocalISOString(resolvedStart);
-                if (resolvedEnd) body.scheduled_end = toLocalISOString(resolvedEnd);
+                if (resolvedStart) body.scheduled_start = resolvedStart.toISOString();
+                if (resolvedEnd) body.scheduled_end = resolvedEnd.toISOString();
 
                 const data = await apiPost<ProcessStatus>("/selection-process/schedule", body);
                 onScheduled(data);
