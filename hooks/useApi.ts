@@ -79,6 +79,21 @@ export async function apiPost<T>(endpoint: string, body: unknown): Promise<T> {
     return res.json();
 }
 
+export async function apiDelete<T>(endpoint: string): Promise<T> {
+    const token = Cookies.get('auth_token');
+    const res = await fetch(`${API_URL}${endpoint}`, {
+        method: 'DELETE',
+        headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json',
+        },
+    });
+    if (!res.ok) {
+        throw new Error(`Error ${res.status}`);
+    }
+    return res.json();
+}
+
 export async function apiPatch<T>(endpoint: string, body?: unknown): Promise<T> {
     const token = Cookies.get('auth_token');
     const res = await fetch(`${API_URL}${endpoint}`, {
