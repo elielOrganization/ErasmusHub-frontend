@@ -100,24 +100,37 @@ export default function DashboardSidebar() {
         '/notifications/me?page_size=100',
         { refreshInterval: 30_000 }
     );
-    const { data: selectionProcessData } = useApi<{
+    const { data: selectionProcessData, refetch: refetchProcess } = useApi<{
         active: boolean;
         scheduled_start: string | null;
         scheduled_end: string | null;
         is_scheduled: boolean;
     }>(
         '/selection-process',
-        { refreshInterval: 60_000 }
+        { refreshInterval: 15_000 }
     );
 
     useEffect(() => {
-        if (selectionProcessData) {
-            setIsProcessStarted(selectionProcessData.active);
-            setScheduledStart(selectionProcessData.scheduled_start ?? null);
-            setScheduledEnd(selectionProcessData.scheduled_end ?? null);
-            setIsScheduled(selectionProcessData.is_scheduled ?? false);
+        if (!selectionProcessData) return;
+        const wasScheduledAndNowActive = !isProcessStarted && selectionProcessData.active && isScheduled;
+        setIsProcessStarted(selectionProcessData.active);
+        setScheduledStart(selectionProcessData.scheduled_start ?? null);
+        setScheduledEnd(selectionProcessData.scheduled_end ?? null);
+        setIsScheduled(selectionProcessData.is_scheduled ?? false);
+        if (wasScheduledAndNowActive) {
+            apiPost('/notifications/broadcast', {
+                message_key: 'selection_process_started',
+                type: 'application_update',
+            }).catch(() => {});
         }
     }, [selectionProcessData]);
+
+    // Refetch when tab becomes visible again
+    useEffect(() => {
+        const onVisible = () => { if (document.visibilityState === 'visible') refetchProcess(); };
+        document.addEventListener('visibilitychange', onVisible);
+        return () => document.removeEventListener('visibilitychange', onVisible);
+    }, [refetchProcess]);
     const enabledTypes = [
         ...(prefs.weeklyDigest ? PREF_TYPE_MAP.weeklyDigest : []),
         ...(prefs.applicationUpdates ? PREF_TYPE_MAP.applicationUpdates : []),
