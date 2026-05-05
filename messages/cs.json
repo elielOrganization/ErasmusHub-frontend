@@ -37,6 +37,7 @@
     "prevButton": "Předchozí",
     "finishButton": "Dokončit registraci",
     "registering": "Registrace...",
+    "welcomeSuccess": "Vítejte!",
     "errors": {
       "emptyFields": "Vyplňte prosím všechna pole.",
       "firstNameRequired": "Jméno je povinné.",
@@ -66,7 +67,10 @@
     "no": "Ne",
     "filters": "Filtry",
     "clearFilters": "Vymazat filtry",
-    "applyFilters": "Použít filtry"
+    "applyFilters": "Použít filtry",
+    "delete": "Smazat",
+    "cancel": "Zrušit",
+    "genericError": "Došlo k chybě. Zkuste to znovu."
   },
   "dashboard": {
     "home": "Domů",
@@ -479,7 +483,8 @@
     "selectTeacher": "Vybrat učitele",
     "allTeachersAssigned": "Všichni učitelé jsou již přiřazeni",
     "addTeacherError": "Nepodařilo se přiřadit učitele. Zkontrolujte, zda máte oprávnění správce.",
-    "loading": "Načítání..."
+    "loading": "Načítání...",
+    "errorInvalidCountry": "Vyberte prosím platnou zemi ze seznamu návrhů."
   },
   "studentsDashboard": {
     "title": "Správa studentů",
@@ -615,7 +620,13 @@
     "cardParental": "Rodičovský souhlas",
     "cardParentalDesc": "Souhlas podepsaný zákonným zástupcem",
     "docType_parental": "Rodičovský souhlas",
-    "parentalAuthDesc": "Dokument souhlasu podepsaný rodičem nebo zákonným zástupcem"
+    "parentalAuthDesc": "Dokument souhlasu podepsaný rodičem nebo zákonným zástupcem",
+    "previewError403": "Přístup odepřen (403).",
+    "previewError404": "Soubor nebyl nalezen nebo byl smazán (404).",
+    "previewError401": "Platnost relace vypršela. Načtěte stránku znovu a přihlaste se (401).",
+    "previewError500": "Interní chyba serveru. Zkuste to prosím znovu (500).",
+    "previewErrorDownload": "Soubor se nepodařilo stáhnout.",
+    "previewErrorTitle": "Soubor se nepodařilo načíst"
   },
   "settings": {
     "title": "Nastavení",
@@ -722,6 +733,17 @@
     "errorTotal": "Celkový součet musí být přesně 100 %.",
     "errorGeneric": "Při ukládání došlo k chybě. Zkuste to znovu.",
     "lastUpdated": "Poslední aktualizace: {date}",
+    "otros": "Ostatní",
+    "hideSubfields": "Skrýt podpole",
+    "showSubfields": "Zobrazit podpole",
+    "otrosSubfields": "Podpole ostatních",
+    "noSubfields": "Zatím žádná podpole. Klikněte na «Přidat pole» pro začátek.",
+    "subfieldPlaceholder": "Název pole",
+    "addField": "Přidat pole",
+    "errorSubExceeds": "Součet podpolí ({current}%) překračuje váhu Ostatních ({max}%)",
+    "errorSubNotExact": "Součet podpolí ({current}%) musí být přesně {max}%",
+    "warnSubExceeds": "⚠ Součet podpolí ({current}%) překračuje váhu Ostatních ({max}%)",
+    "warnSubMissing": "⚠ Zbývá {missing}% k rozdělení mezi podpole",
     "fields": {
       "interview": "Pohovor",
       "grade_certificate": "Výpis výsledků",

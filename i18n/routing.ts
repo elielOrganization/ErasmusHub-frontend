@@ -2,9 +2,9 @@ import {defineRouting} from 'next-intl/routing';
 import {createNavigation} from 'next-intl/navigation';
 
 export const routing = defineRouting({
-  locales: ['es', 'en', 'cs'], // Tus idiomas
-  defaultLocale: 'en'          // El idioma por defecto
+  locales: ['es', 'en', 'cs'],
+  defaultLocale: 'en'
 });
 
-// Exportamos nuestras propias versiones de Link y useRouter para que mantengan el idioma en la URL
+// Re-export next-intl's navigation helpers so they automatically preserve the locale in the URL
 export const {Link, redirect, usePathname, useRouter} = createNavigation(routing);

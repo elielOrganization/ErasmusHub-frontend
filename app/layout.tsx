@@ -7,7 +7,7 @@ const geistMono = Geist_Mono({ variable: "--font-geist-mono", subsets: ["latin"]
 
 export const metadata: Metadata = {
   title: "ErasmusHub",
-  description: "La plataforma para estudiantes Erasmus",
+  description: "The platform for Erasmus students",
   applicationName: "ErasmusHub",
   appleWebApp: {
     capable: true,

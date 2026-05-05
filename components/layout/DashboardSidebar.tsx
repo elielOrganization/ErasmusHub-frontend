@@ -16,16 +16,16 @@ import Modal from '@/components/ui/Modal';
 import ScheduleProcessModal from '@/components/ui/ScheduleProcessModal';
 
 export default function DashboardSidebar() {
-    // Estado para el proceso de selección
+    // Selection process state
     const [isProcessStarted, setIsProcessStarted] = useState(false);
     const [isTogglingProcess, setIsTogglingProcess] = useState(false);
     const [scheduledStart, setScheduledStart] = useState<string | null>(null);
     const [scheduledEnd, setScheduledEnd] = useState<string | null>(null);
     const [isScheduled, setIsScheduled] = useState(false);
-    // Estado para los modales
+    // Modal visibility state
     const [showConfirmModal, setShowConfirmModal] = useState(false);
     const [showScheduleModal, setShowScheduleModal] = useState(false);
-    // Estado para reset Erasmus
+    // Reset Erasmus state
     const [showResetModal, setShowResetModal] = useState(false);
     const [resetConfirmText, setResetConfirmText] = useState('');
     const [isResetting, setIsResetting] = useState(false);
@@ -396,7 +396,7 @@ export default function DashboardSidebar() {
                 )}
             </aside>
 
-            {/* Modal de confirmación para detener el proceso */}
+            {/* Confirm modal to stop the process */}
             <ConfirmModal
                 open={showConfirmModal}
                 title={t('processStopTitle')}
@@ -407,7 +407,7 @@ export default function DashboardSidebar() {
                 onClose={() => setShowConfirmModal(false)}
             />
 
-            {/* Modal de programación del proceso */}
+            {/* Schedule modal for the selection process */}
             <ScheduleProcessModal
                 open={showScheduleModal}
                 onClose={() => setShowScheduleModal(false)}
@@ -428,7 +428,7 @@ export default function DashboardSidebar() {
                 }}
             />
 
-            {/* Modal Reset Erasmus — requiere escribir "RESET" */}
+            {/* Reset Erasmus modal — requires typing "RESET" to confirm */}
             <Modal open={showResetModal} onClose={() => { if (!isResetting) { setShowResetModal(false); setResetConfirmText(''); setResetDone(false); } }}>
                 <div className="border-l-4 border-red-500 pl-3 mb-1">
                     <h3 className="text-base font-bold text-gray-900 dark:text-gray-100">{t('resetErasmusTitle')}</h3>

@@ -14,15 +14,11 @@ import { API_URL } from "@/lib/api";
 import { GYMNASIUM_COURSES } from "../../documents/constants";
 
 // ─────────────────────────────────────────────────────────────────────────────
-// Endpoints disponibles en el backend:
+// Available backend endpoints:
 //
-// GET  /documents/user/{userId}          → DocumentRead[]  ✅ DISPONIBLE
-// PATCH /documents/{docId}/review        → Document        ✅ DISPONIBLE
+// GET  /documents/user/{userId}          → DocumentRead[]  ✅ AVAILABLE
+// PATCH /documents/{docId}/review        → Document        ✅ AVAILABLE
 //   Body: { state: "approved" | "rejected", grade?: number }
-//
-// TODO (pendiente de backend):
-//   - Campo `rejection_reason` en el modelo Document y en DocumentReviewUpdate
-//   - Acceso del profesor al archivo: GET /documents/{id}/file solo permite al propietario
 // ─────────────────────────────────────────────────────────────────────────────
 
 // Tipos del backend (document_type enum values reales del backend)
@@ -66,9 +62,9 @@ async function patchInterview(userId: number, payload: { status: "rejected"; rej
     if (!res.ok) throw new Error(`PATCH /interviews/${userId} failed: ${res.status}`);
 }
 
-// ✅ Endpoint disponible: PATCH /documents/{docId}/review
-// Nota: no parseamos res.json() — si el backend devuelve body vacío lanzaría excepción
-// aunque el PATCH hubiera tenido éxito, causando un falso error al usuario.
+// ✅ Available endpoint: PATCH /documents/{docId}/review
+// Note: res.json() is intentionally not called — an empty body from the backend would
+// throw even on a successful PATCH, causing a false error for the user.
 async function reviewDocument(docId: number, payload: ReviewPayload): Promise<void> {
     const token = Cookies.get("auth_token");
     const res = await fetch(`${API_URL}/documents/${docId}/review`, {
@@ -89,11 +85,11 @@ export default function StudentRevisionPage() {
     const studentId = params.studentId;
     const router = useRouter();
 
-    // ✅ Endpoint disponible: GET /documents/user/{userId}
+    // ✅ Available endpoint: GET /documents/user/{userId}
     const { data: documents, loading, error, refetch } = useApi<ReviewDocument[]>(
         `/documents/user/${studentId}`
     );
-    // GET /users/ devuelve todos; filtramos por studentId (no existe GET /users/{id})
+    // GET /users/ returns all users; filter by studentId (no GET /users/{id} endpoint exists)
     const { data: allUsers } = useApi<StudentInfo[]>("/users");
     const studentData = allUsers?.find(u => u.id === parseInt(studentId));
 
@@ -162,10 +158,10 @@ export default function StudentRevisionPage() {
             ...(actionMode === "reject" && { rejection_reason: reason.trim() }),
         };
 
-        // El backend hace commit() antes de notificaciones, así que puede guardar
-        // correctamente pero devolver un error HTTP. Ignoramos el error del PATCH
-        // y verificamos el resultado real con un fetch directo.
-        try { await reviewDocument(docId, payload); } catch { /* verificar con fetch directo */ }
+        // The backend commits before sending notifications, so it may save successfully
+        // but still return an HTTP error. Ignore the PATCH error and verify the
+        // actual outcome with a direct fetch.
+        try { await reviewDocument(docId, payload); } catch { /* verify with direct fetch below */ }
 
         const token = Cookies.get("auth_token");
         let savedState: string | null = null;

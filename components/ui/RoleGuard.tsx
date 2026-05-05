@@ -37,7 +37,7 @@ function mapRole(roleName: unknown): AllowedRole {
     return "lector";
 }
 
-/** Comprueba si role está en la lista sin usar .includes() sobre el prop */
+/** Check whether role is in the allowed list without calling .includes() on the prop */
 function roleIsAllowed(allowed: unknown, role: AllowedRole): boolean {
     if (!Array.isArray(allowed)) return false;
     for (let i = 0; i < allowed.length; i++) {
@@ -54,7 +54,7 @@ export default function RoleGuard(props: RoleGuardProps) {
     const router = useRouter();
     const locale = useLocale();
 
-    // Sin sesión → redirige al login en vez de mostrar "sin permisos"
+    // No session → redirect to login instead of showing "access denied"
     useEffect(() => {
         if (!loading && !user) {
             router.replace(`/${locale}/login`);

@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { useTranslations } from "next-intl";
 import { useRoleTheme } from "@/hooks/useRoleTheme";
 import { fetchDocumentBlob } from "@/services/documentsService";
 import type { UserDocument } from "../types";
@@ -11,6 +12,8 @@ interface PreviewModalProps {
 }
 
 export default function PreviewModal({ doc, onClose }: PreviewModalProps) {
+    const t = useTranslations("documents");
+    const tc = useTranslations("common");
     const theme = useRoleTheme();
     const [blobUrl, setBlobUrl] = useState<string | null>(null);
     const [loadingFile, setLoadingFile] = useState(false);
@@ -35,11 +38,11 @@ export default function PreviewModal({ doc, onClose }: PreviewModalProps) {
                 if (cancelled) return;
                 const msg = err instanceof Error ? err.message : String(err);
                 const status = msg.match(/\d{3}/)?.[0];
-                if (status === "403") setFileError("Sin permiso para acceder a este archivo (403).");
-                else if (status === "404") setFileError("El archivo no existe o fue eliminado (404).");
-                else if (status === "401") setFileError("Sesión caducada. Recarga la página e inicia sesión de nuevo (401).");
-                else if (status === "500") setFileError("Error interno del servidor. Inténtalo más tarde (500).");
-                else setFileError(msg || "No se pudo descargar el archivo.");
+                if (status === "403") setFileError(t("previewError403"));
+                else if (status === "404") setFileError(t("previewError404"));
+                else if (status === "401") setFileError(t("previewError401"));
+                else if (status === "500") setFileError(t("previewError500"));
+                else setFileError(msg || t("previewErrorDownload"));
             })
             .finally(() => { if (!cancelled) setLoadingFile(false); });
         return () => { cancelled = true; };
@@ -85,7 +88,7 @@ export default function PreviewModal({ doc, onClose }: PreviewModalProps) {
                                 <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
                                 <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
                             </svg>
-                            <p className="text-xs text-gray-400">Cargando...</p>
+                            <p className="text-xs text-gray-400">{tc("loading")}</p>
                         </div>
                     ) : fileError ? (
                         <div className="flex flex-col items-center gap-3 text-center max-w-sm">
@@ -95,7 +98,7 @@ export default function PreviewModal({ doc, onClose }: PreviewModalProps) {
                                 </svg>
                             </div>
                             <div>
-                                <p className="text-sm font-semibold text-gray-700 dark:text-gray-200">No se pudo cargar el archivo</p>
+                                <p className="text-sm font-semibold text-gray-700 dark:text-gray-200">{t("previewErrorTitle")}</p>
                                 <p className="text-xs text-gray-400 dark:text-gray-500 mt-1">{fileError}</p>
                             </div>
                             <button

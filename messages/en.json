@@ -37,6 +37,7 @@
     "prevButton": "Previous",
     "finishButton": "Finish Registration",
     "registering": "Registering...",
+    "welcomeSuccess": "Welcome!",
     "errors": {
       "emptyFields": "Please fill in all fields.",
       "firstNameRequired": "Name is required.",
@@ -66,7 +67,10 @@
     "no": "No",
     "filters": "Filters",
     "clearFilters": "Clear filters",
-    "applyFilters": "Apply filters"
+    "applyFilters": "Apply filters",
+    "delete": "Delete",
+    "cancel": "Cancel",
+    "genericError": "An error occurred. Please try again."
   },
   "dashboard": {
     "home": "Home",
@@ -479,7 +483,8 @@
     "selectTeacher": "Select teacher",
     "allTeachersAssigned": "All teachers already assigned",
     "addTeacherError": "Could not assign teacher. Check that you have admin permissions.",
-    "loading": "Loading..."
+    "loading": "Loading...",
+    "errorInvalidCountry": "Please select a valid country from the suggestions."
   },
   "studentsDashboard": {
     "title": "Student Management",
@@ -615,7 +620,13 @@
     "cardParental": "Parental Authorization",
     "cardParentalDesc": "Authorization signed by legal guardian",
     "docType_parental": "Parental Authorization",
-    "parentalAuthDesc": "Authorization document signed by parent or legal guardian"
+    "parentalAuthDesc": "Authorization document signed by parent or legal guardian",
+    "previewError403": "Access denied (403).",
+    "previewError404": "File not found or deleted (404).",
+    "previewError401": "Session expired. Reload the page and sign in again (401).",
+    "previewError500": "Internal server error. Try again later (500).",
+    "previewErrorDownload": "Could not download the file.",
+    "previewErrorTitle": "Could not load the file"
   },
   "settings": {
     "title": "Settings",
@@ -722,6 +733,17 @@
     "errorTotal": "The total must be exactly 100%.",
     "errorGeneric": "An error occurred while saving. Please try again.",
     "lastUpdated": "Last updated: {date}",
+    "otros": "Others",
+    "hideSubfields": "Hide subfields",
+    "showSubfields": "Show subfields",
+    "otrosSubfields": "Other subfields",
+    "noSubfields": "No subfields yet. Click «Add field» to start.",
+    "subfieldPlaceholder": "Field name",
+    "addField": "Add field",
+    "errorSubExceeds": "The sum of subfields ({current}%) exceeds the Others weight ({max}%)",
+    "errorSubNotExact": "The sum of subfields ({current}%) must be exactly {max}%",
+    "warnSubExceeds": "⚠ The sum of subfields ({current}%) exceeds the Others weight ({max}%)",
+    "warnSubMissing": "⚠ {missing}% remaining to distribute among subfields",
     "fields": {
       "interview": "Interview",
       "grade_certificate": "Grade certificate",

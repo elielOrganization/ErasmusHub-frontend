@@ -38,12 +38,6 @@ function localNowPlus5(): string {
     return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`;
 }
 
-function toLocalISOString(date: Date): string {
-    // Serialize as local time (not UTC) so backend stores and compares in local time
-    const pad = (n: number) => String(n).padStart(2, '0');
-    return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}T${pad(date.getHours())}:${pad(date.getMinutes())}:00`;
-}
-
 export default function ScheduleProcessModal({
     open,
     onClose,
@@ -54,6 +48,7 @@ export default function ScheduleProcessModal({
     onStartedNow,
 }: ScheduleProcessModalProps) {
     const t = useTranslations("dashboard");
+    const tc = useTranslations("common");
 
     const [startNow, setStartNow] = useState(false);
     const [startDate, setStartDate] = useState<string>(() => toLocalInputValue(scheduledStart) || localNowPlus5());
@@ -121,7 +116,7 @@ export default function ScheduleProcessModal({
             onClose();
         } catch (e: unknown) {
             const msg = e instanceof Error ? e.message : String(e);
-            setError(msg || "Error");
+            setError(msg || tc("genericError"));
         } finally {
             setLoading(false);
         }
@@ -135,7 +130,7 @@ export default function ScheduleProcessModal({
             onClose();
         } catch (e: unknown) {
             const msg = e instanceof Error ? e.message : String(e);
-            setError(msg || "Error");
+            setError(msg || tc("genericError"));
         } finally {
             setLoading(false);
         }

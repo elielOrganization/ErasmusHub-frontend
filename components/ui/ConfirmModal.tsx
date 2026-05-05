@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useTranslations } from "next-intl";
 import Modal from "@/components/ui/Modal";
 
 function XMarkIcon() {
@@ -29,14 +30,18 @@ export default function ConfirmModal({
     title,
     description,
     itemName,
-    confirmLabel = "Eliminar",
-    cancelLabel = "Cancelar",
+    confirmLabel,
+    cancelLabel,
     deletingLabel,
     onConfirm,
     onClose,
 }: ConfirmModalProps) {
+    const tc = useTranslations("common");
     const [deleting, setDeleting] = useState(false);
     const [msg, setMsg] = useState<{ type: "success" | "error"; text: string } | null>(null);
+
+    const resolvedConfirm = confirmLabel ?? tc("delete");
+    const resolvedCancel = cancelLabel ?? tc("cancel");
 
     const handleConfirm = async () => {
         setDeleting(true);
@@ -44,7 +49,7 @@ export default function ConfirmModal({
         try {
             await onConfirm();
         } catch {
-            setMsg({ type: "error", text: "Ha ocurrido un error. Inténtalo de nuevo." });
+            setMsg({ type: "error", text: tc("genericError") });
         } finally {
             setDeleting(false);
         }
@@ -99,14 +104,14 @@ export default function ConfirmModal({
                     disabled={deleting || msg?.type === "success"}
                     className={`px-4 py-2 rounded-xl text-sm font-medium transition-colors ${msg?.type === "success" ? "text-gray-300 cursor-not-allowed" : "text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 cursor-pointer"}`}
                 >
-                    {cancelLabel}
+                    {resolvedCancel}
                 </button>
                 <button
                     onClick={handleConfirm}
                     disabled={deleting || msg?.type === "success"}
                     className={`px-4 py-2 rounded-xl text-sm font-medium text-white transition-colors ${deleting || msg?.type === "success" ? "bg-red-400 cursor-not-allowed opacity-60" : "bg-red-600 hover:bg-red-700 cursor-pointer"}`}
                 >
-                    {deleting ? (deletingLabel ?? confirmLabel) : confirmLabel}
+                    {deleting ? (deletingLabel ?? resolvedConfirm) : resolvedConfirm}
                 </button>
             </div>
         </Modal>

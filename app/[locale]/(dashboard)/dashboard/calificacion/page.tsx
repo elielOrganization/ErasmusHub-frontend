@@ -147,8 +147,8 @@ export default function CalificacionPage() {
         if (!totalExact) { setError(t("errorTotal")); return; }
         if (!subExact) {
             setError(subExceeds
-                ? `La suma de subcampos (${subTotal.toFixed(1)}%) supera el peso de Otros (${otrosWeight.toFixed(1)}%)`
-                : `La suma de subcampos (${subTotal.toFixed(1)}%) debe ser exactamente ${otrosWeight.toFixed(1)}%`
+                ? t('errorSubExceeds', { current: subTotal.toFixed(1), max: otrosWeight.toFixed(1) })
+                : t('errorSubNotExact', { current: subTotal.toFixed(1), max: otrosWeight.toFixed(1) })
             );
             return;
         }
@@ -179,7 +179,7 @@ export default function CalificacionPage() {
             });
             if (!res.ok) {
                 const body = await res.json().catch(() => ({}));
-                // Pydantic devuelve detail como array de objetos; extraemos el primer mensaje legible
+                // Pydantic returns detail as an array of objects; extract the first readable message
                 let msg: string;
                 if (Array.isArray(body?.detail)) {
                     msg = body.detail.map((e: { msg?: string }) => e.msg ?? JSON.stringify(e)).join(" | ");
@@ -253,15 +253,15 @@ export default function CalificacionPage() {
                         <tr className="hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors">
                             <td className="px-5 py-4">
                                 <div className="flex items-center gap-2">
-                                    <span className="text-sm font-medium text-gray-800 dark:text-gray-200">Otros</span>
-                                    <span className="text-[10px] text-gray-400 italic">(opcional)</span>
+                                    <span className="text-sm font-medium text-gray-800 dark:text-gray-200">{t('otros')}</span>
+                                    <span className="text-[10px] text-gray-400 italic">({t('optional')})</span>
                                     {otrosWeight > 0 && (
                                         <button
                                             type="button"
                                             onClick={() => setOtros(p => ({ ...p, open: !p.open }))}
                                             className="ml-auto flex items-center gap-1 text-xs text-blue-600 dark:text-blue-400 hover:underline"
                                         >
-                                            {otros.open ? "Ocultar subcampos" : "Ver subcampos"}
+                                            {otros.open ? t('hideSubfields') : t('showSubfields')}
                                             <svg className={`h-3.5 w-3.5 transition-transform ${otros.open ? "rotate-180" : ""}`} fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
                                             </svg>
@@ -293,14 +293,14 @@ export default function CalificacionPage() {
                                 <td colSpan={2} className="px-5 py-4 bg-gray-50 dark:bg-gray-800/40">
                                     <div className="space-y-3">
                                         <div className="flex items-center justify-between">
-                                            <p className="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Subcampos de Otros</p>
+                                            <p className="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">{t('otrosSubfields')}</p>
                                             <span className={`text-xs font-semibold ${subExceeds ? "text-red-500" : subExact ? "text-emerald-600 dark:text-emerald-400" : "text-amber-500"}`}>
                                                 {subTotal.toFixed(1)} / {otrosWeight.toFixed(1)} %
                                             </span>
                                         </div>
 
                                         {otros.subfields.length === 0 && (
-                                            <p className="text-xs text-gray-400 italic">Sin subcampos aún. Pulsa "Añadir campo" para empezar.</p>
+                                            <p className="text-xs text-gray-400 italic">{t('noSubfields')}</p>
                                         )}
 
                                         {otros.subfields.map((sf, idx) => (
@@ -310,7 +310,7 @@ export default function CalificacionPage() {
                                                         <input
                                                             type="text" value={sf.label}
                                                             onChange={e => updateSubField(idx, { label: e.target.value })}
-                                                            placeholder="Nombre del campo"
+                                                            placeholder={t('subfieldPlaceholder')}
                                                             className="flex-1 text-sm border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-1.5 bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
                                                         />
                                                         <input
@@ -344,15 +344,15 @@ export default function CalificacionPage() {
                                                 <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
                                                 </svg>
-                                                Añadir campo
+                                                {t('addField')}
                                             </button>
                                         )}
 
                                         {subExceeds && (
-                                            <p className="text-xs text-red-500 dark:text-red-400">⚠ La suma de subcampos ({subTotal.toFixed(1)}%) supera el peso de Otros ({otrosWeight.toFixed(1)}%)</p>
+                                            <p className="text-xs text-red-500 dark:text-red-400">{t('warnSubExceeds', { current: subTotal.toFixed(1), max: otrosWeight.toFixed(1) })}</p>
                                         )}
                                         {!subExceeds && !subExact && otrosWeight > 0 && (
-                                            <p className="text-xs text-amber-500 dark:text-amber-400">⚠ Faltan {(otrosWeight - subTotal).toFixed(1)}% por distribuir entre los subcampos</p>
+                                            <p className="text-xs text-amber-500 dark:text-amber-400">{t('warnSubMissing', { missing: (otrosWeight - subTotal).toFixed(1) })}</p>
                                         )}
                                     </div>
                                 </td>

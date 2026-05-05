@@ -212,7 +212,7 @@ function CreateModal({ open, onClose, onCreated }: { open: boolean; onClose: () 
     const handleCreate = async () => {
         if (!form.name.trim()) return;
         if (isCountryInvalid) {
-            setErrorMsg('Selecciona un país válido del listado de sugerencias.');
+            setErrorMsg(t('errorInvalidCountry'));
             return;
         }
         setCreating(true);
@@ -417,7 +417,7 @@ function EditModal({ opp, open, onClose, onUpdated }: { opp: OpportunityWithStud
     const handleSave = async () => {
         if (!opp || !form.name.trim()) return;
         if (isCountryInvalid) {
-            setErrorMsg('Selecciona un país válido del listado de sugerencias.');
+            setErrorMsg(t('errorInvalidCountry'));
             return;
         }
         setSaving(true);
