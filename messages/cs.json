@@ -74,7 +74,7 @@
   },
   "dashboard": {
     "home": "Domů",
-    "admin": "Panel administrátora",
+    "admin": "Nastavení",
     "students": "Studenti",
     "opportunities": "Příležitosti",
     "documents": "Knihovna",
@@ -109,7 +109,7 @@
     "manageStudentsDesc": "Spravujte registrované studenty",
     "manageDocuments": "Spravovat dokumenty",
     "manageDocumentsDesc": "Přístup k systémovým dokumentům",
-    "adminPanel": "Panel administrátora",
+    "adminPanel": "Nastavení",
     "adminPanelDesc": "Spravujte uživatele a nastavení systému",
     "unreadNotices": "Nepřečtená upozornění",
     "activeInternships": "Aktivní praxe",
@@ -303,7 +303,7 @@
       "selection_process_started": "Proces výběru Erasmus začal",
       "interview_passed": "Prošli jste pohovorem s hodnocením {grade}",
       "interview_rejected": "Neprošli jste pohovorem: {reason}",
-      "interview_readmitted": "Byli jste readmitováni do výběrového řízení"
+      "interview_readmitted": "Byli jste znovu přijmout do výběrového řízení"
     }
   },
   "table": {
@@ -746,10 +746,10 @@
     "warnSubMissing": "⚠ Zbývá {missing}% k rozdělení mezi podpole",
     "fields": {
       "interview": "Pohovor",
-      "grade_certificate": "Výpis výsledků",
+      "grade_certificate": "Studijní výsledky",
       "motivation_letter": "Motivační dopis",
       "language_certificate": "Jazykový certifikát",
-      "disability_certificate": "Certifikát zdravotního postižení"
+      "disability_certificate": "Zdravotní prohlídka (dát jako nepovinny údaj)"
     }
   },
   "accessDenied": {
@@ -835,7 +835,7 @@
     "publishError": "Chyba při zveřejňování listiny",
     "resultadosGrade": "Hodnocení: {grade}",
     "resultadosReason": "Důvod: {reason}",
-    "excludeFromProcess": "Vyloučit z výběru",
+    "excludeFromProcess": "Vyřadit žádost",
     "excludeConfirmTitle": "Vyloučit studenta",
     "excludeConfirmDesc": "Student bude vyloučen z aktuálního výběrového řízení. Uveďte důvod:",
     "excludeReasonPlaceholder": "Důvod vyloučení...",
@@ -844,9 +844,9 @@
     "excludeError": "Chyba při vyloučení.",
     "searchPlaceholder": "Hledat studenta...",
     "colTotal": "Celkem",
-    "readmitStudent": "Readmitovat",
-    "readmitSuccess": "Student byl readmitován.",
-    "readmitError": "Chyba při readmitování studenta.",
+    "readmitStudent": "Znovu přijmout",
+    "readmitSuccess": "Student byl znovu přijmout.",
+    "readmitError": "Chyba při znovu přijmout studenta.",
     "filterAll": "Vše",
     "filterWithPending": "S nevyřízenými",
     "filterReviewed": "Zkontrolováno",
@@ -860,7 +860,7 @@
     "rubricLabel": "Rubrika — Ostatní ({weight}%)",
     "rubricSuggestedGrade": "Navrhovaná známka dle rubriky:",
     "rubricUseGrade": "Použít tuto známku",
-    "rubricAdequate": "Přiměřený",
+    "rubricAdequate": "Dostatečný",
     "rubricNotable": "Dobrý",
     "rubricExcellent": "Výborný"
   },
