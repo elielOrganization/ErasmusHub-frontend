@@ -13,13 +13,18 @@ import { useApi, apiPost } from '@/hooks/useApi';
 import LanguageSwitcher from '../dropdowns/LanguageSwitcher';
 import ConfirmModal from '@/components/ui/ConfirmModal';
 import Modal from '@/components/ui/Modal';
+import ScheduleProcessModal from '@/components/ui/ScheduleProcessModal';
 
 export default function DashboardSidebar() {
     // Estado para el proceso de selección
     const [isProcessStarted, setIsProcessStarted] = useState(false);
     const [isTogglingProcess, setIsTogglingProcess] = useState(false);
-    // Estado para el modal de confirmación
+    const [scheduledStart, setScheduledStart] = useState<string | null>(null);
+    const [scheduledEnd, setScheduledEnd] = useState<string | null>(null);
+    const [isScheduled, setIsScheduled] = useState(false);
+    // Estado para los modales
     const [showConfirmModal, setShowConfirmModal] = useState(false);
+    const [showScheduleModal, setShowScheduleModal] = useState(false);
     // Estado para reset Erasmus
     const [showResetModal, setShowResetModal] = useState(false);
     const [resetConfirmText, setResetConfirmText] = useState('');
@@ -95,7 +100,12 @@ export default function DashboardSidebar() {
         '/notifications/me?page_size=100',
         { refreshInterval: 30_000 }
     );
-    const { data: selectionProcessData } = useApi<{ active: boolean }>(
+    const { data: selectionProcessData } = useApi<{
+        active: boolean;
+        scheduled_start: string | null;
+        scheduled_end: string | null;
+        is_scheduled: boolean;
+    }>(
         '/selection-process',
         { refreshInterval: 60_000 }
     );
@@ -103,6 +113,9 @@ export default function DashboardSidebar() {
     useEffect(() => {
         if (selectionProcessData) {
             setIsProcessStarted(selectionProcessData.active);
+            setScheduledStart(selectionProcessData.scheduled_start ?? null);
+            setScheduledEnd(selectionProcessData.scheduled_end ?? null);
+            setIsScheduled(selectionProcessData.is_scheduled ?? false);
         }
     }, [selectionProcessData]);
     const enabledTypes = [
@@ -273,30 +286,59 @@ export default function DashboardSidebar() {
 
                             {isRealAdmin && (
                                 <div className="mt-6 space-y-1">
-                                    {/* Toggle selection process */}
+                                    {/* Toggle / schedule selection process */}
                                     <button
-                                        onClick={() => !isTogglingProcess && setShowConfirmModal(true)}
+                                        onClick={() => {
+                                            if (isTogglingProcess) return;
+                                            if (isProcessStarted) {
+                                                setShowConfirmModal(true);
+                                            } else {
+                                                setShowScheduleModal(true);
+                                            }
+                                        }}
                                         disabled={isTogglingProcess}
-                                        className={`flex items-center gap-3 px-3 py-2.5 w-full rounded-lg transition-all duration-200 disabled:opacity-60 disabled:cursor-not-allowed ${isProcessStarted ? 'text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-500/10' : 'text-emerald-600 dark:text-emerald-400 hover:bg-emerald-50 dark:hover:bg-emerald-500/10'}`}
+                                        className={`flex items-center gap-3 px-3 py-2.5 w-full rounded-lg transition-all duration-200 disabled:opacity-60 disabled:cursor-not-allowed ${isProcessStarted ? 'text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-500/10' : isScheduled ? 'text-amber-600 dark:text-amber-400 hover:bg-amber-50 dark:hover:bg-amber-500/10' : 'text-emerald-600 dark:text-emerald-400 hover:bg-emerald-50 dark:hover:bg-emerald-500/10'}`}
                                     >
                                         {isTogglingProcess ? (
                                             <svg className="w-5 h-5 shrink-0 animate-spin" fill="none" viewBox="0 0 24 24">
                                                 <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
                                                 <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
                                             </svg>
+                                        ) : isProcessStarted ? (
+                                            <svg className="w-5 h-5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth="2">
+                                                <path strokeLinecap="round" strokeLinejoin="round" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z M9 10h6m-6 4h6" />
+                                            </svg>
+                                        ) : isScheduled ? (
+                                            <svg className="w-5 h-5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth="2">
+                                                <path strokeLinecap="round" strokeLinejoin="round" d="M12 6v6l4 2m6-2a10 10 0 11-20 0 10 10 0 0120 0z" />
+                                            </svg>
                                         ) : (
                                             <svg className="w-5 h-5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth="2">
-                                                {isProcessStarted ? (
-                                                    <path strokeLinecap="round" strokeLinejoin="round" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z M9 10h6m-6 4h6" />
-                                                ) : (
-                                                    <path strokeLinecap="round" strokeLinejoin="round" d="M5.25 5.653c0-.856.917-1.398 1.667-.986l11.54 6.348a1.125 1.125 0 010 1.971l-11.54 6.347a1.125 1.125 0 01-1.667-.985V5.653z" />
-                                                )}
+                                                <path strokeLinecap="round" strokeLinejoin="round" d="M5.25 5.653c0-.856.917-1.398 1.667-.986l11.54 6.348a1.125 1.125 0 010 1.971l-11.54 6.347a1.125 1.125 0 01-1.667-.985V5.653z" />
                                             </svg>
                                         )}
                                         <span className={`text-sm font-semibold whitespace-nowrap transition-opacity duration-300 ${isCollapsed ? 'opacity-0' : 'opacity-100'}`}>
-                                            {isTogglingProcess ? t('processProcessing') : isProcessStarted ? t('processStop') : t('processStart')}
+                                            {isTogglingProcess
+                                                ? t('processProcessing')
+                                                : isProcessStarted
+                                                ? t('processStop')
+                                                : isScheduled
+                                                ? t('processScheduled')
+                                                : t('processStart')}
                                         </span>
                                     </button>
+
+                                    {/* Scheduled status info */}
+                                    {!isCollapsed && (isScheduled || (isProcessStarted && scheduledEnd)) && (
+                                        <div className="px-3 py-1.5 text-[11px] text-gray-400 dark:text-gray-500 space-y-0.5">
+                                            {scheduledStart && (
+                                                <p>{t('processScheduledStart')}: <span className="font-medium text-amber-600 dark:text-amber-400">{new Date(scheduledStart).toLocaleString()}</span></p>
+                                            )}
+                                            {scheduledEnd && (
+                                                <p>{t('processScheduledEnd')}: <span className="font-medium text-amber-600 dark:text-amber-400">{new Date(scheduledEnd).toLocaleString()}</span></p>
+                                            )}
+                                        </div>
+                                    )}
 
                                     {/* Reset Erasmus */}
                                     <button
@@ -341,15 +383,36 @@ export default function DashboardSidebar() {
                 )}
             </aside>
 
-            {/* Modal de confirmación para el proceso de selección */}
+            {/* Modal de confirmación para detener el proceso */}
             <ConfirmModal
                 open={showConfirmModal}
-                title={isProcessStarted ? t('processStopTitle') : t('processStartTitle')}
-                description={isProcessStarted ? t('processStopDesc') : t('processStartDesc')}
-                confirmLabel={isProcessStarted ? t('processStop') : t('processStart')}
+                title={t('processStopTitle')}
+                description={t('processStopDesc')}
+                confirmLabel={t('processStop')}
                 cancelLabel={t('processCancel')}
                 onConfirm={handleToggleProcess}
                 onClose={() => setShowConfirmModal(false)}
+            />
+
+            {/* Modal de programación del proceso */}
+            <ScheduleProcessModal
+                open={showScheduleModal}
+                onClose={() => setShowScheduleModal(false)}
+                isActive={isProcessStarted}
+                scheduledStart={scheduledStart}
+                scheduledEnd={scheduledEnd}
+                onScheduled={(data) => {
+                    setIsProcessStarted(data.active);
+                    setScheduledStart(data.scheduled_start ?? null);
+                    setScheduledEnd(data.scheduled_end ?? null);
+                    setIsScheduled(data.is_scheduled ?? false);
+                }}
+                onStartedNow={async () => {
+                    await apiPost('/notifications/broadcast', {
+                        message_key: 'selection_process_started',
+                        type: 'application_update',
+                    });
+                }}
             />
 
             {/* Modal Reset Erasmus — requiere escribir "RESET" */}
