@@ -24,13 +24,22 @@ interface ScheduleProcessModalProps {
 
 function toLocalInputValue(isoString: string | null): string {
     if (!isoString) return "";
+    // The backend stores naive local datetimes — display as-is
     return isoString.slice(0, 16);
 }
 
 function localNowPlus5(): string {
     const d = new Date();
     d.setMinutes(d.getMinutes() + 5);
-    return d.toISOString().slice(0, 16);
+    // Return local datetime string (not UTC) for the input default
+    const pad = (n: number) => String(n).padStart(2, '0');
+    return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`;
+}
+
+function toLocalISOString(date: Date): string {
+    // Serialize as local time (not UTC) so backend stores and compares in local time
+    const pad = (n: number) => String(n).padStart(2, '0');
+    return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}T${pad(date.getHours())}:${pad(date.getMinutes())}:00`;
 }
 
 export default function ScheduleProcessModal({
@@ -92,7 +101,7 @@ export default function ScheduleProcessModal({
                 if (resolvedEnd) {
                     // Also set the scheduled end
                     const schedData = await apiPost<ProcessStatus>("/selection-process/schedule", {
-                        scheduled_end: resolvedEnd.toISOString(),
+                        scheduled_end: toLocalISOString(resolvedEnd),
                     });
                     onScheduled(schedData);
                 } else {
@@ -101,8 +110,8 @@ export default function ScheduleProcessModal({
                 onStartedNow();
             } else {
                 const body: Record<string, string> = {};
-                if (resolvedStart) body.scheduled_start = resolvedStart.toISOString();
-                if (resolvedEnd) body.scheduled_end = resolvedEnd.toISOString();
+                if (resolvedStart) body.scheduled_start = toLocalISOString(resolvedStart);
+                if (resolvedEnd) body.scheduled_end = toLocalISOString(resolvedEnd);
 
                 const data = await apiPost<ProcessStatus>("/selection-process/schedule", body);
                 onScheduled(data);
