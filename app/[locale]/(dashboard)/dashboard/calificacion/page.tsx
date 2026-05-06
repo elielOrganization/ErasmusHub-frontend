@@ -11,8 +11,8 @@ import LoadingSpinner from "@/components/ui/LoadingSpinner";
 
 // ── Types ──────────────────────────────────────────────────────────────────────
 
-interface OtroSubField { label: string; weight: number; }
-interface OtrosData    { weight: number; subfields: OtroSubField[]; }
+interface OtherSubField { label: string; weight: number; }
+interface OthersData    { weight: number; subfields: OtherSubField[]; }
 
 interface PonderacionData {
     id: number;
@@ -21,7 +21,7 @@ interface PonderacionData {
     motivation_letter: number;
     language_certificate: number;
     disability_certificate: number;
-    otros: OtrosData | null;
+    others: OthersData | null;
     updated_at: string;
     updated_by: number | null;
 }
@@ -37,7 +37,7 @@ interface FormValues {
 }
 
 interface SubFieldDraft { label: string; weight: string; }
-interface OtrosDraft    { weight: string; open: boolean; subfields: SubFieldDraft[]; }
+interface OthersDraft    { weight: string; open: boolean; subfields: SubFieldDraft[]; }
 
 // ── Constants ──────────────────────────────────────────────────────────────────
 
@@ -69,7 +69,7 @@ export default function CalificacionPage() {
         disability_certificate: "",
     });
 
-    const [otros, setOtros] = useState<OtrosDraft>({
+    const [others, setOthers] = useState<OthersDraft>({
         weight: "",
         open: false,
         subfields: [],
@@ -88,22 +88,22 @@ export default function CalificacionPage() {
                 language_certificate: data.language_certificate > 0 ? String(data.language_certificate) : "",
                 disability_certificate: data.disability_certificate > 0 ? String(data.disability_certificate) : "",
             });
-            if (data.otros) {
-                setOtros({
-                    weight: String(data.otros.weight),
-                    open: data.otros.subfields.length > 0,
-                    subfields: data.otros.subfields.map(sf => ({ label: sf.label, weight: String(sf.weight) })),
+            if (data.others) {
+                setOthers({
+                    weight: String(data.others.weight),
+                    open: data.others.subfields.length > 0,
+                    subfields: data.others.subfields.map(sf => ({ label: sf.label, weight: String(sf.weight) })),
                 });
             } else {
-                setOtros({ weight: "", open: false, subfields: [] });
+                setOthers({ weight: "", open: false, subfields: [] });
             }
         }
     }, [data]);
 
     // ── Calculations ────────────────────────────────────────────────────────────
 
-    const otrosWeight = parseFloat(otros.weight) || 0;
-    const subTotal    = otros.subfields.reduce((acc, sf) => acc + (parseFloat(sf.weight) || 0), 0);
+    const othersWeight = parseFloat(others.weight) || 0;
+    const subTotal     = others.subfields.reduce((acc, sf) => acc + (parseFloat(sf.weight) || 0), 0);
 
     const total =
         (parseFloat(form.interview) || 0) +
@@ -111,26 +111,26 @@ export default function CalificacionPage() {
         (parseFloat(form.motivation_letter) || 0) +
         (parseFloat(form.language_certificate) || 0) +
         (parseFloat(form.disability_certificate) || 0) +
-        otrosWeight;
+        othersWeight;
 
-    const totalExact  = Math.abs(total - 100) < 0.01;
+    const totalExact   = Math.abs(total - 100) < 0.01;
     const totalExceeds = total > 100.01;
-    const subExceeds  = subTotal > otrosWeight + 0.01;
-    const subExact    = otrosWeight === 0 || Math.abs(subTotal - otrosWeight) < 0.01;
+    const subExceeds   = subTotal > othersWeight + 0.01;
+    const subExact     = othersWeight === 0 || Math.abs(subTotal - othersWeight) < 0.01;
 
-    const handleOtrosWeightChange = (val: string) => {
+    const handleOthersWeightChange = (val: string) => {
         const num = parseFloat(val) || 0;
-        setOtros(prev => ({ ...prev, weight: val, open: num > 0 ? true : prev.open }));
+        setOthers(prev => ({ ...prev, weight: val, open: num > 0 ? true : prev.open }));
     };
 
     const addSubField = () =>
-        setOtros(prev => ({ ...prev, subfields: [...prev.subfields, { label: "", weight: "" }] }));
+        setOthers(prev => ({ ...prev, subfields: [...prev.subfields, { label: "", weight: "" }] }));
 
     const updateSubField = (idx: number, patch: Partial<SubFieldDraft>) =>
-        setOtros(prev => ({ ...prev, subfields: prev.subfields.map((sf, i) => i === idx ? { ...sf, ...patch } : sf) }));
+        setOthers(prev => ({ ...prev, subfields: prev.subfields.map((sf, i) => i === idx ? { ...sf, ...patch } : sf) }));
 
     const removeSubField = (idx: number) =>
-        setOtros(prev => ({ ...prev, subfields: prev.subfields.filter((_, i) => i !== idx) }));
+        setOthers(prev => ({ ...prev, subfields: prev.subfields.filter((_, i) => i !== idx) }));
 
     // ── Save ────────────────────────────────────────────────────────────────────
 
@@ -147,16 +147,16 @@ export default function CalificacionPage() {
         if (!totalExact) { setError(t("errorTotal")); return; }
         if (!subExact) {
             setError(subExceeds
-                ? t('errorSubExceeds', { current: subTotal.toFixed(1), max: otrosWeight.toFixed(1) })
-                : t('errorSubNotExact', { current: subTotal.toFixed(1), max: otrosWeight.toFixed(1) })
+                ? t('errorSubExceeds', { current: subTotal.toFixed(1), max: othersWeight.toFixed(1) })
+                : t('errorSubNotExact', { current: subTotal.toFixed(1), max: othersWeight.toFixed(1) })
             );
             return;
         }
 
-        const otrosPayload = otrosWeight > 0
+        const othersPayload = othersWeight > 0
             ? {
-                weight: otrosWeight,
-                subfields: otros.subfields
+                weight: othersWeight,
+                subfields: others.subfields
                     .filter(sf => sf.label.trim() && parseFloat(sf.weight) > 0)
                     .map(sf => ({ label: sf.label.trim(), weight: parseFloat(sf.weight) })),
               }
@@ -174,7 +174,7 @@ export default function CalificacionPage() {
                     motivation_letter: parseFloat(form.motivation_letter),
                     language_certificate: parseFloat(form.language_certificate),
                     disability_certificate: parseFloat(form.disability_certificate),
-                    otros: otrosPayload,
+                    others: othersPayload,
                 }),
             });
             if (!res.ok) {
@@ -249,20 +249,20 @@ export default function CalificacionPage() {
                             </tr>
                         ))}
 
-                        {/* Otros row */}
+                        {/* Others row */}
                         <tr className="hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors">
                             <td className="px-5 py-4">
                                 <div className="flex items-center gap-2">
-                                    <span className="text-sm font-medium text-gray-800 dark:text-gray-200">{t('otros')}</span>
+                                    <span className="text-sm font-medium text-gray-800 dark:text-gray-200">{t('others')}</span>
                                     <span className="text-[10px] text-gray-400 italic">({t('optional')})</span>
-                                    {otrosWeight > 0 && (
+                                    {othersWeight > 0 && (
                                         <button
                                             type="button"
-                                            onClick={() => setOtros(p => ({ ...p, open: !p.open }))}
+                                            onClick={() => setOthers(p => ({ ...p, open: !p.open }))}
                                             className="ml-auto flex items-center gap-1 text-xs text-blue-600 dark:text-blue-400 hover:underline"
                                         >
-                                            {otros.open ? t('hideSubfields') : t('showSubfields')}
-                                            <svg className={`h-3.5 w-3.5 transition-transform ${otros.open ? "rotate-180" : ""}`} fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            {others.open ? t('hideSubfields') : t('showSubfields')}
+                                            <svg className={`h-3.5 w-3.5 transition-transform ${others.open ? "rotate-180" : ""}`} fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
                                             </svg>
                                         </button>
@@ -274,36 +274,36 @@ export default function CalificacionPage() {
                                     {isAdmin ? (
                                         <input
                                             type="number" min="0" max="100" step="0.1"
-                                            value={otros.weight}
-                                            onChange={e => handleOtrosWeightChange(e.target.value)}
+                                            value={others.weight}
+                                            onChange={e => handleOthersWeightChange(e.target.value)}
                                             placeholder="0"
                                             className="w-20 text-right text-sm border border-gray-300 dark:border-gray-600 rounded-lg px-2 py-1.5 bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
                                         />
                                     ) : (
-                                        <span className="text-sm font-semibold text-gray-800 dark:text-gray-200 w-20 text-right">{otrosWeight || 0}</span>
+                                        <span className="text-sm font-semibold text-gray-800 dark:text-gray-200 w-20 text-right">{othersWeight || 0}</span>
                                     )}
                                     <span className="text-sm text-gray-500 dark:text-gray-400">%</span>
                                 </div>
                             </td>
                         </tr>
 
-                        {/* Subcampos panel */}
-                        {otrosWeight > 0 && otros.open && (
+                        {/* Subfields panel */}
+                        {othersWeight > 0 && others.open && (
                             <tr>
                                 <td colSpan={2} className="px-5 py-4 bg-gray-50 dark:bg-gray-800/40">
                                     <div className="space-y-3">
                                         <div className="flex items-center justify-between">
-                                            <p className="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">{t('otrosSubfields')}</p>
+                                            <p className="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">{t('othersSubfields')}</p>
                                             <span className={`text-xs font-semibold ${subExceeds ? "text-red-500" : subExact ? "text-emerald-600 dark:text-emerald-400" : "text-amber-500"}`}>
-                                                {subTotal.toFixed(1)} / {otrosWeight.toFixed(1)} %
+                                                {subTotal.toFixed(1)} / {othersWeight.toFixed(1)} %
                                             </span>
                                         </div>
 
-                                        {otros.subfields.length === 0 && (
+                                        {others.subfields.length === 0 && (
                                             <p className="text-xs text-gray-400 italic">{t('noSubfields')}</p>
                                         )}
 
-                                        {otros.subfields.map((sf, idx) => (
+                                        {others.subfields.map((sf, idx) => (
                                             <div key={idx} className="flex items-center gap-2">
                                                 {isAdmin ? (
                                                     <>
@@ -349,10 +349,10 @@ export default function CalificacionPage() {
                                         )}
 
                                         {subExceeds && (
-                                            <p className="text-xs text-red-500 dark:text-red-400">{t('warnSubExceeds', { current: subTotal.toFixed(1), max: otrosWeight.toFixed(1) })}</p>
+                                            <p className="text-xs text-red-500 dark:text-red-400">{t('warnSubExceeds', { current: subTotal.toFixed(1), max: othersWeight.toFixed(1) })}</p>
                                         )}
-                                        {!subExceeds && !subExact && otrosWeight > 0 && (
-                                            <p className="text-xs text-amber-500 dark:text-amber-400">{t('warnSubMissing', { missing: (otrosWeight - subTotal).toFixed(1) })}</p>
+                                        {!subExceeds && !subExact && othersWeight > 0 && (
+                                            <p className="text-xs text-amber-500 dark:text-amber-400">{t('warnSubMissing', { missing: (othersWeight - subTotal).toFixed(1) })}</p>
                                         )}
                                     </div>
                                 </td>

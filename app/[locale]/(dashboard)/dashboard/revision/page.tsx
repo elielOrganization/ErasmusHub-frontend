@@ -40,9 +40,9 @@ type InterviewMode = "grade" | "reject" | null;
 type SortCol = "pending" | "approved" | "rejected" | "total" | null;
 type StatusFilter = "all" | "pending" | "reviewed" | "excluded";
 
-interface OtroSubField { label: string; weight: number; }
-interface OtrosData    { weight: number; subfields: OtroSubField[]; }
-interface CalificacionData { otros: OtrosData | null; }
+interface OtherSubField { label: string; weight: number; }
+interface OthersData    { weight: number; subfields: OtherSubField[]; }
+interface CalificacionData { others: OthersData | null; }
 
 const RUBRIC_OPTIONS = [
     { labelKey: "rubricAdequate",  value: 5   },
@@ -82,7 +82,7 @@ export default function RevisionPage() {
     const { data, loading, error, refetch } = useApi<StudentDocSummary[]>("/documents/pending");
     const { data: usersData } = useApi<UserPublicMin[]>("/users");
     const { data: calificacionData } = useApi<CalificacionData>("/calificacion");
-    const othersConfig = calificacionData?.otros ?? null;
+    const othersConfig = calificacionData?.others ?? null;
 
     // Map: userId → final_grade (calculated by backend)
     const [finalGrades, setFinalGrades] = useState<Map<number, number | null>>(new Map());
