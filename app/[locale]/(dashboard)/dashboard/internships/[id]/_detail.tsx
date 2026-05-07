@@ -1,12 +1,10 @@
 "use client";
 
-import { useParams, useRouter } from "next/navigation";
+import { useParams, useRouter, useSearchParams } from "next/navigation";
 import { useLocale, useTranslations } from "next-intl";
 import { useState, useEffect, useRef, useCallback, useMemo } from "react";
-import Cookies from "js-cookie";
-import { useApi } from "@/hooks/useApi";
+import { useApi, apiPost } from "@/hooks/useApi";
 import { useAuth } from "@/context/AuthContext";
-import { API_URL } from "@/lib/api";
 import LoadingSpinner from "@/components/ui/LoadingSpinner";
 import type { ApplicationWithOpportunity } from "../page";
 
@@ -102,23 +100,11 @@ function DayModal({ day, opportunityId, initialNotes, locale, t, onClose, onSave
         setError(null);
         setSaved(false);
         try {
-            const token = Cookies.get("auth_token");
-            const res = await fetch(`${API_URL}/opportunity-daily-notes/`, {
-                method: "POST",
-                headers: {
-                    "Authorization": `Bearer ${token}`,
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify({
-                    opportunity_id: opportunityId,
-                    date: toISODate(day),
-                    notes: text,
-                }),
+            await apiPost("/opportunity-daily-notes/", {
+                opportunity_id: opportunityId,
+                date: toISODate(day),
+                notes: text,
             });
-            if (!res.ok) {
-                const body = await res.json().catch(() => ({}));
-                throw new Error(body?.detail ?? "error");
-            }
             setSaved(true);
             onSaved(toISODate(day), text);
             setTimeout(onClose, 800);
@@ -277,10 +263,11 @@ function InfoPill({ icon, label }: { icon: React.ReactNode; label: string }) {
 // ── Page ───────────────────────────────────────────────────────────────────────
 
 export default function PracticaDetailPage() {
-    const { id }   = useParams<{ id: string }>();
-    const locale   = useLocale();
-    const router   = useRouter();
-    const t        = useTranslations("practicas");
+    const { id }        = useParams<{ id: string }>();
+    const locale        = useLocale();
+    const router        = useRouter();
+    const searchParams  = useSearchParams();
+    const t             = useTranslations("practicas");
 
     const { user, loading: authLoading } = useAuth();
     const { data: applications, loading, refetch: refetchApps } =
@@ -291,9 +278,6 @@ export default function PracticaDetailPage() {
         [applications, id],
     );
     const oppId = app?.opportunity_id ?? null;
-
-    // Map date → note text
-    const [notes, setNotes] = useState<Record<string, string>>({});
 
     // Selected day for modal
     const [selectedDay, setSelectedDay] = useState<Date | null>(null);
@@ -317,39 +301,47 @@ export default function PracticaDetailPage() {
     // Cache-busting key: changes when opportunity dates change → forces remount of day list
     const datesKey = `${app?.opportunity_start_date ?? "x"}-${app?.opportunity_end_date ?? "x"}`;
 
-    // Fetch daily notes from server
-    const fetchNotes = useCallback(async () => {
-        if (!oppId) return;
-        const token = Cookies.get("auth_token");
-        try {
-            const res = await fetch(
-                `${API_URL}/opportunity-daily-notes/?opportunity_id=${oppId}`,
-                { headers: { Authorization: `Bearer ${token}` } },
-            );
-            if (!res.ok) return;
-            const data: DailyNote[] = await res.json();
-            const map: Record<string, string> = {};
-            data.forEach((n) => { map[n.date] = n.notes ?? ""; });
-            setNotes(map);
-        } catch { /* silent */ }
-    }, [oppId]);
+    // Fetch daily notes via useApi (same auth path as the rest of the app)
+    const { data: dailyNotesData, refetch: refetchNotes } = useApi<DailyNote[]>(
+        oppId ? `/opportunity-daily-notes?opportunity_id=${oppId}` : null,
+        { refreshInterval: 0 }
+    );
 
-    useEffect(() => { fetchNotes(); }, [fetchNotes]);
+    // Convert array → date→text map
+    const notes = useMemo(() => {
+        const map: Record<string, string> = {};
+        dailyNotesData?.forEach((n) => { map[n.date] = n.notes ?? ""; });
+        return map;
+    }, [dailyNotesData]);
 
     // Refresh opportunity data + notes when the user returns to this tab
+    const refetchAll = useCallback(() => {
+        refetchApps();
+        refetchNotes();
+    }, [refetchApps, refetchNotes]);
+
     useEffect(() => {
-        const onVisible = () => {
-            if (document.visibilityState === "visible") {
-                refetchApps();
-                fetchNotes();
-            }
-        };
+        const onVisible = () => { if (document.visibilityState === "visible") refetchAll(); };
         document.addEventListener("visibilitychange", onVisible);
         return () => document.removeEventListener("visibilitychange", onVisible);
-    }, [refetchApps, fetchNotes]);
+    }, [refetchAll]);
 
-    const handleNoteSaved = (date: string, text: string) =>
-        setNotes((prev) => ({ ...prev, [date]: text }));
+    // Auto-open modal when ?date=YYYY-MM-DD is in the URL (only once, not on refetch)
+    useEffect(() => {
+        const dateParam = searchParams.get("date");
+        if (!dateParam || !days) return;
+        const target = days.find(d => toISODate(d) === dateParam);
+        if (!target) return;
+        const now = new Date(); now.setHours(0, 0, 0, 0);
+        if (target > now) return; // don't open for future days
+        setSelectedDay(prev => prev ?? target); // only set if not already open
+    }, [searchParams, days]);
+
+    const handleNoteSaved = (date: string, text: string) => {
+        // Optimistic local update — refetch will sync from backend
+        refetchNotes();
+        void date; void text; // suppress lint warnings (refetch covers both)
+    };
 
     // Auth guard
     useEffect(() => {
@@ -364,7 +356,7 @@ export default function PracticaDetailPage() {
         <div className="space-y-6">
             {/* Back */}
             <button
-                onClick={() => router.push(`/${locale}/dashboard/practicas`)}
+                onClick={() => router.push(`/${locale}/dashboard/internships`)}
                 className="inline-flex items-center gap-1.5 text-sm text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 transition-colors"
             >
                 <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">

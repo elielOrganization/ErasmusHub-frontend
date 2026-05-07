@@ -478,7 +478,7 @@ export default function RevisionPage() {
 
                                         {/* Button */}
                                         <Link
-                                            href={`/dashboard/revision/${s.user_id}`}
+                                            href={`/dashboard/review/${s.user_id}`}
                                             className={`flex items-center justify-center gap-1.5 w-full py-2 rounded-xl text-xs font-semibold text-white ${theme.btnPrimary} ${theme.btnPrimaryHover} transition-colors`}
                                         >
                                             {t("viewLibrary")}
@@ -572,7 +572,7 @@ export default function RevisionPage() {
                                                 </td>
                                                 <td className="px-5 py-4 text-right">
                                                     <Link
-                                                        href={`/dashboard/revision/${s.user_id}`}
+                                                        href={`/dashboard/review/${s.user_id}`}
                                                         className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold text-white ${theme.btnPrimary} ${theme.btnPrimaryHover} transition-colors`}
                                                     >
                                                         {t("viewLibrary")}

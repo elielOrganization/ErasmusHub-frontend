@@ -3,6 +3,19 @@ import { useState, useEffect, useCallback } from 'react';
 import Cookies from 'js-cookie';
 import { API_URL } from '@/lib/api';
 
+/** Returns true only when the stored JWT is actually past its `exp` claim. */
+function isJwtExpired(): boolean {
+    const token = Cookies.get('auth_token');
+    if (!token) return true;
+    try {
+        const payload = JSON.parse(atob(token.split('.')[1].replace(/-/g, '+').replace(/_/g, '/')));
+        if (!payload?.exp) return false; // no exp → treat as valid
+        return Date.now() / 1000 > payload.exp;
+    } catch {
+        return false; // malformed token → let /auth/me decide
+    }
+}
+
 interface UseApiOptions {
     immediate?: boolean;
     refreshInterval?: number; // ms, 0 = disabled
@@ -26,14 +39,23 @@ export function useApi<T>(endpoint: string | null, options: UseApiOptions = { im
         setError(null);
         try {
             const token = Cookies.get('auth_token');
-            const res = await fetch(`${API_URL}${endpoint}`, {
+            // Strip trailing slash before query string to avoid 307 redirects
+            // that cause browsers to drop the Authorization header
+            const url = `${API_URL}${endpoint}`.replace(/\/(\?|$)/, '$1');
+            const res = await fetch(url, {
                 headers: {
                     'Authorization': `Bearer ${token}`,
                     'Content-Type': 'application/json',
                 },
             });
             if (res.status === 401) {
-                window.dispatchEvent(new CustomEvent('session-expired'));
+                // Only show the session-expired overlay when the JWT is actually
+                // expired. A 401 from a permission-restricted endpoint (which the
+                // backend should return as 403 but sometimes doesn't) must NOT kick
+                // out a legitimately-authenticated user.
+                if (isJwtExpired()) {
+                    window.dispatchEvent(new CustomEvent('session-expired'));
+                }
                 return;
             }
             if (!res.ok) {
@@ -65,7 +87,9 @@ export function useApi<T>(endpoint: string | null, options: UseApiOptions = { im
 
 export async function apiPost<T>(endpoint: string, body: unknown): Promise<T> {
     const token = Cookies.get('auth_token');
-    const res = await fetch(`${API_URL}${endpoint}`, {
+    // Strip trailing slash to avoid 307 redirects that lose the Authorization header
+    const url = `${API_URL}${endpoint}`.replace(/\/(\?|$)/, '$1');
+    const res = await fetch(url, {
         method: 'POST',
         headers: {
             'Authorization': `Bearer ${token}`,

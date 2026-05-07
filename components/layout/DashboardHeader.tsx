@@ -73,6 +73,8 @@ export default function DashboardHeader() {
     const realRoleName = user?.role?.name || '';
     const isAdminUser = realRoleName.toLowerCase().includes('admin');
 
+
+
     const currentBtn = ROLE_BUTTONS.find(b => b.id === previewRole) ?? ROLE_BUTTONS[0];
 
     const [roleDropdownOpen, setRoleDropdownOpen] = useState(false);
@@ -90,43 +92,40 @@ export default function DashboardHeader() {
     }, [roleDropdownOpen]);
 
     return (
-        <header className="fixed top-0 left-0 w-full h-12 bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-800 flex items-center px-3 sm:px-6 z-30 shadow-sm gap-2">
+        <header className="fixed top-0 left-0 w-full h-12 bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-800 flex items-center pl-0 sm:pl-16 pr-3 sm:pr-6 z-30 shadow-sm gap-2">
 
-            {/* ── Left: sidebar toggle + desktop role pills ── */}
-            <div className="flex items-center gap-2 shrink-0">
-                {/* Mobile sidebar toggle — always visible */}
-                <button
-                    onClick={toggleSidebar}
-                    className="md:hidden cursor-pointer group"
-                    aria-label="Toggle menu"
+            {/* ── Mobile sidebar toggle (before title) ── */}
+            <button
+                onClick={toggleSidebar}
+                className="md:hidden cursor-pointer group shrink-0 flex flex-row items-center gap-1 px-2 py-1 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+                aria-label="Toggle menu"
+            >
+                <Image
+                    src="/logoVector.svg"
+                    alt="ErasmusHub"
+                    width={32}
+                    height={32}
+                    className={`transition-all duration-300 ease-in-out group-hover:scale-110 group-active:scale-95 ${isCollapsed ? 'translate-x-0 opacity-100 rotate-0' : '-translate-x-4 opacity-0 rotate-[360deg]'}`}
+                />
+                <span
+                    style={{ writingMode: 'vertical-lr', textOrientation: 'upright' }}
+                    className={`text-[9px] font-semibold tracking-normal text-gray-400 dark:text-gray-500 leading-none transition-all duration-300 ${isCollapsed ? 'opacity-100' : 'opacity-0'}`}
                 >
-                    <div className={`w-8 h-8 rounded-xl flex items-center justify-center transition-colors ${theme.logoBg}`}>
-                        <Image
-                            src="/logoVector.svg"
-                            alt="ErasmusHub"
-                            width={20}
-                            height={20}
-                            className="w-5 h-5 transition-transform group-hover:scale-110 group-active:scale-95"
-                        />
-                    </div>
-                </button>
+                    MENU
+                </span>
+            </button>
 
-                {/* Desktop: collapsed logo button */}
-                <button
-                    onClick={toggleSidebar}
-                    className={`hidden md:flex cursor-pointer group transition-all duration-300 ${isCollapsed ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}
-                    aria-label="Toggle sidebar"
-                >
-                    <Image
-                        src="/logoVector.svg"
-                        alt="ErasmusHub"
-                        width={32}
-                        height={32}
-                        className="w-8 h-8 transition-transform group-hover:scale-110"
-                    />
-                </button>
+            {/* ── Title — left ── */}
+            <Link
+                href="/dashboard"
+                className={`text-base sm:text-lg font-extrabold tracking-tight transition-colors whitespace-nowrap shrink-0 ml-2 sm:ml-0 ${theme.titleText} ${theme.titleHover}`}
+            >
+                ErasmusHub
+            </Link>
 
-                {/* Desktop: full role pills (admin only) */}
+            {/* ── Center: toggles + role pills ── */}
+            <div className="absolute left-1/2 -translate-x-1/2 flex items-center gap-2">
+                {/* Desktop role pills (admin only) */}
                 {isAdminUser && (
                     <div className="hidden lg:flex items-center gap-1">
                         {ROLE_BUTTONS.map(({ id, translationKey, activeClass, inactiveClass, dotClass }) => {
@@ -150,15 +149,7 @@ export default function DashboardHeader() {
                 )}
             </div>
 
-            {/* ── Center: title — flex-1 so it sits between sides without overlapping ── */}
-            <div className="flex-1 min-w-0 flex justify-center">
-                <Link
-                    href="/dashboard"
-                    className={`text-base sm:text-lg font-extrabold tracking-tight transition-colors whitespace-nowrap ${theme.titleText} ${theme.titleHover}`}
-                >
-                    ErasmusHub
-                </Link>
-            </div>
+            <div className="flex-1" />
 
             {/* ── Right: actions + mobile/tablet role pill (admin) ── */}
             <div className="flex items-center gap-1 sm:gap-2 shrink-0">
@@ -170,7 +161,7 @@ export default function DashboardHeader() {
                             className={`inline-flex items-center gap-1 px-2 py-1 rounded-full text-[11px] font-semibold transition-all duration-200 ${currentBtn.activeClass}`}
                         >
                             <span className="w-1.5 h-1.5 rounded-full bg-white/80 shrink-0" />
-                            <span className="max-w-[56px] truncate">{tRoles(currentBtn.translationKey)}</span>
+                            <span className="max-w-[90px] truncate">{tRoles(currentBtn.translationKey)}</span>
                             <svg className={`w-3 h-3 shrink-0 transition-transform duration-200 ${roleDropdownOpen ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth="2.5">
                                 <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
                             </svg>
@@ -201,7 +192,6 @@ export default function DashboardHeader() {
                     </div>
                 )}
 
-                <ChatDropdown />
                 <NotificationDropdown />
                 <div className="hidden md:flex items-center gap-2 ml-1">
                     <div className="h-6 w-px bg-gray-100 dark:bg-gray-700" />

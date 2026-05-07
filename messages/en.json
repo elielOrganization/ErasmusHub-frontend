@@ -101,6 +101,8 @@
     "quickActions": "Quick actions",
     "calendar": "Calendar",
     "calendarToday": "Today",
+    "calendarErasmusStart": "Erasmus Start",
+    "calendarErasmusEnd": "Erasmus End",
     "myInternships": "My Internships",
     "myInternshipsDesc": "View and manage your active internships",
     "myNotices": "My Notices",

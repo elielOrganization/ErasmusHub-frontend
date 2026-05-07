@@ -52,6 +52,10 @@ const adminTheme = {
     badgeBg: 'bg-purple-600',
     softBgHalf: 'bg-purple-50/30 dark:bg-purple-900/20',
     hoverSoftBgHalf: 'hover:bg-purple-50/30 dark:hover:bg-purple-900/20',
+    rangeBg: 'bg-purple-50 dark:bg-purple-900/30',
+    rangeEdgeBg: 'bg-purple-100 dark:bg-purple-900/50',
+    rangeEdgeText: 'text-purple-700 dark:text-purple-300',
+    rangeEdgeBorder: 'border-purple-300 dark:border-purple-700',
 };
 
 const studentTheme = {
@@ -95,6 +99,10 @@ const studentTheme = {
     badgeBg: 'bg-emerald-600',
     softBgHalf: 'bg-emerald-50/30 dark:bg-emerald-900/20',
     hoverSoftBgHalf: 'hover:bg-emerald-50/30 dark:hover:bg-emerald-900/20',
+    rangeBg: 'bg-emerald-50 dark:bg-emerald-900/30',
+    rangeEdgeBg: 'bg-emerald-100 dark:bg-emerald-900/50',
+    rangeEdgeText: 'text-emerald-700 dark:text-emerald-300',
+    rangeEdgeBorder: 'border-emerald-300 dark:border-emerald-700',
 };
 
 const teacherTheme = {
@@ -138,6 +146,10 @@ const teacherTheme = {
     badgeBg: 'bg-blue-600',
     softBgHalf: 'bg-blue-50/30 dark:bg-blue-900/20',
     hoverSoftBgHalf: 'hover:bg-blue-50/30 dark:hover:bg-blue-900/20',
+    rangeBg: 'bg-blue-50 dark:bg-blue-900/30',
+    rangeEdgeBg: 'bg-blue-100 dark:bg-blue-900/50',
+    rangeEdgeText: 'text-blue-700 dark:text-blue-300',
+    rangeEdgeBorder: 'border-blue-300 dark:border-blue-700',
 };
 
 // Default & Lector: light gray
@@ -182,6 +194,10 @@ const defaultTheme = {
     badgeBg: 'bg-gray-500',
     softBgHalf: 'bg-gray-50/30 dark:bg-gray-800/30',
     hoverSoftBgHalf: 'hover:bg-gray-50/30 dark:hover:bg-gray-800/30',
+    rangeBg: 'bg-gray-100 dark:bg-gray-800/50',
+    rangeEdgeBg: 'bg-gray-200 dark:bg-gray-700/60',
+    rangeEdgeText: 'text-gray-600 dark:text-gray-300',
+    rangeEdgeBorder: 'border-gray-300 dark:border-gray-600',
 };
 
 export type RoleTheme = typeof adminTheme;

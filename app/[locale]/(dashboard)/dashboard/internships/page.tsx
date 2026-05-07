@@ -146,7 +146,7 @@ export default function PracticasPage() {
                         return (
                             <button
                                 key={app.id}
-                                onClick={() => router.push(`/${locale}/dashboard/practicas/${app.opportunity_id}`)}
+                                onClick={() => router.push(`/${locale}/dashboard/internships/${app.opportunity_id}`)}
                                 className="group relative w-full text-left rounded-2xl border border-gray-100 dark:border-gray-800 bg-white dark:bg-gray-900 p-6 shadow-sm transition-all hover:shadow-md hover:border-emerald-200 dark:hover:border-emerald-800 focus:outline-none focus:ring-2 focus:ring-emerald-500/30"
                             >
                                 {/* Top row */}

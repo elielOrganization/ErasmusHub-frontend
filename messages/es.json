@@ -101,6 +101,8 @@
     "quickActions": "Accesos rápidos",
     "calendar": "Calendario",
     "calendarToday": "Hoy",
+    "calendarErasmusStart": "Comienzo Erasmus",
+    "calendarErasmusEnd": "Fin Erasmus",
     "myInternships": "Mis Prácticas",
     "myInternshipsDesc": "Consulta y gestiona tus prácticas activas",
     "myNotices": "Mis Avisos",

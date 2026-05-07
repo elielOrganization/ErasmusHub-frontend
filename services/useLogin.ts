@@ -79,8 +79,8 @@ export const useLogin = (translationsOrOptions: LoginTranslations | LoginOptions
                 throw new Error(data.detail || translations.generic);
             }
 
-            const expireTime = 30 / (24 * 60);
-            Cookies.set('auth_token', data.access_token, { expires: expireTime, secure: true, sameSite: 'strict' });
+            const expireTime = 1; // 1 day
+            Cookies.set('auth_token', data.access_token, { expires: expireTime, sameSite: 'strict' });
 
             navigatingRef.current = true;
             await loginGlobal(data.access_token);

@@ -315,7 +315,7 @@ export default function StudentProfilePage() {
                         )}
 
                         <Link
-                            href={`/${locale}/dashboard/revision/${studentId}`}
+                            href={`/${locale}/dashboard/review/${studentId}`}
                             className={`w-full inline-flex items-center justify-center gap-2 px-4 py-3 rounded-2xl text-sm font-bold text-white transition-all hover:opacity-90 active:scale-[.98] ${theme.btnPrimary}`}
                         >
                             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="w-4 h-4">

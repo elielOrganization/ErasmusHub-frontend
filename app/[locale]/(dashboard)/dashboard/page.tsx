@@ -68,28 +68,28 @@ export default function DashboardHome() {
     const adminActions: QuickAction[] = [
         { title: t("adminPanel"),      desc: t("adminPanelDesc"),      href: "/dashboard/admin",        icon: Icons.settings  },
         { title: t("manageStudents"),  desc: t("manageStudentsDesc"),  href: "/dashboard/students",     icon: Icons.users     },
-        { title: t("revision"),        desc: t("revisionDesc"),        href: "/dashboard/revision",     icon: Icons.clipboard },
-        { title: t("listaFinal"),      desc: t("listaFinalDesc"),      href: "/dashboard/lista-final",  icon: Icons.checklist },
+        { title: t("revision"),        desc: t("revisionDesc"),        href: "/dashboard/review",     icon: Icons.clipboard },
+        { title: t("listaFinal"),      desc: t("listaFinalDesc"),      href: "/dashboard/final-list",  icon: Icons.checklist },
     ];
 
     const studentActions: QuickAction[] = [
         { title: t("myDocuments"),     desc: t("myDocumentsDesc"),     href: "/dashboard/documents",    icon: Icons.document  },
-        { title: t("myNotices"),       desc: t("myNoticesDesc"),       href: "/dashboard/avisos",       icon: Icons.bell, badge: unreadCount },
-        { title: t("myInternships"),   desc: t("myInternshipsDesc"),   href: "/dashboard/practicas",    icon: Icons.briefcase },
-        { title: t("calificacion"),    desc: t("calificacionDesc"),    href: "/dashboard/calificacion", icon: Icons.chart     },
-        { title: t("listaFinal"),      desc: t("listaFinalDesc"),      href: "/dashboard/lista-final",  icon: Icons.checklist },
+        { title: t("myNotices"),       desc: t("myNoticesDesc"),       href: "/dashboard/notifications",       icon: Icons.bell, badge: unreadCount },
+        { title: t("myInternships"),   desc: t("myInternshipsDesc"),   href: "/dashboard/internships",    icon: Icons.briefcase },
+        { title: t("calificacion"),    desc: t("calificacionDesc"),    href: "/dashboard/grading", icon: Icons.chart     },
+        { title: t("listaFinal"),      desc: t("listaFinalDesc"),      href: "/dashboard/final-list",  icon: Icons.checklist },
     ];
 
     const teacherActions: QuickAction[] = [
         { title: t("manageStudents"),  desc: t("manageStudentsDesc"),  href: "/dashboard/students",     icon: Icons.users     },
-        { title: t("revision"),        desc: t("revisionDesc"),        href: "/dashboard/revision",     icon: Icons.clipboard },
-        { title: t("listaFinal"),      desc: t("listaFinalDesc"),      href: "/dashboard/lista-final",  icon: Icons.checklist },
-        { title: t("calificacion"),    desc: t("calificacionDesc"),    href: "/dashboard/calificacion", icon: Icons.chart     },
+        { title: t("revision"),        desc: t("revisionDesc"),        href: "/dashboard/review",     icon: Icons.clipboard },
+        { title: t("listaFinal"),      desc: t("listaFinalDesc"),      href: "/dashboard/final-list",  icon: Icons.checklist },
+        { title: t("calificacion"),    desc: t("calificacionDesc"),    href: "/dashboard/grading", icon: Icons.chart     },
     ];
 
     const lectorActions: QuickAction[] = [
-        { title: t("listaFinal"),      desc: t("listaFinalDesc"),      href: "/dashboard/lista-final",  icon: Icons.checklist },
-        { title: t("calificacion"),    desc: t("calificacionDesc"),    href: "/dashboard/calificacion", icon: Icons.chart     },
+        { title: t("listaFinal"),      desc: t("listaFinalDesc"),      href: "/dashboard/final-list",  icon: Icons.checklist },
+        { title: t("calificacion"),    desc: t("calificacionDesc"),    href: "/dashboard/grading", icon: Icons.chart     },
         { title: t("opportunities"),   desc: t("opportunitiesDesc"),   href: "/dashboard/opportunities",icon: Icons.globe     },
     ];
 
@@ -130,7 +130,7 @@ export default function DashboardHome() {
                     {/* Unread badge (all roles) */}
                     {unreadCount > 0 && (
                         <Link
-                            href="/dashboard/avisos"
+                            href="/dashboard/notifications"
                             className="shrink-0 flex items-center gap-2 bg-white/20 hover:bg-white/30 transition-colors rounded-xl px-3 py-2"
                         >
                             <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth="2">

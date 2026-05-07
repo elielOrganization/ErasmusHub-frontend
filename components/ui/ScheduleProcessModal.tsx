@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useTranslations } from "next-intl";
 import Modal from "@/components/ui/Modal";
+import { useRoleTheme } from "@/hooks/useRoleTheme";
 import { apiPost, apiDelete } from "@/hooks/useApi";
 
 type ProcessStatus = {
@@ -24,7 +25,6 @@ interface ScheduleProcessModalProps {
 
 function toLocalInputValue(isoString: string | null): string {
     if (!isoString) return "";
-    // Backend stores UTC — convert to local for the datetime-local input
     const d = new Date(isoString + 'Z');
     const pad = (n: number) => String(n).padStart(2, '0');
     return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`;
@@ -33,7 +33,6 @@ function toLocalInputValue(isoString: string | null): string {
 function localNowPlus5(): string {
     const d = new Date();
     d.setMinutes(d.getMinutes() + 5);
-    // Return local datetime string (not UTC) for the input default
     const pad = (n: number) => String(n).padStart(2, '0');
     return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`;
 }
@@ -49,6 +48,7 @@ export default function ScheduleProcessModal({
 }: ScheduleProcessModalProps) {
     const t = useTranslations("dashboard");
     const tc = useTranslations("common");
+    const theme = useRoleTheme();
 
     const [startNow, setStartNow] = useState(false);
     const [startDate, setStartDate] = useState<string>(() => toLocalInputValue(scheduledStart) || localNowPlus5());
@@ -57,7 +57,6 @@ export default function ScheduleProcessModal({
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
 
-    // Reset form state when modal opens
     const handleOpen = () => {
         setStartNow(false);
         setStartDate(toLocalInputValue(scheduledStart) || localNowPlus5());
@@ -93,10 +92,8 @@ export default function ScheduleProcessModal({
         setLoading(true);
         try {
             if (startNow) {
-                // Toggle on immediately
                 const toggleData = await apiPost<ProcessStatus>("/selection-process/toggle", {});
                 if (resolvedEnd) {
-                    // Also set the scheduled end
                     const schedData = await apiPost<ProcessStatus>("/selection-process/schedule", {
                         scheduled_end: resolvedEnd.toISOString(),
                     });
@@ -109,7 +106,6 @@ export default function ScheduleProcessModal({
                 const body: Record<string, string> = {};
                 if (resolvedStart) body.scheduled_start = resolvedStart.toISOString();
                 if (resolvedEnd) body.scheduled_end = resolvedEnd.toISOString();
-
                 const data = await apiPost<ProcessStatus>("/selection-process/schedule", body);
                 onScheduled(data);
             }
@@ -141,33 +137,57 @@ export default function ScheduleProcessModal({
 
     return (
         <Modal open={open} onClose={() => { if (!loading) { handleOpen(); onClose(); } }}>
-            <div className="border-l-4 border-emerald-500 pl-3 mb-1">
-                <h3 className="text-base font-bold text-gray-900 dark:text-gray-100">
-                    {t("processScheduleTitle")}
-                </h3>
+
+            {/* ── Header ── */}
+            <div className="flex items-center gap-3 mb-1">
+                <div className={`w-10 h-10 rounded-2xl ${theme.accentBg} flex items-center justify-center shrink-0`}>
+                    <svg className={`w-5 h-5 ${theme.accent}`} fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth="2">
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                    </svg>
+                </div>
+                <div>
+                    <h3 className="text-base font-bold text-gray-900 dark:text-gray-100">
+                        {t("processScheduleTitle")}
+                    </h3>
+                    <p className="text-xs text-gray-400 dark:text-gray-500 mt-0.5">
+                        {t("processScheduleDesc")}
+                    </p>
+                </div>
             </div>
 
-            <p className="text-sm text-gray-500 dark:text-gray-400 leading-relaxed">
-                {t("processScheduleDesc")}
-            </p>
+            <div className={`h-px w-full ${theme.accentBg}`} />
 
-            <div className="space-y-4">
-                {/* Start section — only when process is not active */}
+            <div className="space-y-5">
+
+                {/* ── Start section ── */}
                 {!isActive && (
-                    <div className="space-y-2">
-                        <p className="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                    <div className="space-y-3">
+                        <p className={`text-[11px] font-bold uppercase tracking-widest ${theme.accent}`}>
                             {t("processScheduleStart")}
                         </p>
 
-                        <label className="flex items-center gap-2 cursor-pointer select-none">
+                        <label className={`flex items-center gap-3 p-3 rounded-xl border cursor-pointer transition-all select-none ${
+                            startNow
+                                ? `${theme.accentBg} ${theme.borderLight}`
+                                : 'border-gray-100 dark:border-gray-800 hover:border-gray-200 dark:hover:border-gray-700'
+                        }`}>
+                            <div className={`w-5 h-5 rounded-md border-2 flex items-center justify-center shrink-0 transition-all ${
+                                startNow ? `${theme.checkboxBg} border-transparent` : 'border-gray-300 dark:border-gray-600'
+                            }`}>
+                                {startNow && (
+                                    <svg className="w-3 h-3 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth="3">
+                                        <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+                                    </svg>
+                                )}
+                            </div>
                             <input
                                 type="checkbox"
                                 checked={startNow}
                                 onChange={e => setStartNow(e.target.checked)}
                                 disabled={loading}
-                                className="w-4 h-4 rounded accent-emerald-500"
+                                className="sr-only"
                             />
-                            <span className="text-sm text-gray-700 dark:text-gray-300">
+                            <span className={`text-sm font-medium ${startNow ? theme.accentText : 'text-gray-700 dark:text-gray-300'}`}>
                                 {t("processScheduleStartNow")}
                             </span>
                         </label>
@@ -179,27 +199,40 @@ export default function ScheduleProcessModal({
                                 min={minDate}
                                 onChange={e => setStartDate(e.target.value)}
                                 disabled={loading}
-                                className="w-full px-3 py-2 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 text-sm outline-none focus:ring-2 focus:ring-emerald-400/40 focus:border-emerald-400 dark:focus:border-emerald-500 disabled:opacity-50"
+                                className={`w-full px-3 py-2.5 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 text-sm outline-none transition-all focus:ring-2 focus:border-transparent disabled:opacity-50 ${theme.focusRing}`}
                             />
                         )}
                     </div>
                 )}
 
-                {/* End section */}
-                <div className="space-y-2">
-                    <p className="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                {/* ── End section ── */}
+                <div className="space-y-3">
+                    <p className={`text-[11px] font-bold uppercase tracking-widest ${theme.accent}`}>
                         {t("processScheduleEnd")}
                     </p>
 
-                    <label className="flex items-center gap-2 cursor-pointer select-none">
+                    <label className={`flex items-center gap-3 p-3 rounded-xl border cursor-pointer transition-all select-none ${
+                        noEnd
+                            ? `${theme.accentBg} ${theme.borderLight}`
+                            : 'border-gray-100 dark:border-gray-800 hover:border-gray-200 dark:hover:border-gray-700'
+                    }`}>
+                        <div className={`w-5 h-5 rounded-md border-2 flex items-center justify-center shrink-0 transition-all ${
+                            noEnd ? `${theme.checkboxBg} border-transparent` : 'border-gray-300 dark:border-gray-600'
+                        }`}>
+                            {noEnd && (
+                                <svg className="w-3 h-3 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth="3">
+                                    <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+                                </svg>
+                            )}
+                        </div>
                         <input
                             type="checkbox"
                             checked={noEnd}
                             onChange={e => setNoEnd(e.target.checked)}
                             disabled={loading}
-                            className="w-4 h-4 rounded accent-emerald-500"
+                            className="sr-only"
                         />
-                        <span className="text-sm text-gray-700 dark:text-gray-300">
+                        <span className={`text-sm font-medium ${noEnd ? theme.accentText : 'text-gray-700 dark:text-gray-300'}`}>
                             {t("processScheduleNoEnd")}
                         </span>
                     </label>
@@ -211,22 +244,29 @@ export default function ScheduleProcessModal({
                             min={startNow || isActive ? minDate : (startDate || minDate)}
                             onChange={e => setEndDate(e.target.value)}
                             disabled={loading}
-                            className="w-full px-3 py-2 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 text-sm outline-none focus:ring-2 focus:ring-emerald-400/40 focus:border-emerald-400 dark:focus:border-emerald-500 disabled:opacity-50"
+                            className={`w-full px-3 py-2.5 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 text-sm outline-none transition-all focus:ring-2 focus:border-transparent disabled:opacity-50 ${theme.focusRing}`}
                         />
                     )}
                 </div>
 
+                {/* ── Error ── */}
                 {error && (
-                    <p className="text-xs text-red-500 dark:text-red-400">{error}</p>
+                    <div className="flex items-center gap-2 px-3 py-2.5 rounded-xl bg-red-50 dark:bg-red-900/20 border border-red-100 dark:border-red-800">
+                        <svg className="w-4 h-4 text-red-500 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth="2">
+                            <path strokeLinecap="round" strokeLinejoin="round" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                        <p className="text-xs font-medium text-red-600 dark:text-red-400">{error}</p>
+                    </div>
                 )}
             </div>
 
+            {/* ── Actions ── */}
             <div className="flex justify-between items-center pt-1 gap-2 flex-wrap">
                 {hasExistingSchedule && (
                     <button
                         onClick={handleCancelSchedule}
                         disabled={loading}
-                        className="px-3 py-2 rounded-xl text-xs font-medium text-orange-600 dark:text-orange-400 hover:bg-orange-50 dark:hover:bg-orange-500/10 transition-colors disabled:opacity-40"
+                        className="px-3 py-2 rounded-xl text-xs font-semibold text-orange-600 dark:text-orange-400 hover:bg-orange-50 dark:hover:bg-orange-500/10 transition-colors disabled:opacity-40"
                     >
                         {t("processScheduleCancel")}
                     </button>
@@ -243,7 +283,7 @@ export default function ScheduleProcessModal({
                     <button
                         onClick={handleSubmit}
                         disabled={loading}
-                        className="px-4 py-2 rounded-xl text-sm font-medium text-white bg-emerald-600 hover:bg-emerald-700 transition-colors disabled:opacity-40 disabled:cursor-not-allowed flex items-center gap-2"
+                        className={`px-4 py-2 rounded-xl text-sm font-semibold text-white transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2 ${theme.btnPrimary} ${theme.btnPrimaryHover}`}
                     >
                         {loading && (
                             <div className="w-3.5 h-3.5 border-2 border-white border-t-transparent rounded-full animate-spin" />

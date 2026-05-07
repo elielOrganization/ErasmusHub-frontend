@@ -86,12 +86,15 @@ export default function StudentRevisionPage() {
     const router = useRouter();
 
     // ✅ Available endpoint: GET /documents/user/{userId}
-    const { data: documents, loading, error, refetch } = useApi<ReviewDocument[]>(
+    const { data: documents, loading, error } = useApi<ReviewDocument[]>(
         `/documents/user/${studentId}`
     );
     // GET /users/ returns all users; filter by studentId (no GET /users/{id} endpoint exists)
     const { data: allUsers } = useApi<StudentInfo[]>("/users");
     const studentData = allUsers?.find(u => u.id === parseInt(studentId));
+
+    // Local overrides — applied on top of fetched data so only the touched doc re-renders
+    const [docOverrides, setDocOverrides] = useState<Record<number, Partial<ReviewDocument>>>({});
 
     // Per-document action state
     const [activeDoc, setActiveDoc] = useState<number | null>(null);
@@ -158,41 +161,34 @@ export default function StudentRevisionPage() {
             ...(actionMode === "reject" && { rejection_reason: reason.trim() }),
         };
 
-        // The backend commits before sending notifications, so it may save successfully
-        // but still return an HTTP error. Ignore the PATCH error and verify the
-        // actual outcome with a direct fetch.
-        try { await reviewDocument(docId, payload); } catch { /* verify with direct fetch below */ }
-
-        const token = Cookies.get("auth_token");
-        let savedState: string | null = null;
         try {
-            const check = await fetch(`${API_URL}/documents/user/${studentId}`, {
-                headers: { Authorization: `Bearer ${token}` },
-            });
-            if (check.ok) {
-                const updated: ReviewDocument[] = await check.json();
-                savedState = updated.find(d => d.id === docId)?.state ?? null;
-            }
-        } catch { /* si falla la verificación asumimos éxito */ }
+            await reviewDocument(docId, payload);
 
-        const success = savedState === targetState || savedState === null;
-
-        if (success) {
             if (actionMode === "reject") {
                 try { await patchInterview(parseInt(studentId), { status: "pending" }); } catch { /* silent */ }
             }
+
+            // Update only this document locally — no full refetch
+            setDocOverrides(prev => ({
+                ...prev,
+                [docId]: {
+                    state: targetState,
+                    grade: actionMode === "approve" && grade ? parseFloat(grade) : null,
+                    rejection_reason: actionMode === "reject" ? reason.trim() : null,
+                },
+            }));
+
             setFeedback({
                 docId,
                 type: "success",
                 msg: actionMode === "approve" ? t("approvedSuccess") : t("rejectedSuccess"),
             });
             cancelAction();
-        } else {
+        } catch {
             setFeedback({ docId, type: "error", msg: t("actionError") });
+        } finally {
+            setSubmitting(false);
         }
-
-        setSubmitting(false);
-        try { await refetch(); } catch { /* silent */ }
     }
 
     async function handleExclude() {
@@ -204,7 +200,7 @@ export default function StudentRevisionPage() {
         try {
             await patchInterview(parseInt(studentId), { status: "rejected", rejection_reason: excludeReason.trim() });
             setExcludeFeedback({ type: "success", msg: t("excludeSuccess") });
-            setTimeout(() => router.push("/dashboard/revision"), 1200);
+            setTimeout(() => router.push("/dashboard/review"), 1200);
         } catch {
             setExcludeFeedback({ type: "error", msg: t("excludeError") });
             setExcludeSubmitting(false);
@@ -217,7 +213,7 @@ export default function StudentRevisionPage() {
         try {
             await patchInterview(parseInt(studentId), { status: "pending" });
             setReadmitFeedback({ type: "success", msg: t("readmitSuccess") });
-            setTimeout(() => router.push("/dashboard/revision"), 1200);
+            setTimeout(() => router.push("/dashboard/review"), 1200);
         } catch {
             setReadmitFeedback({ type: "error", msg: t("readmitError") });
             setReadmitSubmitting(false);
@@ -309,7 +305,9 @@ export default function StudentRevisionPage() {
         );
     }
 
-    const docs = documents ?? [];
+    const docs = (documents ?? []).map(d =>
+        docOverrides[d.id] ? { ...d, ...docOverrides[d.id] } : d
+    );
     const studentName = studentData ? `${studentData.first_name} ${studentData.last_name}` : `#${studentId}`;
     const studentCourse = studentData?.year
         ? (GYMNASIUM_COURSES.find(c => c.value === studentData.year)?.label ?? studentData.year)
@@ -323,7 +321,7 @@ export default function StudentRevisionPage() {
             <div className="space-y-3">
                 <div className="flex items-start gap-3">
                     <Link
-                        href="/dashboard/revision"
+                        href="/dashboard/review"
                         className="mt-1 shrink-0 text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 transition-colors"
                     >
                         <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">

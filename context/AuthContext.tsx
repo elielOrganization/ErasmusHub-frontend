@@ -29,6 +29,7 @@ interface AuthContextType {
     user: User | null;
     loading: boolean;
     roleName: string | null; // inmediate value from token
+    token: string | null;
     loginGlobal: (token: string) => Promise<void>;
     logout: () => void;
 }
@@ -58,19 +59,21 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     const [user, setUser] = useState<User | null>(null);
     const [loading, setLoading] = useState(true);
     const [roleName, setRoleName] = useState<string | null>(null);
+    const [token, setToken] = useState<string | null>(() => Cookies.get('auth_token') ?? null);
     const router = useRouter();
 
     // Decodes the token and updates roleName (fast path). Then refreshes full user data.
     const refreshUserFromToken = async () => {
-        const token = Cookies.get('auth_token');
-        if (!token) {
+        const cookieToken = Cookies.get('auth_token') ?? null;
+        setToken(cookieToken);
+        if (!cookieToken) {
             setUser(null);
             setRoleName(null);
             setLoading(false);
             return;
         }
 
-        const decoded = decodeJwt<{ sub?: string; role?: string }>(token);
+        const decoded = decodeJwt<{ sub?: string; role?: string }>(cookieToken);
         const role = decoded?.role ?? null;
         setRoleName(role);
 
@@ -78,7 +81,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             const response = await fetch(`${API_URL}/auth/me`, {
                 method: 'GET',
                 headers: {
-                    'Authorization': `Bearer ${token}`,
+                    'Authorization': `Bearer ${cookieToken}`,
                     'Accept': 'application/json',
                 },
             });
@@ -122,11 +125,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         Cookies.remove('auth_token');
         setUser(null);
         setRoleName(null);
+        setToken(null);
         router.push('/login');
     };
 
     return (
-        <AuthContext.Provider value={{ user, loading, roleName, loginGlobal, logout }}>
+        <AuthContext.Provider value={{ user, loading, roleName, token, loginGlobal, logout }}>
             {children}
         </AuthContext.Provider>
     );
