@@ -151,46 +151,72 @@ function UserProfilePanel({ user, open, onClose, onEdit, onDelete, currentUserId
     const tRoles = useTranslations('roles');
     const tUp = useTranslations('userProfile');
 
+    const [mounted, setMounted] = useState(false);
+    const [show, setShow] = useState(false);
+    const [localUser, setLocalUser] = useState<User | null>(null);
+
+    useEffect(() => {
+        if (user) setLocalUser(user);
+    }, [user]);
+
+    useEffect(() => {
+        if (open) {
+            setMounted(true);
+            // Double rAF: first frame mounts at start state, second frame triggers transition
+            const id = requestAnimationFrame(() =>
+                requestAnimationFrame(() => setShow(true))
+            );
+            return () => cancelAnimationFrame(id);
+        } else {
+            setShow(false);
+            const tid = setTimeout(() => setMounted(false), 300);
+            return () => clearTimeout(tid);
+        }
+    }, [open]);
+
     useEffect(() => {
         const handleKey = (e: KeyboardEvent) => { if (e.key === 'Escape') onClose(); };
         if (open) document.addEventListener('keydown', handleKey);
         return () => document.removeEventListener('keydown', handleKey);
     }, [open, onClose]);
 
-    if (!open || !user) return null;
+    if (!mounted || !localUser) return null;
 
-    const isSuperAdmin = user.id === 1;
-    const isSelf = user.id === currentUserId;
+    const isSuperAdmin = localUser.id === 1;
+    const isSelf = localUser.id === currentUserId;
     const canDelete = !isSelf && !isSuperAdmin;
-    const rawRole = user.role?.name ?? '';
+    const rawRole = localUser.role?.name ?? '';
     const displayRole = rawRole ? translateRole(rawRole, tRoles) : t('unknown');
     const pillClasses = getRolePillClasses(rawRole);
-    const [avFrom, avTo] = avatarGradient(user.first_name + user.last_name);
-    const initials = `${user.first_name[0] ?? ''}${user.last_name[0] ?? ''}`.toUpperCase();
+    const [avFrom, avTo] = avatarGradient(localUser.first_name + localUser.last_name);
+    const initials = `${localUser.first_name[0] ?? ''}${localUser.last_name[0] ?? ''}`.toUpperCase();
 
     const fmt = (d?: string | null) =>
         d ? new Date(d).toLocaleDateString(undefined, { year: 'numeric', month: 'long', day: 'numeric' }) : null;
 
     const fields: { label: string; val: string | null | undefined }[] = [
-        { label: tUp('firstName'),  val: user.first_name },
-        { label: tUp('lastName'),   val: user.last_name },
-        { label: tUp('email'),      val: user.email },
-        { label: tUp('phone'),      val: user.phone },
-        { label: tUp('address'),    val: user.address },
-        { label: tUp('birthDate'),  val: fmt(user.birth_date) },
-        { label: tUp('memberSince'), val: fmt(user.created_at) },
-        ...(user.rodne_cislo
-            ? [{ label: tUp('rodneCislo'), val: user.rodne_cislo.slice(0, 4) + '••••••' }]
+        { label: tUp('firstName'),  val: localUser.first_name },
+        { label: tUp('lastName'),   val: localUser.last_name },
+        { label: tUp('email'),      val: localUser.email },
+        { label: tUp('phone'),      val: localUser.phone },
+        { label: tUp('address'),    val: localUser.address },
+        { label: tUp('birthDate'),  val: fmt(localUser.birth_date) },
+        { label: tUp('memberSince'), val: fmt(localUser.created_at) },
+        ...(localUser.rodne_cislo
+            ? [{ label: tUp('rodneCislo'), val: localUser.rodne_cislo.slice(0, 4) + '••••••' }]
             : []),
     ];
 
     return (
         <div className="fixed inset-0 z-50 flex">
             {/* Backdrop */}
-            <div className="fixed inset-0 bg-black/40 backdrop-blur-sm" onClick={onClose} />
+            <div
+                className={`fixed inset-0 bg-black/40 backdrop-blur-sm transition-opacity duration-300 ${show ? 'opacity-100' : 'opacity-0'}`}
+                onClick={onClose}
+            />
 
             {/* Panel */}
-            <div className="relative ml-auto h-full w-full max-w-sm bg-white dark:bg-gray-900 shadow-2xl flex flex-col overflow-hidden">
+            <div className={`relative ml-auto h-full w-full max-w-sm bg-white dark:bg-gray-900 shadow-2xl flex flex-col overflow-hidden transition-transform duration-300 ease-in-out ${show ? 'translate-x-0' : 'translate-x-full'}`}>
 
                 {/* Header */}
                 <div className="flex items-start justify-between gap-3 p-5 border-b border-gray-100 dark:border-gray-800">
@@ -204,14 +230,14 @@ function UserProfilePanel({ user, open, onClose, onEdit, onDelete, currentUserId
                         <div className="min-w-0">
                             <div className="flex items-center gap-2 flex-wrap">
                                 <h2 className="text-base font-bold text-gray-800 dark:text-gray-100 truncate">
-                                    {user.first_name} {user.last_name}
+                                    {localUser.first_name} {localUser.last_name}
                                 </h2>
                             </div>
                             <div className="flex items-center gap-1.5 flex-wrap mt-1.5">
                                 <span className={`px-2 py-0.5 rounded-lg text-xs font-semibold ${pillClasses}`}>
                                     {displayRole}
                                 </span>
-                                {user.is_minor && (
+                                {localUser.is_minor && (
                                     <span className="px-2 py-0.5 rounded-lg text-xs font-semibold bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-400">
                                         {t('minor')}
                                     </span>
